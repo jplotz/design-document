@@ -1,0 +1,93 @@
+\documentclass[12pt]{article}
+
+% Only needed for example text
+\usepackage{lipsum}
+
+\usepackage{minted}
+
+\usepackage{float}
+\usepackage{graphicx}
+\graphicspath{{graphics/}}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+
+% Include a list of logos of some of the project's tech stack,
+% all on one line. Each logo is limited to a maximum size of 1"x1"
+% per the assignment instructions. It isn't mentioned explicitly
+% but I would assume numbered captions are not required for simple logos.
+\newcommand{\onelinelogos}{
+\begin{figure}[H]
+	\centering
+	$\vcenter{\hbox{\includegraphics[keepaspectratio,width=1in,height=1in]{django-logo-negative}}}$
+	\hspace{0.1in}
+	$\vcenter{\hbox{\includegraphics[keepaspectratio,width=1in,height=1in]{python-logo}}}$
+	\hspace{0.1in}
+	$\vcenter{\hbox{\includegraphics[keepaspectratio,width=1in,height=1in]{javascript-logo}}}$
+	\hspace{0.1in}
+	$\vcenter{\hbox{\includegraphics[keepaspectratio,width=1in,height=1in]{docker-logo-blue}}}$
+	\hspace{0.1in}
+	$\vcenter{\hbox{\includegraphics[keepaspectratio,width=1in,height=1in]{aws-logo}}}$
+\end{figure}
+}
+
+% For simple quarter-page graphics.
+% Parameters: filename, caption, label
+\newcommand{\simplegraphic}[3] {
+\begin{figure}[H]
+	\centering
+	\includegraphics[keepaspectratio,height=0.25\textheight,width=\textwidth]{#1}
+	\caption{#2}
+	\label{#3}
+\end{figure}
+}
+
+% Half-page graphic ("very complex figures or screenshots with a lot of information").
+% Parameters: filename, caption, label
+\newcommand{\complexgraphic}[3] {
+\begin{figure}[H]
+	\centering
+	\includegraphics[keepaspectratio,height=0.5\textheight,width=\textwidth]{#1}
+	\caption{#2}
+	\label{#3}
+\end{figure}
+}
+
+\usepackage{subfiles}
+
+
+\title{Preliminary Design Document}
+\author{
+	Dustin Allen
+	\and
+	Daniel Armas
+	\and
+	Rithik Dhakshnamoorthy
+	\and
+	Jacob Plotz
+	\and
+	Luke Samuel Sandoval
+	\and
+	Jereme Saunders
+}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+% Should not be more than two pages in the final PDF
+\tableofcontents
+
+
+\section{Design Plan}
+\subfile{sections/design-plan.tex}
+
+\section{Minimum Viable Product}
+\subfile{sections/mvp.tex}
+
+\section{Timeline and Milestones}
+\subfile{sections/timeline-milestones.tex}
+
+\end{document}
