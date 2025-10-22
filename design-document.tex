@@ -1,8 +1,5 @@
 \documentclass[12pt]{article}
 
-% Only needed for example text
-\usepackage{lipsum}
-
 \usepackage{minted}
 
 \usepackage{float}
@@ -165,17 +162,181 @@ If all the user needs is a URL, provide the URL in an easy-to-copy format. Nothi
 % Describe technologies used to make MVP possible
 \section{Research}
 
-\subsection{Security}
+\subsection{Hosting Provider}
+\subsubsection{DigitalOcean}
+DigitalOcean droplets are small-sized virtual machines that are billed on a monthly basis.
+The team has previous experience using DigitalOcean droplets for hosting, making a Basic droplet a potential choice. However, since WADT is a SaaS application, in DigitalOcean's own terms a Basic droplet may not suffice. Additional tiers of compute and memory would impose an unfair cost on the student group.
 
-\subsection {Dockerizing and Containerization}
-% Probably poor title, but placeholder for now
-\subsection{API Considerations}
+\subsubsection{BuyVM}
+BuyVM virtual machines are cheaper than a DigitalOcean droplet, but lack the support and convenient admin UI of DigitalOcean or AWS. BuyVM would allow maximum control and potentially a relatively unique hosting stack comprised of a hardened *BSD distribution. However, this route was not chosen for the first iteration of WADT due to the high learning curve.
+
+\subsubsection{AWS}
+AWS EC2 was recommended by our sponsor and provided and paid for by our sponsor. This made it an attractive option for the team, even if the pricing model creates risks and additional considerations regarding extensive network traffic. AWS benefits from extensive documentation and high configurability. Ultimately, a single instance was chosen to start with the option of scaling to additional instances as usage of the project grows.
+
+\subsection{Host Operating System}
+\subsubsection{OpenBSD}
+OpenBSD is a security-focused UNIX system. While using a security-focused system for a cybersecurity-focused project is a good idea, the relative scarcity of documentation meant a steep learning curve for the team.
+
+Considering a *BSD distribution was quickly invalidated as the team determined that Docker is a Linux-specific application. Docker relies on Linux kernel namespaces as part of its core design, meaning that to use a *BSD distribution would require dramatic changes in other parts of the project, effectively invalidating WADT's original purpose. A BSD-based project would make use of Jails instead of Docker. Since users expect to manipulate Docker containers with WADT, changing to BSD would require a change in our MVP, making it more than a mere technical decision.
+
+\subsubsection{CentOS}
+CentOS is a Linux distribution which is used internally for the labs run by our sponsor. For the purposes of our users, the main functional difference they will experience between CentOS and other choices of distribution is the package manager. Key project pieces (Docker, NGINX, etc.) are available for every Linux distribution the team considered, the only difference between them being familiarity.
+
+It was decided to optimize for our developer team's productivity in the beginning, and since no member had previous experience with CentOS, it was decided to postpone its adoption. WADT can be migrated to CentOS for lab instructors and students once its core features are developed.
+
+\subsubsection{Amazon Linux}
+Amazon Linux is a distribution provided by Amazon specifically for EC2 instances. Its primary advantage for the team would be easy integration with IaC tools like Terraform and CloudFormation.
+
+Amazon Linux is not ideal for either developers or users in terms of previous experience and familiarity. It is not used internally within labs and was not used for testing and early development.
+
+\subsubsection{Ubuntu}
+Ubuntu was chosen to promote a fast ramp-up and make it easy for every member of the team to contribute. Ubuntu is an ideal choice, since it supports all elements of the project tech stack and is widely-used.
+
+Specifically, Ubuntu by default enforces an externally-managed Python environment which effectively necessitates using virtual environments to manage project dependencies. This ensures no developers have conflicts between project-specific packages and system-wide packages and reduces dependency conflicts.
+
+PostgreSQL is also available in Ubuntu's default repositories, simplifying project setup when compared to CentOS or Amazon Linux.
+
+\subsection{General Security Concerns}
+\subsection{2-Factor Authentication}
+
+\subsection{Containerization Tools}
+\subsubsection{OCI Compliance}
+The Open Container Initiative (OCI) maintains a group of three specifications which containerization tools are expected to follow to be compliant to the same standards as Docker. Since Docker was taken as a baseline technology for the project, only other OCI-compliant containerization tools were considered.
+
+\subsubsection{Podman}
+Podman is a drop-in replacement for Docker which is both daemonless and rootless. It differs in its underlying architecture: Podman is pod-based. A pod is an infra container combined with a number of regular containers.
+
+For comparison, plain Docker functions interacts with plain containers, not pods. Docker Compose can be used to run multiple containers together for a project.
+
+\simplegraphic{podman-pod-architecture}{Pod architecture}{fig:podman}
+% source: https://developers.redhat.com/blog/2019/01/15/podman-managing-containers-pods#
+
+Podman's daemonless design means that it does not require a running background process (daemon) to function. Instead, Podman relies on systemd. This is in contrast to Docker, which requires a daemon with root privileges.
+
+Podman is also rootless, meaning that system root privileges are not required by any part of Podman to run containers. This feature is the biggest draw of Podman over Docker for a security-focused project. With Podman, WADT would never require root privileges to run containers or be forced to interact with a privileged daemon process.
+
+Although Podman is intended as a drop-in replacement for Docker, there are minor differences which ultimately led to the team's selection of Docker instead. Docker can perform pulls from DockerHub with short image names, while Podman requires additional configuration to do so. So while \texttt{docker pull postgres} will run successfully, \texttt{podman pull postgres} will throw an error.
+
+These small differences are likely to create cognitive friction for users of WADT.
+
+
+\subsubsection{Docker}
+Docker is a widely-used set of container tools. A number of features made Docker the ideal choice for WADT.
+\begin{itemize}
+	\item Official, extensive SDK with available low-level API access
+	\item Images already available for numerous applications. While any OCI-compliant container engine can run these images, in practice they are built and tested for Docker
+	\item DockerHub integration
+\end{itemize}
+
+\subsection{Programming Language and Web Framework}
+
+\subsubsection{Python and Flask}
+Too minimal
+
+\subsubsection{Golang and Gin}
+Too minimal. Also golang is a new language for i assume most or all of the team
+
+\subsubsection{Python and Django}
+Django is a web framework for Python which was chosen for its sensible architecture and useful features. Django's ORM and admin panel made configuring the database a one-day job, while its migrations feature ensures that any changes are tracked along with the project.
+
+Django's MVC architecture and template system enforces clear separation of concerns and makes prototyping fast and easy. Combined with its powerful ORM, simple views can be implemented in a few lines of code.
+\begin{figure}[H]
+	\centering
+	\begin{minted}{python}
+	def index(request):
+	    container_catalog = Container.objects.order_by("name")
+	    context = {"container_catalog": container_catalog}
+	    return render(request, "wadtapp/index.html", context)
+	\end{minted}
+	\caption{Django queries and template system make simple pages simple to write.}
+	\label{fig:indexview}
+\end{figure}
+
+\subsection{Docker Integration}
+
+\subsubsection{python-on-whales}
+good, but only for Docker Compose
+
+\subsubsection{go-sdk}
+not using it because we're not using go
+
+\subsubsection{docker-py}
+good
+
+\subsection{Asynchronous Support}
+
+\subsubsection{Celery}
+too complex
+
+\subsubsection{Django Channels}
+good. prevents the client from repeatedly polling the server
+
+\subsection{Backend Architecture}
+
+\subsubsection{Django MVC}
+what's meant here is using django's built in stuff for rendering HTML templates with whatever data you want.
+
+\subsubsection{API-only}
+what's meant here is using Django to create an API that just sends and receives JSON and doesn't take responsibility for rendering pages, which is what we're actually doing.
+
+
+\subsection{API Testing}
+
+\subsubsection{cURL}
+yay!
+
+\subsubsection{Postman}
+ew
+
+\subsection{API Documentation}
+
+\subsubsection{Hoppscotch}
+free and open-source
+
+\subsubsection{SwaggerHub}
+I don't like swaggerhub
+
+\subsection{API Performance Testing}
+
+\subsection{Secrets Management}
+TruffleHog
+
+\subsection{CI/CD Pipeline}
+
 % Descrbie what technologies we used/considered and why chosen technology was selected
 \subsection{Database}
 
+\subsubsection{MySQL}
+bruh absolutely not
+
+\subsubsection{MariaDB}
+better but still MySQL is kinda clunky
+
+\subsubsection{MongoDB}
+requires a third-party backend to be used with Django
+
+\subsubsection{PostgreSQL}
+well-supported, easy to install and once you figure out how to set it up, it's not that hard to reproduce those steps.
+
+\subsection{Container Identity Management}
+the problem of figuring out which container is which. container name and container id are both guaranteed to be unique by docker, but which one we need to use depends on context.
+
+\subsection{Docker Compose}
+docker compose afaik requires a different python library than just
+one-container-at-a-time, which means if any webapps we want on WADT
+use compose, we need a way to use a different library to control them.
+
+\subsection{Docker Architecture}
+
+% docker team stuff here I suppose
+
+
 % Again, placeholder title, just for ideas for this section
 \subsection{Frontend}
+
+
 \section{System Architecture}
+
 
 \section{Timeline and Milestones}
 
