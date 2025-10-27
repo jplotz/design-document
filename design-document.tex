@@ -183,8 +183,68 @@ For the framework some of the biggest concerns were ensuring that authentication
 Some other considerations were the usage of web-sockets for our communication protocols as they would provide continuous streaming of live logs or container stats. This was also considered due to the concern of "heisenbugs", race conditions and other overhead related issues such as our client initialization with each user who may be using the application. After research the decision to not utilize web-sockets was that the REST API would be able to handle this much better with less complications of writing and implementing these systems ourselves. The research also provided insight on Docker itself. The realization was that rather than initializing multiple clients when we have multiple users, instead initializing a single shared client would be the best option. This is because Docker already uses different request threads which will help us prevent race conditions or any "heisenbugs" that were anticipated at first. Using this Docker client management we also avoid high overhead costs as the clients are only created once the app boots up, it is inherently designed to be shared across threads while keeping user data seperate, and prevents the need for database space being taken
 \subsection{Database}
 
-% Again, placeholder title, just for ideas for this section
-\subsection{Frontend}
+% Frontend Part 3: CSS Libraries
+\section{CSS Libraries}
+
+When it comes to frontend work, part of the problem is making sure that a website looks appealing enough to attract users, providing a more enjoyable coding experience for the developer and ensure pleasurable user experience. %Maybe rethink this line here
+With this in mind, we wanted to choose a professional CSS library that provides the user with good readablliy and accessablity.
+There were a lot of options for CSS libraries, but we narrowed the options down to three: Bootstrap, Tailwind and Chakra UI.
+
+\subsection{Bootstrap} 
+This one was our first consideration, as bootstrap is a very popular CSS library. 
+Bootstrap and REACT have their own merged CSS library that makes coding the project smoother called 'REACT-Bootstrap'.
+REACT-Bootstrap utilizes the bootstrap visuals with REACT type programming to ensure a coherent coding experiece.
+
+Bootstrap's reviews are overall possitive, with extensive praise on the use of child themes.
+Its REACT-Bootstrap also gets pretty high reviews, being praised for it's developer friendly nature.
+The only major complaint on Bbootstrap is it's lack of flexability, requiring the developer to edit the CSS code themselves to achieve the desired look.
+
+There are also custom themes for bootstrap to use that can be found online.
+One example is 'Bootswatch', which provides free themes for bootstrap that can be easily implemented into the project.
+Utilizing these themes can help us achieve a more unique look for our project, and possibly implement different themes for the user to choose from.
+
+% Bootstrap section done.
+
+\subsection{Tailwind}
+Tailwind is another popular CSS library containing many good options for css design.
+Through research, we found that tailwind operated very differently from bootstrap, as it is a utility-first CSS library.
+This means that instead of having pre-designed components like bootstrap, tailwind gives a lot of freedom to the developer to design their own components using CSS.
+
+Tailwind reviews are good, with 63\% of the reviews on their website being 5 star.
+A complaint that we have noticed when it came to tailwind is that while it is versitile and useful, there is a learning curve.
+It suggested that those who don't have extensive knowledge on CSS will struggle a little to utilize tailwind's components.
+
+Unlike Bootstrap which has it's own REACT library, tailwind does not have one.
+Instead, tailwind has it's own third party library called Tailwind UI that integrates tailwind with REACT.
+However, this third party library is locked behind a paywall, requiring the developer to pay to use it.
+Our research concludes that tailwind is extremely versitile for CSS design, however requires a learning curve.
+
+% Tailwind section done
+
+\subsection{Chakra UI}
+Chakra UI also came accross our radar as a popular CSS library.
+On chakra's website, there was a page that showcased the professional websites made using Chakra UI. 
+This was a nice way to look at what a fully fletched website using Chakra UI can do.
+Chakra UI's reviews are mostly possitive, with emphasise on good developer experience.
+A downside to Chakra UI is a lack of certain components (one example is the search bar component), as well
+as good ways to change the themes of the componenets.
+
+% Chakra UI + Figma Kit?
+Chakra UI is also developer friendly with Figma with their Charka UI + Figma Kit. 
+We found it interesting that there was a figma page that showed us exactly what to use for certain components.
+This was a nice touch that made us consider Chakra UI more seriously since we used Figma for our design mockups.
+
+\subsection{What we choose}
+After weighing all considerations, our team selected \textbf{REACT-Bootstrap} as our primary CSS framework. 
+It offers a familiar structure, excellent documentation, and seamless integration with React, 
+enabling us to focus on functionality without getting bogged down in complex setup processes.
+
+Additionally, having a developer with prior Bootstrap experience allowed us to accelerate onboarding 
+and maintain consistency across our components.
+While Tailwind and Chakra UI both provide unique advantages — creative freedom and modern theming, 
+respectively — React-Bootstrap strikes the most effective balance between stability, usability, and developer productivity.
+
+
 \section{System Architecture}
 
 \section{Timeline and Milestones}
