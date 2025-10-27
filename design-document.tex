@@ -1,8 +1,5 @@
 \documentclass[12pt]{article}
 
-% Only needed for example text
-\usepackage{lipsum}
-
 \usepackage{minted}
 
 \usepackage{float}
@@ -165,14 +162,147 @@ If all the user needs is a URL, provide the URL in an easy-to-copy format. Nothi
 % Describe technologies used to make MVP possible
 \section{Research}
 
-\subsection{Security}
-Security was one of the biggest concerns as hosting intentionally vulnerable applications inherently has many risks that need to be narrowed down and handled before pushed to a live server. Docker has some very strong security primitives that will be utilized to help the application be as secure as possible. Linux namespaces will be used to help ensure that each container has its own isolated process tree, filesystem, and network stack, ensuring that the containers are self-contained and unaware of the host system. A dedicated, isolated Docker bridge network will be used for each student's session. Containers will not be attached to the default bridge or the host network. Using this will aid in preventing these containers from scanning or attacking other services on the host machine/other containers. This essentially enforces a "deny by default" policy for communication within the containers and system itself.
-\\
-\\
-One of the other main concerns was the containers not shutting down on time or a student potentially forgetting to shut down the container itself. Not only would this potentially lead to high overhead costs, it would also potentially leave an opening for a security breach to happen. Due to this, a life time limit will be implemented on the containers to automatically run a stop command to ensure that the containers do not run for extended periods of time. This will help us cleanup our resources along with limiting the potentials for misuse.
-\subsection {Dockerizing and Containerization}
-% Probably poor title, but placeholder for now
-\subsection{API Considerations}
+\subsection{Hosting Provider}
+\subsubsection{DigitalOcean}
+DigitalOcean droplets are small-sized virtual machines that are billed on a monthly basis.
+The team has previous experience using DigitalOcean droplets for hosting, making a Basic droplet a potential choice. However, since WADT is a SaaS application, in DigitalOcean's own terms a Basic droplet may not suffice. Additional tiers of compute and memory would impose an unfair cost on the student group.
+
+\subsubsection{BuyVM}
+BuyVM virtual machines are cheaper than a DigitalOcean droplet, but lack the support and convenient admin UI of DigitalOcean or AWS. BuyVM would allow maximum control and potentially a relatively unique hosting stack comprised of a hardened *BSD distribution. However, this route was not chosen for the first iteration of WADT due to the high learning curve.
+
+\subsubsection{AWS}
+AWS EC2 was recommended by our sponsor and provided and paid for by our sponsor. This made it an attractive option for the team, even if the pricing model creates risks and additional considerations regarding extensive network traffic. AWS benefits from extensive documentation and high configurability. Ultimately, a single instance was chosen to start with the option of scaling to additional instances as usage of the project grows.
+
+\subsection{Host Operating System}
+\subsubsection{OpenBSD}
+OpenBSD is a security-focused UNIX system. While using a security-focused system for a cybersecurity-focused project is a good idea, the relative scarcity of documentation meant a steep learning curve for the team.
+
+Considering a *BSD distribution was quickly invalidated as the team determined that Docker is a Linux-specific application. Docker relies on Linux kernel namespaces as part of its core design, meaning that to use a *BSD distribution would require dramatic changes in other parts of the project, effectively invalidating WADT's original purpose. A BSD-based project would make use of Jails instead of Docker. Since users expect to manipulate Docker containers with WADT, changing to BSD would require a change in our MVP, making it more than a mere technical decision.
+
+\subsubsection{CentOS}
+CentOS is a Linux distribution which is used internally for the labs run by our sponsor. For the purposes of our users, the main functional difference they will experience between CentOS and other choices of distribution is the package manager. Key project pieces (Docker, NGINX, etc.) are available for every Linux distribution the team considered, the only difference between them being familiarity.
+
+It was decided to optimize for our developer team's productivity in the beginning, and since no member had previous experience with CentOS, it was decided to postpone its adoption. WADT can be migrated to CentOS for lab instructors and students once its core features are developed.
+
+\subsubsection{Amazon Linux}
+Amazon Linux is a distribution provided by Amazon specifically for EC2 instances. Its primary advantage for the team would be easy integration with IaC tools like Terraform and CloudFormation.
+
+Amazon Linux is not ideal for either developers or users in terms of previous experience and familiarity. It is not used internally within labs and was not used for testing and early development.
+
+\subsubsection{Ubuntu}
+Ubuntu was chosen to promote a fast ramp-up and make it easy for every member of the team to contribute. Ubuntu is an ideal choice, since it supports all elements of the project tech stack and is widely-used.
+
+Specifically, Ubuntu by default enforces an externally-managed Python environment which effectively necessitates using virtual environments to manage project dependencies. This ensures no developers have conflicts between project-specific packages and system-wide packages and reduces dependency conflicts.
+
+PostgreSQL is also available in Ubuntu's default repositories, simplifying project setup when compared to CentOS or Amazon Linux.
+
+\subsection{General Security Concerns}
+\subsection{2-Factor Authentication}
+
+\subsection{Containerization Tools}
+\subsubsection{OCI Compliance}
+The Open Container Initiative (OCI) maintains a group of three specifications which containerization tools are expected to follow to be compliant to the same standards as Docker. Since Docker was taken as a baseline technology for the project, only other OCI-compliant containerization tools were considered.
+
+\subsubsection{Podman}
+Podman is a drop-in replacement for Docker which is both daemonless and rootless. It differs in its underlying architecture: Podman is pod-based. A pod is an infra container combined with a number of regular containers.
+
+For comparison, plain Docker functions interacts with plain containers, not pods. Docker Compose can be used to run multiple containers together for a project.
+
+\simplegraphic{podman-pod-architecture}{Pod architecture}{fig:podman}
+% source: https://developers.redhat.com/blog/2019/01/15/podman-managing-containers-pods#
+
+Podman's daemonless design means that it does not require a running background process (daemon) to function. Instead, Podman relies on systemd. This is in contrast to Docker, which requires a daemon with root privileges.
+
+Podman is also rootless, meaning that system root privileges are not required by any part of Podman to run containers. This feature is the biggest draw of Podman over Docker for a security-focused project. With Podman, WADT would never require root privileges to run containers or be forced to interact with a privileged daemon process.
+
+Although Podman is intended as a drop-in replacement for Docker, there are minor differences which ultimately led to the team's selection of Docker instead. Docker can perform pulls from DockerHub with short image names, while Podman requires additional configuration to do so. So while \texttt{docker pull postgres} will run successfully, \texttt{podman pull postgres} will throw an error.
+
+These small differences are likely to create cognitive friction for users of WADT.
+
+
+\subsubsection{Docker}
+Docker is a widely-used set of container tools. A number of features made Docker the ideal choice for WADT.
+\begin{itemize}
+	\item Official, extensive SDK with available low-level API access
+	\item Images already available for numerous applications. While any OCI-compliant container engine can run these images, in practice they are built and tested for Docker
+	\item DockerHub integration
+\end{itemize}
+
+\subsection{Programming Language and Web Framework}
+
+\subsubsection{Python and Flask}
+Too minimal
+
+\subsubsection{Golang and Gin}
+Too minimal. Also golang is a new language for i assume most or all of the team
+
+\subsubsection{Python and Django}
+Django is a web framework for Python which was chosen for its sensible architecture and useful features. Django's ORM and admin panel made configuring the database a one-day job, while its migrations feature ensures that any changes are tracked along with the project.
+
+Django's MVC architecture and template system enforces clear separation of concerns and makes prototyping fast and easy. Combined with its powerful ORM, simple views can be implemented in a few lines of code.
+\begin{figure}[H]
+	\centering
+	\begin{minted}{python}
+	def index(request):
+	    container_catalog = Container.objects.order_by("name")
+	    context = {"container_catalog": container_catalog}
+	    return render(request, "wadtapp/index.html", context)
+	\end{minted}
+	\caption{Django queries and template system make simple pages simple to write.}
+	\label{fig:indexview}
+\end{figure}
+
+\subsection{Docker Integration}
+
+\subsubsection{python-on-whales}
+good, but only for Docker Compose
+
+\subsubsection{go-sdk}
+not using it because we're not using go
+
+\subsubsection{docker-py}
+good
+
+\subsection{Asynchronous Support}
+
+\subsubsection{Celery}
+too complex
+
+\subsubsection{Django Channels}
+good. prevents the client from repeatedly polling the server
+
+\subsection{Backend Architecture}
+
+\subsubsection{Django MVC}
+what's meant here is using django's built in stuff for rendering HTML templates with whatever data you want.
+
+\subsubsection{API-only}
+what's meant here is using Django to create an API that just sends and receives JSON and doesn't take responsibility for rendering pages, which is what we're actually doing.
+
+
+\subsection{API Testing}
+
+\subsubsection{cURL}
+yay!
+
+\subsubsection{Postman}
+ew
+
+\subsection{API Documentation}
+
+\subsubsection{Hoppscotch}
+free and open-source
+
+\subsubsection{SwaggerHub}
+I don't like swaggerhub
+
+\subsection{API Performance Testing}
+
+\subsection{Secrets Management}
+TruffleHog
+
+\subsection{CI/CD Pipeline}
+
 % Descrbie what technologies we used/considered and why chosen technology was selected
 For API implementation, some of the biggest considerations are what will potential students need to have access too and what will make this project the easiest to utilize. Along with this we also had to ensure that interfacing with Docker would be seamless to ensure that we could control the container instances while minimizing the potential risks of security issues. Due to this the project was decided to run on Python as Docker SDK for python was the most feature-rich and had the best integration with the Docker engine. With the integration this project will have much easier implementation of the core operations needed to control the containers i.e. start, stop, logs, restart, etc.
 \\
@@ -183,69 +313,37 @@ For the framework some of the biggest concerns were ensuring that authentication
 Some other considerations were the usage of web-sockets for our communication protocols as they would provide continuous streaming of live logs or container stats. This was also considered due to the concern of "heisenbugs", race conditions and other overhead related issues such as our client initialization with each user who may be using the application. After research the decision to not utilize web-sockets was that the REST API would be able to handle this much better with less complications of writing and implementing these systems ourselves. The research also provided insight on Docker itself. The realization was that rather than initializing multiple clients when we have multiple users, instead initializing a single shared client would be the best option. This is because Docker already uses different request threads which will help us prevent race conditions or any "heisenbugs" that were anticipated at first. Using this Docker client management we also avoid high overhead costs as the clients are only created once the app boots up, it is inherently designed to be shared across threads while keeping user data seperate, and prevents the need for database space being taken
 \subsection{Database}
 
-% Frontend Part 3: CSS Libraries
-\section{CSS Libraries}
+\subsubsection{MySQL}
+bruh absolutely not
 
-When it comes to frontend work, part of the problem is making sure that a website looks appealing enough to attract users, providing a more enjoyable coding experience for the developer and ensure pleasurable user experience. %Maybe rethink this line here
-With this in mind, we wanted to choose a professional CSS library that provides the user with good readablliy and accessablity.
-There were a lot of options for CSS libraries, but we narrowed the options down to three: Bootstrap, Tailwind and Chakra UI.
+\subsubsection{MariaDB}
+better but still MySQL is kinda clunky
 
-\subsection{Bootstrap} 
-This one was our first consideration, as bootstrap is a very popular CSS library. 
-Bootstrap and REACT have their own merged CSS library that makes coding the project smoother called 'REACT-Bootstrap'.
-REACT-Bootstrap utilizes the bootstrap visuals with REACT type programming to ensure a coherent coding experiece.
+\subsubsection{MongoDB}
+requires a third-party backend to be used with Django
 
-Bootstrap's reviews are overall possitive, with extensive praise on the use of child themes.
-Its REACT-Bootstrap also gets pretty high reviews, being praised for it's developer friendly nature.
-The only major complaint on Bbootstrap is it's lack of flexability, requiring the developer to edit the CSS code themselves to achieve the desired look.
+\subsubsection{PostgreSQL}
+well-supported, easy to install and once you figure out how to set it up, it's not that hard to reproduce those steps.
 
-There are also custom themes for bootstrap to use that can be found online.
-One example is 'Bootswatch', which provides free themes for bootstrap that can be easily implemented into the project.
-Utilizing these themes can help us achieve a more unique look for our project, and possibly implement different themes for the user to choose from.
+\subsection{Container Identity Management}
+the problem of figuring out which container is which. container name and container id are both guaranteed to be unique by docker, but which one we need to use depends on context.
 
-% Bootstrap section done.
+\subsection{Docker Compose}
+docker compose afaik requires a different python library than just
+one-container-at-a-time, which means if any webapps we want on WADT
+use compose, we need a way to use a different library to control them.
 
-\subsection{Tailwind}
-Tailwind is another popular CSS library containing many good options for css design.
-Through research, we found that tailwind operated very differently from bootstrap, as it is a utility-first CSS library.
-This means that instead of having pre-designed components like bootstrap, tailwind gives a lot of freedom to the developer to design their own components using CSS.
+\subsection{Docker Architecture}
 
-Tailwind reviews are good, with 63\% of the reviews on their website being 5 star.
-A complaint that we have noticed when it came to tailwind is that while it is versitile and useful, there is a learning curve.
-It suggested that those who don't have extensive knowledge on CSS will struggle a little to utilize tailwind's components.
+% docker team stuff here I suppose
 
-Unlike Bootstrap which has it's own REACT library, tailwind does not have one.
-Instead, tailwind has it's own third party library called Tailwind UI that integrates tailwind with REACT.
-However, this third party library is locked behind a paywall, requiring the developer to pay to use it.
-Our research concludes that tailwind is extremely versitile for CSS design, however requires a learning curve.
 
-% Tailwind section done
-
-\subsection{Chakra UI}
-Chakra UI also came accross our radar as a popular CSS library.
-On chakra's website, there was a page that showcased the professional websites made using Chakra UI. 
-This was a nice way to look at what a fully fletched website using Chakra UI can do.
-Chakra UI's reviews are mostly possitive, with emphasise on good developer experience.
-A downside to Chakra UI is a lack of certain components (one example is the search bar component), as well
-as good ways to change the themes of the componenets.
-
-% Chakra UI + Figma Kit?
-Chakra UI is also developer friendly with Figma with their Charka UI + Figma Kit. 
-We found it interesting that there was a figma page that showed us exactly what to use for certain components.
-This was a nice touch that made us consider Chakra UI more seriously since we used Figma for our design mockups.
-
-\subsection{What we choose}
-After weighing all considerations, our team selected \textbf{REACT-Bootstrap} as our primary CSS framework. 
-It offers a familiar structure, excellent documentation, and seamless integration with React, 
-enabling us to focus on functionality without getting bogged down in complex setup processes.
-
-Additionally, having a developer with prior Bootstrap experience allowed us to accelerate onboarding 
-and maintain consistency across our components.
-While Tailwind and Chakra UI both provide unique advantages — creative freedom and modern theming, 
-respectively — React-Bootstrap strikes the most effective balance between stability, usability, and developer productivity.
+% Again, placeholder title, just for ideas for this section
+\subsection{Frontend}
 
 
 \section{System Architecture}
+
 
 \section{Timeline and Milestones}
 
