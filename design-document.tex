@@ -2,6 +2,9 @@
 
 \usepackage{minted}
 
+% for clickable ToC
+\usepackage[hidelinks]{hyperref}
+
 \usepackage{float}
 \usepackage{graphicx}
 \graphicspath{{graphics/}}
@@ -78,12 +81,15 @@
 \tableofcontents
 
 \section{Executive Summary}
-%TODO
+Imagine you have an epiphany: I need to practice SQL injection. Suppose this is an immediate need. What is your next step?
+
+If you're anything like the typical student, you will turn to a search engine and find small, toy examples which have little relation to real-world examples, or labs hiding behind paywalls. You might opt for a self-hosted solution, but in that case, be prepared to take an hour or more setting up your target application.
+
+Enter the Web App Deployment Tooling (WADT) project. WADT provides an easy-to-use GUI that hides the details of setup and installation so that students can practice as soon as they sit down, no tedium required. A number of preconfigured target applications are available for use, all using a robust open-source tech stack.
 
 \section{Project Description}
 
 \subsection {Overview}
-%TODO duplicate? see a few paragraphs down, same thing is repeated
 The Web App Deployment Tooling (WADT) project allows students and instructors to browse a catalog of ready-to-deploy vulnerable webapps and manage them through a graphical interface. WADT is the first step in the learning pipeline that ensures students and instructors are on the same page in minimal time. Their efforts can shift to investigating the app itself, while the container-based architecture of WADT ensures they have reproducible sandboxed builds available at the click of a button.
 
 \subsection{The Setup Timesink Problem}
@@ -97,9 +103,6 @@ Both parties are capable of following a list of instructions to set up a target 
 WADT aims to eliminate redundant setup work by providing a standardized environment where vulnerable web apps can be deployed instantly in isolated containers. This ensures reproducibility, simplifies lab setup, and allows both instructors and students to focus on the learning objectives.
 
 \section{Minimum Viable Product}
-
-\subsection{How our MVP Solves the Setup Timesink Problem}
-The Web App Deployment Tooling (WADT) project allows students and instructors to browse a catalog of ready-to-deploy vulnerable webapps and manage them through a graphical interface. WADT is the first step in the learning pipeline that ensures students and instructors are on the same page in minimal time. Their efforts can shift to investigating the app itself, while the container-based architecture of WADT ensures they have reproducible sandboxed builds available at the click of a button.
 
 \subsection{Scope and Limitations}
 WADT is intended to be used in an instructional setting as part of a lab. While all code developed for the project is free and open-source, the site and the AWS instance it runs on are not accessible to the general public. The team members and sponsor are the only individuals expected to access the site and instance while it is in early development.
@@ -139,7 +142,7 @@ If all the user needs is a URL, provide the URL in an easy-to-copy format. Nothi
 \subsection{Definition of Done}
 \begin{itemize}
 	\item At least 7 target vulnerable webapps are listed on the site with icons, names, and descriptions. An image for each webapp has been created and tested for reliability (always deploys when required) and reproducibility (application source code and initial state are immutable and consistent). Each target app passes automated tests ensuring that the desired vulnerable endpoints are confirmed reachable.
-	\item Container limits. Each container is alloted a specific amount of compute resources and network bandwidth. Each container is only kept running for a maximum of 24 hours from the last user interaction, at which point it will be automatically downed.
+	\item Container limits. Each container is allotted a specific amount of compute resources and network bandwidth. Each container is only kept running for a maximum of 24 hours from the last user interaction, at which point it will be automatically downed.
 	\item Status indicator. Each webapp indicates its state. State indication matches actual container behavior (does not indicate stop when container with specified ID is still running, etc.).
 	\item Deploy feature. Users can deploy any of the target webapps. Deploy is accompanied by connection information, assisting users in making requests to the vulnerable application.
 	\item Stop feature. Users can stop any webapp. Stop only functions for containers which are currently running.
@@ -160,6 +163,9 @@ If all the user needs is a URL, provide the URL in an easy-to-copy format. Nothi
 	      Make site compatible with widely used color scheme file formats (minimum: .Xresources, .itermcolors, Windows settings.json, and .yml used for GNOME terminal and xfce4 terminal). Students will be able to use the same colors for WADT and for their terminal.
 	\item Custom interactions window. Users can issue (arbitrary) commands to the container through the site. Users may edit files with a text editor through the site. This stretch goal is extremely ambitious. The security vulnerabilities potentially resulting from exposing a shell to a container are numerous and severe. Additionally, embedding a full terminal emulator inside of a webapp is a difficult task.
 \end{itemize}
+
+\subsection{Tech Stack}
+\onelinelogos
 
 % Describe technologies used to make MVP possible
 \section{Research}
@@ -203,8 +209,68 @@ Security was one of the biggest concerns as hosting intentionally vulnerable app
 
 One of the other main concerns was the containers not shutting down on time or a student potentially forgetting to shut down the container itself. Not only would this potentially lead to high overhead costs, it would also potentially leave an opening for a security breach to happen. Due to this, a life time limit will be implemented on the containers to automatically run a stop command to ensure that the containers do not run for extended periods of time. This will help us cleanup our resources along with limiting the potentials for misuse.
 
+\subsection{Incoming Requests}
+Arbitrary command execution vulnerabilities are present for a number of selected target vulnerable webapps.
+
+Suppose for a case example, the Damn Vulnerable Web Application (DVWA) selected by the team. DVWA includes a PHP remote code execution lab. Since arbitrary command execution is built-in to the target webapp, the slightest misconfiguration of the underlying Docker container will compromise the server.
+
+Example exploitation steps:
+\begin{enumerate}
+	\item Misconfigure Docker containers. In this example, a user uses a DVWA compose file with \texttt{privileged: true} and \texttt{pid: "host"} configured for each container
+	\item User starts DVWA with \texttt{docker compose up} with root privileges
+	\item User configures DVWA built-in security level to low using environment variables, config file, or webpage
+	\item User accesses command injection vulnerability in browser at /vulnerabilities/exec
+	\item User enters \texttt{localhost; ls /dev} to verify injection vulnerability. Devices on the host are listed. In this instance, the shell runs as user www-data, meaning that exploitation possibilities are roughly the same as a non-root user on the host. In the event of a privilege escalation vulnerability, the user may gain root access
+	\item For this demonstration, the user runs a fork bomb
+		\simplegraphic{fork-bomb}{Command injection - fork bomb setup}{fig:forkbomb}
+	\item A significant slowdown occurs on the host system. In principle, a user could perform this attack on the WADT site to take it offline
+		\simplegraphic{cannot-fork}{Command injection - fork bomb execution}{fig:forkbomb-exec}
+\end{enumerate}
+
+\subsection{Outgoing Requests}
+In addition to concerns that users could compromise the WADT site through any one of its containers, there is the additional concern that the containers could be manipulated to perform malicious outgoing requests. Containers, if compromised, could participate in DDoS, botnets, or be used to distribute illegal content, to name a few examples.
+
+This problem is especially difficult to solve since blocking all outgoing requests will break any dependencies that target vulnerable webapps have on external services.
+
+%TODO provide example
+
+\subsection{XSS}
+%TODO explain how users mess with other users through XSS
+
 \subsection{2-Factor Authentication}
-%TODO
+In addition to previous security methods, it is desirable to add 2-factor authentication upon login. There are multiple approaches which solve the problem.
+
+\subsubsection{pyotp + pass + pass-otp}
+This solution implements TOTP (Time-based One Time Password) authentication, a form of 2-factor authentication, that relies on SSH access to the AWS instance which runs the site. This restriction ensures that the only users who can manipulate containers through the site \textit{already} have full server access as a prerequisite.
+
+The setup steps are as follows:
+\begin{enumerate}
+	\item Use \texttt{pyotp} to generate a shared secret
+	\item Display the shared secret as a URI to the user on the WADT webpage. Other display options include QR code
+	\item User logs in to the instance over SSH
+	\item User uses \texttt{pass} with the \texttt{pass-otp} extension to store the URI
+\end{enumerate}
+
+The usage steps are as follows:
+\begin{enumerate}
+	\item User logs in to the instance over SSH
+	\item User runs \texttt{pass otp [secret-name]} to generate a one-time sign in code
+	\item User enters sign in code (or copies it) to the WADT site
+	\item User completes signin
+\end{enumerate}
+
+While this solution is minimal, it relies on existing libraries and services for the core parts of TOTP, sidestepping documented issues with roll-your-own TOTP like floating point imprecision when calculating the time input.
+
+This solution is also compatible with existing, more standardized authentication providers like Microsoft Authenticator, making it a sensible addition to the project.
+
+All users who access WADT may be required to have SSH access to the underlying server as a prerequisite if it is ensured that only the \texttt{pass} program on the server is configured for MFA.
+
+
+\subsubsection{Traditional Authentication Providers}
+Traditional auth providers are available, most notably Microsoft Authenticator and Google Authenticator, that can provide the same service as \texttt{pass-otp} for users. However, since these traditional providers are not linked to the underlying hosting, they do not provide the same kind of security that the previous solution affords.
+
+Traditional 2FA providers are primarily concerned with verifying the identity of users. Microsoft authenticator in and of itself will verify that the individual attempting a sign-on is the identity they claim to be. However, a solution with \texttt{pass-otp} also incidentally verifies that the individual attempting sign-on has access to the resources the WADT project is looking to protect.
+%TODO explain how adding traditional auth provider would work
 
 %TODO add more to security section
 
@@ -336,7 +402,7 @@ For API implementation, some of the biggest considerations are what will potenti
 For the framework some of the biggest concerns were ensuring that authentication, admin control and security all had proper components available, which is why the final decision was to use Django as our framework for the API. One of the biggest motivators was that Django already has built in authentication features. This allows for users to have secure registration, login, and allows the application to have session management features including user identification without having the need to build up the authorization system from scratch. Django also offers a built-in admin panel along with object relational mapper will help associate users with the containers they are utilizing, and manage user data leading to simpler database operations. REST architecture is also being used as it is the industry standard for web API.
 
 \subsection{API Considerations}
-Some other considerations were the usage of web-sockets for our communication protocols as they would provide continuous streaming of live logs or container stats. This was also considered due to the concern of "heisenbugs", race conditions and other overhead related issues such as our client initialization with each user who may be using the application. After research the decision to not utilize web-sockets was that the REST API would be able to handle this much better with less complications of writing and implementing these systems ourselves. The research also provided insight on Docker itself. The realization was that rather than initializing multiple clients when we have multiple users, instead initializing a single shared client would be the best option. This is because Docker already uses different request threads which will help us prevent race conditions or any "heisenbugs" that were anticipated at first. Using this Docker client management we also avoid high overhead costs as the clients are only created once the app boots up, it is inherently designed to be shared across threads while keeping user data seperate, and prevents the need for database space being taken
+Some other considerations were the usage of web-sockets for our communication protocols as they would provide continuous streaming of live logs or container stats. This was also considered due to the concern of "heisenbugs", race conditions and other overhead related issues such as our client initialization with each user who may be using the application. After research the decision to not utilize web-sockets was that the REST API would be able to handle this much better with less complications of writing and implementing these systems ourselves. The research also provided insight on Docker itself. The realization was that rather than initializing multiple clients when we have multiple users, instead initializing a single shared client would be the best option. This is because Docker already uses different request threads which will help us prevent race conditions or any "heisenbugs" that were anticipated at first. Using this Docker client management we also avoid high overhead costs as the clients are only created once the app boots up, it is inherently designed to be shared across threads while keeping user data separate, and prevents the need for database space being taken.
 
 \subsection{Database}
 
@@ -375,17 +441,17 @@ use compose, we need a way to use a different library to control them.
 \subsection{CSS Libraries}
 When it comes to frontend work, part of the problem is making sure that a website looks appealing enough to attract users, providing a more enjoyable coding experience for the developer and ensure pleasurable user experience. %Maybe rethink this line here
 
-With this in mind, we wanted to choose a professional CSS library that provides the user with good readablliy and accessablity.
+With this in mind, we wanted to choose a professional CSS library that provides the user with good readability and accessibility.
 There were a lot of options for CSS libraries, but we narrowed the options down to three: Bootstrap, Tailwind and Chakra UI.
 
 \subsubsection{Bootstrap}
 This one was our first consideration, as bootstrap is a very popular CSS library.
 Bootstrap and REACT have their own merged CSS library that makes coding the project smoother called 'REACT-Bootstrap'.
-REACT-Bootstrap utilizes the bootstrap visuals with REACT type programming to ensure a coherent coding experiece.
+REACT-Bootstrap utilizes the bootstrap visuals with REACT type programming to ensure a coherent coding experience.
 
-Bootstrap's reviews are overall possitive, with extensive praise on the use of child themes.
+Bootstrap's reviews are overall positive, with extensive praise on the use of child themes.
 Its REACT-Bootstrap also gets pretty high reviews, being praised for it's developer friendly nature.
-The only major complaint on Bbootstrap is it's lack of flexability, requiring the developer to edit the CSS code themselves to achieve the desired look.
+The only major complaint on Bootstrap is it's lack of flexibility, requiring the developer to edit the CSS code themselves to achieve the desired look.
 
 There are also custom themes for bootstrap to use that can be found online.
 
@@ -393,31 +459,31 @@ One example is 'Bootswatch', which provides free themes for bootstrap that can b
 Utilizing these themes can help us achieve a more unique look for our project, and possibly implement different themes for the user to choose from.
 
 \subsubsection{Tailwind}
-Tailwind is another popular CSS library containing many good options for css design.
+Tailwind is another popular CSS library containing many good options for CSS design.
 Through research, we found that tailwind operated very differently from bootstrap, as it is a utility-first CSS library.
 This means that instead of having pre-designed components like bootstrap, tailwind gives a lot of freedom to the developer to design their own components using CSS.
 
 Tailwind reviews are good, with 63\% of the reviews on their website being 5 star.
-A complaint that we have noticed when it came to tailwind is that while it is versitile and useful, there is a learning curve.
+A complaint that we have noticed when it came to tailwind is that while it is versatile and useful, there is a learning curve.
 It suggested that those who don't have extensive knowledge on CSS will struggle a little to utilize tailwind's components.
 
 Unlike Bootstrap which has it's own REACT library, tailwind does not have one.
 Instead, tailwind has it's own third party library called Tailwind UI that integrates tailwind with REACT.
 However, this third party library is locked behind a paywall, requiring the developer to pay to use it.
-Our research concludes that tailwind is extremely versitile for CSS design, however requires a learning curve.
+Our research concludes that tailwind is extremely versatile for CSS design, however requires a learning curve.
 
 \subsubsection{Chakra UI}
-Chakra UI also came accross our radar as a popular CSS library.
-On chakra's website, there was a page that showcased the professional websites made using Chakra UI.
-This was a nice way to look at what a fully fletched website using Chakra UI can do.
+Chakra UI also came across our radar as a popular CSS library.
+On Chakra's website, there was a page that showcased the professional websites made using Chakra UI.
+This was a nice way to look at what a fully developed website using Chakra UI can do.
 
-Chakra UI's reviews are mostly possitive, with emphasise on good developer experience.
+Chakra UI's reviews are mostly positive, with emphasis on good developer experience.
 A downside to Chakra UI is a lack of certain components (one example is the search bar component), as well
-as good ways to change the themes of the componenets.
+as good ways to change the themes of the components.
 
 % Chakra UI + Figma Kit?
-Chakra UI is also developer friendly with Figma with their Charka UI + Figma Kit.
-We found it interesting that there was a figma page that showed us exactly what to use for certain components.
+Chakra UI is also developer friendly with Figma with their Chakra UI + Figma Kit.
+We found it interesting that there was a Figma page that showed us exactly what to use for certain components.
 This was a nice touch that made us consider Chakra UI more seriously since we used Figma for our design mockups.
 
 \subsubsection{What we chose}
