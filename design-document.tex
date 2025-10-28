@@ -209,6 +209,31 @@ Security was one of the biggest concerns as hosting intentionally vulnerable app
 
 One of the other main concerns was the containers not shutting down on time or a student potentially forgetting to shut down the container itself. Not only would this potentially lead to high overhead costs, it would also potentially leave an opening for a security breach to happen. Due to this, a life time limit will be implemented on the containers to automatically run a stop command to ensure that the containers do not run for extended periods of time. This will help us cleanup our resources along with limiting the potentials for misuse.
 
+\subsection{Incoming Requests}
+Arbitrary command execution vulnerabilities are present for a number of selected target vulnerable webapps.
+
+Suppose for a case example, the Damn Vulnerable Web Application (DVWA) selected by the team. DVWA includes a PHP remote code execution lab. Since arbitrary command execution is built-in to the target webapp, the slightest misconfiguration of the underlying Docker container will compromise the server.
+
+Example exploitation steps:
+\begin{enumerate}
+	\item Misconfigure Docker containers. In this example, a user uses a DVWA compose file with \texttt{privileged: true} and \texttt{pid: "host"} configured for each container
+	\item User starts DVWA with \texttt{docker compose up} with root privileges
+	\item User configures DVWA built-in security level to low using environment variables, config file, or webpage
+	\item User accesses command injection vulnerability in browser at /vulnerabilities/exec
+	\item User enters \texttt{localhost; ls /dev} to verify injection vulnerability. Devices on the host are listed. In this instance, the shell runs as user www-data, meaning that exploitation possibilities are roughly the same as a non-root user on the host. In the event of a privilege escalation vulnerability, the user may gain root access
+	\item For this demonstration, the user runs a fork bomb
+		\simplegraphic{fork-bomb}{Command injection - fork bomb setup}{fig:forkbomb}
+	\item A significant slowdown occurs on the host system. In principle, a user could perform this attack on the WADT site to take it offline
+		\simplegraphic{cannot-fork}{Command injection - fork bomb execution}{fig:forkbomb-exec}
+\end{enumerate}
+
+\subsection{Outgoing Requests}
+In addition to concerns that users could compromise the WADT site through any one of its containers, there is the additional concern that the containers could be manipulated to perform malicious outgoing requests. Containers, if compromised, could participate in DDoS, botnets, or be used to distribute illegal content, to name a few examples.
+
+This problem is especially difficult to solve since blocking all outgoing requests will break any dependencies that target vulnerable webapps have on external services.
+
+\subsection{XSS}
+
 \subsection{2-Factor Authentication}
 In addition to previous security methods, it is desirable to add 2-factor authentication upon login. There are multiple approaches which solve the problem.
 
@@ -239,7 +264,9 @@ All users who access WADT may be required to have SSH access to the underlying s
 
 
 \subsubsection{Traditional Authentication Providers}
-%TODO
+Traditional auth providers are available, most notably Microsoft Authenticator and Google Authenticator, that can provide the same service as \texttt{pass-otp} for users. However, since these traditional providers are not linked to the underlying hosting, they do not provide the same kind of security that the previous solution affords.
+
+Traditional 2FA providers are primarily concerned with verifying the identity of users. Microsoft authenticator in and of itself will verify that the individual attempting a sign-on is the identity they claim to be. However, a solution with \texttt{pass-otp} also incidentally verifies that the individual attempting sign-on has access to the resources the WADT project is looking to protect.
 
 %TODO add more to security section
 
