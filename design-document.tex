@@ -232,7 +232,10 @@ In addition to concerns that users could compromise the WADT site through any on
 
 This problem is especially difficult to solve since blocking all outgoing requests will break any dependencies that target vulnerable webapps have on external services.
 
+%TODO provide example
+
 \subsection{XSS}
+%TODO explain how users mess with other users through XSS
 
 \subsection{2-Factor Authentication}
 In addition to previous security methods, it is desirable to add 2-factor authentication upon login. There are multiple approaches which solve the problem.
@@ -267,6 +270,7 @@ All users who access WADT may be required to have SSH access to the underlying s
 Traditional auth providers are available, most notably Microsoft Authenticator and Google Authenticator, that can provide the same service as \texttt{pass-otp} for users. However, since these traditional providers are not linked to the underlying hosting, they do not provide the same kind of security that the previous solution affords.
 
 Traditional 2FA providers are primarily concerned with verifying the identity of users. Microsoft authenticator in and of itself will verify that the individual attempting a sign-on is the identity they claim to be. However, a solution with \texttt{pass-otp} also incidentally verifies that the individual attempting sign-on has access to the resources the WADT project is looking to protect.
+%TODO explain how adding traditional auth provider would work
 
 %TODO add more to security section
 
