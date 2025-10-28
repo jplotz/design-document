@@ -464,6 +464,26 @@ However, Canva does have a major limitation in terms of flexibility. Its heavy u
 After evaluating the most practical tools for our needs, our team ultimately selected Figma as our primary technology for design prototyping. It offered the most balanced combination of collaboration features, accessibility, and functionality. Allowing our front-end team to efficiently plan, iterate, and communicate interface designs.
 
 Figma’s collaboration tools, and ease of sharing designs and information made it especially effective for the needs of this project. Its easy-to-use interface lowered the learning curve for members who were new to working with the tool. Additionally, its extensive library of community resources and templates enabled us to quickly build and refine wireframes that align with our project’s goals and communicate the front-end vision with the rest of the team.
+
+\section{Ethical Concerns and Considerations}
+
+WADT will host intentionally vulnerable applications, which come with its own unique ethical and security challenges. We have a responsibility to protect our users, and systems from foul play and misuse. The most prominent ethical consideration for this project revolves around limiting potential harm to protect our users in order to promote responsible cybersecurity education. 
+
+\subsection{Data Privacy}
+WADT serves as an educational tool for students, rather than as commercial application, therefore it is unnecessary to store significant amounts of personal information. The only personal information needed will be a username and password. Other information such as credit card information, address, or other personal contact information will never be stored by WADT. Additionally, logs will exclude any identifiable information beyond what is required for container management system audits. We will store minimal information to ensure that if an account is compromised for any reason, there will be minimal impact for the user. 
+
+\subsection{Responsible Handling of Vulnerable Applications}
+We will host vulnerable applications with exploitable vulnerabilities by design. Given this, we have an ethical responsibility to ensure these vulnerabilities cannot be exploited and used for harm. These applications will be used only for educational purposes within a controlled environment. In order to prevent unethical use of our systems, we will have strict controls to mitigate any risks that come with such hosting. Our AWS instance will not be publicly accessible and will only accept or send out traffic to a small number of white-listed IP addresses for the intended students and instructors. All vulnerable applications will be deployed using OCI-compliant container tooling and images to further reduce risk of exploitation of a contained vulnerability. We will also implement automated shutdowns of containers to reduce exposure and mitigate the ability of vulnerable containers to interact with external environments.
+
+
+\subsection{Information Logging}
+Our application will maintain logs of container actions for both students and instructors such as deployment, stoppage, and resetting. These logs will be limited only to container relevant events or actions. These logs will serve two primary functions.
+\begin{itemize}
+	\item Feedback. Provide clear feedback to students on their interactions with containers.
+	\item Oversight. Provide visibility to instructors into container usage and potential misuse.
+\end{itemize}
+
+Our logs will only capture information required for necessary functions and will exclude excessive information such as private user information, or unrelated system information. Logging will only be used as a tool for debugging, learning, or ensuring proper usage
 \section{System Architecture}
 
 
