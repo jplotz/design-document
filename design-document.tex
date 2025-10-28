@@ -87,7 +87,6 @@ Enter the Web App Deployment Tooling (WADT) project. WADT provides an easy-to-us
 \section{Project Description}
 
 \subsection {Overview}
-%TODO duplicate? see a few paragraphs down, same thing is repeated
 The Web App Deployment Tooling (WADT) project allows students and instructors to browse a catalog of ready-to-deploy vulnerable webapps and manage them through a graphical interface. WADT is the first step in the learning pipeline that ensures students and instructors are on the same page in minimal time. Their efforts can shift to investigating the app itself, while the container-based architecture of WADT ensures they have reproducible sandboxed builds available at the click of a button.
 
 \subsection{The Setup Timesink Problem}
@@ -205,6 +204,35 @@ Security was one of the biggest concerns as hosting intentionally vulnerable app
 One of the other main concerns was the containers not shutting down on time or a student potentially forgetting to shut down the container itself. Not only would this potentially lead to high overhead costs, it would also potentially leave an opening for a security breach to happen. Due to this, a life time limit will be implemented on the containers to automatically run a stop command to ensure that the containers do not run for extended periods of time. This will help us cleanup our resources along with limiting the potentials for misuse.
 
 \subsection{2-Factor Authentication}
+In addition to previous security methods, it is desirable to add 2-factor authentication upon login. There are multiple approaches which solve the problem.
+
+\subsubsection{pyotp + pass + pass-otp}
+This solution implements TOTP (Time-based One Time Password) authentication, a form of 2-factor authentication, that relies on SSH access to the AWS instance which runs the site. This restriction ensures that the only users who can manipulate containers through the site \textit{already} have full server access as a prerequisite.
+
+The setup steps are as follows:
+\begin{enumerate}
+	\item Use \texttt{pyotp} to generate a shared secret
+	\item Display the shared secret as a URI to the user on the WADT webpage. Other display options include QR code
+	\item User logs in to the instance over SSH
+	\item User uses \texttt{pass} with the \texttt{pass-otp} extension to store the URI
+\end{enumerate}
+
+The usage steps are as follows:
+\begin{enumerate}
+	\item User logs in to the instance over SSH
+	\item User runs \texttt{pass otp [secret-name]} to generate a one-time sign in code
+	\item User enters sign in code (or copies it) to the WADT site
+	\item User completes signin
+\end{enumerate}
+
+While this solution is minimal, it relies on existing libraries and services for the core parts of TOTP, sidestepping documented issues with roll-your-own TOTP like floating point imprecision when calculating the time input.
+
+This solution is also compatible with existing, more standardized authentication providers like Microsoft Authenticator, making it a sensible addition to the project.
+
+All users who access WADT may be required to have SSH access to the underlying server as a prerequisite if it is ensured that only the \texttt{pass} program on the server is configured for MFA.
+
+
+\subsubsection{Traditional Authentication Providers}
 %TODO
 
 %TODO add more to security section
