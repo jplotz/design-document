@@ -454,6 +454,12 @@ The Docker architecture offers several advantages for deploying and managing int
     \item {Seamless CI/CD and cloud integration} – Containerized apps can be easily integrated into automated pipelines and deployed to cloud platforms for scalable testing.
   \end{itemize}
 
+\subsubsection{Security Isolation}
+Docker uses built-in Linux features to keep containers separate and safe. Namespaces and cgroups help in isolating processes and controlling resource usage. We also improve security by removing extra permissions and applying system call filters to block risky operations. This helps prevent containers from affecting the host system.
+
+\subsubsection{Container Management Process}
+Our deployment pipeline handles every stage of container management. We build images from Dockerfiles, launch containers with secure configurations, and use volumes in order to retain logs and exploit traces. Containers are stopped and removed cleanly, enabling quick resets between test cycles.
+
 \section{Frontend}
 
 \subsection{CSS Libraries}
