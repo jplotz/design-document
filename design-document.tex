@@ -461,6 +461,30 @@ Docker uses built-in Linux features to keep containers separate and safe. Namesp
 Our deployment pipeline handles every stage of container management. We build images from Dockerfiles, launch containers with secure configurations, and use volumes in order to retain logs and exploit traces. Containers are stopped and removed cleanly, enabling quick resets between test cycles.
 
 \section{Frontend}
+\subsection{Frontend Framework}
+\subsubsection{React}
+The front-end of our application is built using React. React employs a virtual Document Object Model, or DOM, to more efficiently manage updates to the UI. Only the components that have changed are updated, rather than needing to re-render the entire page to make changes. This makes the application faster and more responsive, which is an important quality for any web application.
+
+React provides several benefits that we found attractive:
+\begin{itemize}
+	\item Reusability: Components can be reused across different parts of the application, improving consistency and helping us avoid the DRY principle as much as possible. This will also make it easier for future development teams to extend or modify the project.
+	\item Flexibility and Maintainability: Individual components can be updated or replaced without affecting the rest of the system, allowing for simpler debugging, testing, and any future changes. 
+	\item Organization and Readability: React promotes self-contained components, leading to more structured and readable code. This will make it much easier for future us to understand code if we need to refer to it at some point in the future.
+\end{itemize}
+
+\subsubsection{Drawbacks of React}
+While this React offers many benefits, it does present some challenges that we have to consider. According to our research, large applications can become quite messy if the different components are not managed and organized carefully. However, given the relatively limited scope of our project and our attention to good design practices, we do not expect this to be a significant concern. Also, the emphasis on reusability can sometimes limit customization, but for our needs, we find the benefits of React far outweigh these potential drawbacks.
+
+\subsubsection{React-Bootstrap}
+In order to speed up and simplify the design and process, we incorporated React-Bootstrap, which is a library built on top of Bootstrap 5. Our sponsor is already familiar with Bootstrap, so adopting React-Bootstrap also gives us an additional source of guidance and expertise if needed during development.
+
+\subsubsection{JavaScript vs. Typescript with React}
+React primarily uses JavaScript, but it also supports TypeScript, which we chose for this project. TypeScript extends JavaScript by adding some additional support which offers several advantages. 
+\begin{itemize}
+	\item Compile time error checking. Catches errors at compile time rather than runtime, speeding up the process of finding and fixing bugs.
+	\item Improved readability: Type annotations make the code easier to understand for both our team and others in the future. 
+	\item Easier maintainability: As the project grows, TypeScript will help maintain consistency across components and reduce the risk of introducing hard to find errors.
+\end{itemize}
 
 \subsection{CSS Libraries}
 When it comes to frontend work, part of the problem is making sure that a website looks appealing enough to attract users, providing a more enjoyable coding experience for the developer and ensure pleasurable user experience. %Maybe rethink this line here
