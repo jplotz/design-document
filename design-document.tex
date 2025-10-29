@@ -434,7 +434,27 @@ use compose, we need a way to use a different library to control them.
 
 \subsection{Docker Architecture}
 % Docker team content follows
+\subsection{Docker Architecture}
+% Docker team content follows
+Docker gives a containerization framework that enables us to deploy vulnerable web applications with putting all their dependencies into isolated, secure environments. Most of the tools in Docker explains how we utilize them in our deployment pipeline.
 
+\subsubsection{Core Components}
+The Docker architecture consists of these key elements:
+  \begin{itemize}
+    \item {Docker Engine} – The runtime that builds and runs the containers.
+    \item {Images} – Read-only files that contain everything needed to run an application. We create custom images using Dockerfiles and choose lightweight, secure base images to reduce risk.
+    \item {Containers} – Containers are active instances of images. Each one runs in isolation using Linux namespaces or cgroups to safely execute and run vulnerable applications.
+    \item {Volumes} – Volumes gives persistent storage for logs and payloads. We use them to examine attack traces without changing the container itself.
+    \end{itemize}
+
+\subsubsection{Benefits for Vulnerable App Deployment}
+The Docker architecture offers several advantages for deploying and managing intentionally vulnerable applications:
+  \begin{itemize}
+    \item {Fast setup and teardown} – Containers can be launched or removed in seconds, enabling rapid iteration and testing of exploit scenarios.
+    \item {Safe and isolated experimentation} – Vulnerable apps run in sandboxed environments, allowing controlled execution of payloads without affecting the host system.
+    \item {Cross-platform reproducibility} – Docker ensures consistent behavior across Windows and Linux, reducing platform-specific bugs and simplifying collaboration.
+    \item {Seamless CI/CD and cloud integration} – Containerized apps can be easily integrated into automated pipelines and deployed to cloud platforms for scalable testing.
+  \end{itemize}
 
 \section{Frontend}
 
