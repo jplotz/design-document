@@ -14,7 +14,28 @@ The prototype's definition of done required that at least the core states of Doc
 A crucial oversight of this prototype was the lack of a database, which hid further problems with state and storage that were not discovered until the second prototype. The decision to store important data in memory for a local-only demo sidestepped issues of data corruption, handling asynchronous connections, and scaling that are discussed in more detail in \ref{api-considerations} and \ref{container-identity-management}.
 
 \subsubsection{Programmatic Control}
-The first goal of v0 was to programmatically control Docker containers with a suitable programming language. For Python, two main libraries exist that fit this purpose: python-on-whales and docker-py. Broadly, docker-py is intended for applications that run as a single container, and python-on-whales is intended for applications that run as a group of containers with Docker Compose.
+The first goal of v0 was to programmatically control Docker containers with a suitable programming language. For Python, two main libraries exist that fit this purpose: python-on-whales and docker-py. Broadly, docker-py is intended for applications that run as a single container, and python-on-whales is intended for applications that run as a group of containers with Docker Compose as well as single-container applications. Since DVWA specifically uses Docker Compose to run multiple containers, python-on-whales was selected for the prototype.
+
+First, a short demo was created that essentially listed and used the main parts of the python-on-whales API that the project would depend on. python-on-whales has essentially a one-to-one correspondence beteween its API and the Docker CLI command structure, meaning that finding these endpoints was often as easy as typing the command with Python syntax.
+
+\begin{figure}[H]
+	\centering
+	\begin{minted}{console}
+	docker compose up --detach
+	\end{minted}
+	\caption{\texttt{docker} command syntax}
+	\label{fig:docker-compose-up-cli}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\begin{minted}{python}
+	docker.compose.up(detach=True)
+	\end{minted}
+	\caption{python-on-whales API}
+	\label{fig:docker-compose-up-python}
+\end{figure}
+
 
 \subsubsection{Django}
 
