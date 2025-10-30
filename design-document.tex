@@ -469,8 +469,52 @@ Both Hoppscotch and SwaggerHub provide suitable options for our API documentatio
 %TODO
 
 \subsection{Secrets Management}
-%TODO
-TruffleHog
+
+\subsubsection{Overview}
+Secrets management refers to the secure handling of sensitive information such as API keys, passwords, encryption keys, and database credentials used throughout an application's infrastructure. Without proper management, secrets stored in code or config files can expose vulnerabilities to attackers. Proper secrets management minimizes these risks by ensuring that secrets are secure, access is restricted, and exposure is quickly detected and remediated. 
+
+In our project, secrets management is especially important because we host intentionally vulnerable applications on an Amazon Web Services (AWS) cloud environment. Any leaked credentials, tokens, or access keys could allow malicious users to gain control of containers, the host instance, or associated AWS resources. Therefore, we must adopt proactive scanning and detection measures as part of our security workflow. After all, if the whole point of this application is to teach students about vulnerable web applications, ours has to be secure.
+
+\subsubsection{TruffleHog}
+TruffleHog is an open-source security tool designed to detect secrets and credentials within source code repositories, config files, and commit histories. It scans files for high-entropy strings (values that look like random keys) and known credential patterns (such as AWS access keys, GitHub tokens, or private keys). It can be used locally or integrated into CI/CD pipelines to automatically flag and block commits that contain sensitive information. This allows our secrets management to be proactive rather than reactive. We want our application to be secure from the start, rather than trying to patch vulnerabilities after they are discovered. 
+
+TruffleHog’s main features include:
+\begin{itemize}
+    \item \textbf{Pattern-based and entropy-based scanning:} Detects both known secret formats and unknown high-entropy strings that might be secrets. 
+    \item \textbf{Version-history scanning:} Inspects the entire Git commit history, preventing exposure from older commits.
+    \item \textbf{Extensive detector library:} Includes hundreds of predefined detectors for cloud providers, APIs, and services.
+    \item \textbf{Integration support:} Can be run manually or automatically in CI/CD workflows to enforce security policies before deployment.
+\end{itemize}
+
+\subsubsection{Importance for WADT}
+For the Web App Deployment Tooling (WADT) project, TruffleHog helps prevent accidental credential leakage in our public or shared codebase. Because our team uses AWS for hosting and relies on Docker for containerization, we routinely work with environment variables, API keys, and access credentials that could cause significant damage if exposed.
+
+Integrating TruffleHog allows us to:
+\begin{itemize}
+    \item Automatically scan our Git repository before merges or deployments.
+    \item Detect hard-coded credentials or tokens in Django configuration files, Dockerfiles, or environment files.
+    \item Prevent compromised access to our AWS instance or container registry.
+    \item Enforce best practices for secure development across the team.
+\end{itemize}
+
+\subsubsection{Integration Plan}
+We plan to integrate TruffleHog as part of our CI/CD security checks:
+\begin{enumerate}
+    \item \textbf{Local Pre-Commit Hook:} Developers will install a pre-commit hook that runs TruffleHog before code is committed. If any secrets are detected, the commit will be blocked until the secret is removed or replaced with an environment variable.
+    \item \textbf{Pipeline Integration:} TruffleHog will also run in our CI/CD pipeline to scan each pull request or branch before merging into main. This ensures that no secrets are introduced even if local checks are bypassed.
+    \item \textbf{Periodic Scans:} Scheduled scans of the repository history will be conducted to ensure that no historical commits contain exposed secrets. If any are found, they will be invalidated, rotated, and removed using Git history rewriting tools.
+\end{enumerate}
+
+\subsubsection{Best Practices and Maintenance}
+\begin{itemize}
+    \item All secrets (AWS credentials, Django secret keys, database passwords) will be stored in environment variables, never directly in code.
+    \item A .env file will be used locally and excluded from version control through the use of a .gitignore file.
+    \item Compromised keys will be immediately rotated, and TruffleHog scan reports will be reviewed regularly to verify compliance.
+    \item Access to secrets will be limited to authorized team members only, following the principle of least privilege.
+\end{itemize}
+
+\subsubsection{Summary}
+By integrating TruffleHog into our development workflow, we create a proactive defense layer against one of the most common and dangerous security oversights—hard-coded secrets. This integration not only protects our AWS infrastructure and project data but also helps enforce professional software-security practices within the development team.
 
 \subsection{CI/CD Pipeline}
 %TODO
