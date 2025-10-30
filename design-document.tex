@@ -480,7 +480,7 @@ For API implementation, some of the biggest considerations are what will potenti
 
 For the framework some of the biggest concerns were ensuring that authentication, admin control and security all had proper components available, which is why the final decision was to use Django as our framework for the API. One of the biggest motivators was that Django already has built in authentication features. This allows for users to have secure registration, login, and allows the application to have session management features including user identification without having the need to build up the authorization system from scratch. Django also offers a built-in admin panel along with object relational mapper will help associate users with the containers they are utilizing, and manage user data leading to simpler database operations. REST architecture is also being used as it is the industry standard for web API.
 
-\subsection{API Considerations} \label{api-considerations}
+\subsection{API Considerations} \label{subsec:api-considerations}
 Some other considerations were the usage of web-sockets for our communication protocols as they would provide continuous streaming of live logs or container stats. This was also considered due to the concern of "heisenbugs", race conditions and other overhead related issues such as our client initialization with each user who may be using the application. After research the decision to not utilize web-sockets was that the REST API would be able to handle this much better with less complications of writing and implementing these systems ourselves. The research also provided insight on Docker itself. The realization was that rather than initializing multiple clients when we have multiple users, instead initializing a single shared client would be the best option. This is because Docker already uses different request threads which will help us prevent race conditions or any "heisenbugs" that were anticipated at first. Using this Docker client management we also avoid high overhead costs as the clients are only created once the app boots up, it is inherently designed to be shared across threads while keeping user data separate, and prevents the need for database space being taken.
 
 \subsection{Database}
@@ -501,7 +501,7 @@ requires a third-party backend to be used with Django
 %TODO
 well-supported, easy to install and once you figure out how to set it up, it's not that hard to reproduce those steps.
 
-\subsection{Container Identity Management} \label{container-identity-management}
+\subsection{Container Identity Management} \label{subsec:container-identity-management}
 %TODO
 the problem of figuring out which container is which. container name and container id are both guaranteed to be unique by docker, but which one we need to use depends on context.
 
