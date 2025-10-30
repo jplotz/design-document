@@ -331,13 +331,39 @@ Django's MVC architecture and template system enforces clear separation of conce
 
 \subsection{Docker Integration}
 
-\subsubsection{python-on-whales}
-%TODO
-good, but only for Docker Compose
+% In progress
+\subsection{python-on-whales}
+Python-on-Whales is a clean, one-to-one bridge between the Docker command-line interface (CLI) and Python. 
+It acts as a direct wrapper, letting developers control Docker with familiar Python syntax instead of juggling terminal commands. 
+In short — if you know Python, you already know how to use Python-on-Whales.
 
-\subsubsection{go-sdk}
-%TODO
-not using it because we're not using go
+What makes it stand out is its balance between simplicity and full Docker coverage. 
+It mirrors nearly every Docker feature while offering Pythonic conveniences and type safety.
+
+Some of its main features include:
+\begin{itemize}
+\item Support for the latest docker features
+\item Support for Docker stack, services, and Swarm
+\item Progress bars and progressive outputs when like: pulling, pushing, etc
+\item Support for other CLI commands such as \texttt{docker cp}
+\item SSH support for remote daemons.
+\item Contains a fully typed API
+\item All docker objects and the docker client are safe to use with multithreading and multiprocessing
+\end{itemize}
+Python-on-Whales basically turns docker automation into something readable, testable, and smooth to
+integrate with larger python projects, no weird bash script required.
+More details from python-on-whales can be found on their official website at: https://gabrieldemarmiesse.github.io/python-on-whales/
+
+\subsection{Go, and Go-sdk}
+Go is an open-source programming language developed by Google, built for efficiency in cloud computing, networking, and large-scale distributed systems.
+It’s commonly used for developing command-line interfaces (CLIs), backend web services, and site reliability tools.
+
+AWS SDK for Go (Go-SDK) is a software development kit that integrates Go applications with Amazon Web Services.
+It provides Go developers with the ability to interact directly with AWS APIs, making it useful for managing cloud resources and automating deployments.
+
+Since our project uses AWS for hosting, we briefly considered using Go with the AWS SDK for backend operations.
+However, we ultimately decided against it, as Go wasn’t part of our primary backend stack.
+Sticking with our existing setup allowed us to keep the development process simpler and avoid unnecessary integration overhead.
 
 \subsubsection{docker-py}
 %TODO
@@ -349,9 +375,26 @@ good
 %TODO
 too complex
 
-\subsubsection{Django Channels}
-%TODO
-good. prevents the client from repeatedly polling the server
+\subsection{Django Channels}
+Django Channels is a project that will take Django and extend its abilities beyond HTTP so it may handle
+websockets, chat protocols, IoT protocols, and more. 
+Django channels comprise of multiple packages:
+\begin{itemize}
+    \item Channels: the Django integration layer
+    \item Daphne: the HTTP and Websocket termination server
+    \item asgierf: the base ASGI library, and channels redis: the Redis channel layer backend.
+    \item channels-redis: a Redis-based backend for message passing
+\end{itemize} 
+
+In our project, Django Channels is used to eliminate the need for the client to repeatedly poll the server for updates.
+Instead, it keeps a live connection open, enabling real-time, two-way communication through WebSockets.
+Rather than following the traditional request-response cycle — where the client constantly sends “any updates?” messages —
+Django Channels allows the server to push updates to the client as they happen.
+This drastically cuts down on network overhead and server load, since the client only receives data when something actually changes.
+
+By maintaining an open, event-driven connection, Django Channels creates a faster,
+more responsive interaction between the client and server.
+The result is smoother, real-time feedback and an overall better user experience.
 
 \subsection{Backend Architecture}
 
@@ -380,11 +423,11 @@ Postman is a popular API testing tool with one of its main selling points being 
 
 Some of the main advantages of using Postman include:
 \begin{itemize}
-\item User-Friendly Interface: Postman has its own application with an intuitive interface, making it easy to quickly set up and execute API tests without extensive configuration.
+\item User-Friendly Interface: Postman has its own application with a straightfoward interface, making it easy to quickly set up and execute API tests without extensive configuration.
 \item Collaborative Workspaces: Postman offers shared workspaces where tests can be easily shared with other team members, ensuring consistent and repeatable testing across the development team.
-\item Scripted Testing with JavaScript: Postman allows automated test scripts to be written in JavaScript, enabling the creation of reusable testing routines and smoother integration into development workflows.
-\item CI/CD Pipeline Integration: Postman tests can be run within Continuous Integration and Continuous Deployment (CI/CD) pipelines, allowing automated testing as part of the deployment process.
-\item Cost: The basic version of Postman is free to use while providing all the features required for our current testing needs.
+\item Scripted Testing with JavaScript: Postman allows automated test scripts to be written in JavaScript, enabling the creation of reusable testing routines and smoother integration.
+\item CI/CD Pipeline Integration: Postman tests can be run within CI/CD pipelines, allowing for automated testing as part of the deployment process.
+\item Cost: The basic version of Postman is free to use many helpful features to suit our current testing needs.
 \end{itemize}
 
 \subsubsection{cURL}
@@ -399,19 +442,29 @@ Some advantages of using cURL include:
 \end{itemize}
 
 \subsubsection{Summary: cURL and Postman in Our Testing Workflow}
-Overall, cURL complements Postman well. While Postman is best at collaborative testing and visualization, cURL is better suited for automation of tests as well as integration with the CI/CD pipeline. Together, they provide more flexibility for our testing purposes.
+Overall, cURL complements Postman well. While Postman is best at collaborative testing and visualization, cURL is better suited for automation of tests as well as integration with the CI/CD pipeline. Together, they provide more flexibility for our testing purposes. It is possible that we use both, however, we will primarily use cURL, as it better integrates with other API documentation tools.
 
 \subsection{API Documentation}
-%TODO
+API documentation is often an overlooked aspect of software development, yet it is one of the most important. Thorough and accurate documentation provides clear communication between the API development team and anyone who needs to interact with the API. This includes front-end developers, testers, and even future developers so they can properly understand the API functions. Without proper documentation, using an API can feel like trying to build a piece of furniture out of the without an instruction manual. While it is technically possible, it can be slow, confusing, and prone to error.
 
+Comprehensive API documentation saves time and preserves sanity, by providing a formal description of how each endpoint works, what data it expects, and what responses it returns. This is especially important for complex APIs, where multiple endpoints interact with each other. For our project, maintaining detailed API documentation will also make it easier for future teams to continue development and troubleshoot any issues in a more efficient way.
+
+We considered two tools for documenting our APIs, Hopscotch and SwaggerHub. Both providesda standardized way to describe REST APIs. However, they differ in cost, accessibility, and integration capabilities within our existing testing structure.
 \subsubsection{Hoppscotch}
-%TODO
-free and open-source
+Hoppscotch is a free and open-source platform for testing and documenting APIs. It is entirely browser-based, making it easy for all team members to access without any need for additional installation. One of Hoppscotch’s biggest advantages for our project is its ability to integrate with our API testing tools such as cURL.
 
+As we test our APIs, Hoppscotch will allow us to document each endpoint directly within the same environment, which can be very convenient. Hoppscotch can also generate cURL commands for each request. This makes it simple to copy those commands into scripts for automated or mode advanced testing in the future. This allows for the ability to keep our documentation and testing closely aligned throughout the development process, rather than writing APIs and documenting at the end. Because cURL can be used in our CI/CD pipeline, this integration also helps to ensure that what we have documented remains consistent with what is being actively tested.
+
+Endpoints can also be grouped into collections which help to organize the different APIs, rather than having one large list of different endpoints. Any documentation, alongside any additional notes, can be easily shared with its Share feature.
 \subsubsection{SwaggerHub}
-%TODO
-I don't like swaggerhub
+SwaggerHub is well-known platform for designing and documenting APIs, which incorporates the OpenAPI Specification or OAS. This specification provides a standardized format for describing REST APIs. These descriptions are defined within a YAML or JSON document and are used to define all aspects of the API, such as the endpoints and their corresponding response formats, status codes and example payloads. The goal of these OAS schemas is to provide a structure that can clearly be understood by anyone reading it.
 
+SwaggerHub offers additional advanced features such as version control, various collaboration tools, and even automatic documentation generation. It can also be integrated with CI/CD tools to keep API documentation in synch with live deployments. 
+
+While SwaggerHub does offer many helpful features, it does have a significant drawback, its high cost. While a 30-day free trial is available, the Team plan, which includes the collaboration features, costs \$29 per month.
+
+\subsubsection{HoppScotch or SwaggerHub?}
+Both Hoppscotch and SwaggerHub provide suitable options for our API documentation needs. While SwaggerHub offers more professional-grade collaboration and versioning tools, it also comes with a high monthly cost. This is a long-term project, so we would be required to maintain documentation well beyond the free trial period and thus would have to pay \$29 per month for the Team package. This high cost makes SwaggerHub not feasible in the long term, as we are college students trying to avoid unnecessarily high out of pocket costs. Hoppscotch by contrast, is free, yet it still provides the tools we need to properly document our APIs. It also can integrate directly with cURL, allowing us to import cURL commands directly into Hoppscotch. Additionally, it supports real-time documentation alongside testing. This makes Hoppscotch the more practical tool for our API documentation.
 \subsection{API Performance Testing}
 %TODO
 
@@ -572,6 +625,43 @@ Additionally, having a developer with prior Bootstrap experience allowed us to a
 and maintain consistency across our components.
 While Tailwind and Chakra UI both provide unique advantages — creative freedom and modern theming,
 respectively — React-Bootstrap strikes the most effective balance between stability, usability, and developer productivity.
+
+\subsection{Themes}
+Since we decided to use React-Bootswatch for our CSS library, the goal was to find themes that actually fit our project’s personality.
+%Rethink line below
+We wanted a setup that not only looked clean but gave users the option to tweak the website’s vibe to their liking.
+We ended up utilizing bootswatch, a theme library made for bootstrap and can be utilized with react-bootstrap.
+Bootswatch made that easy—it’s built for Bootstrap, works smoothly with React-Bootstrap, and comes loaded with theme options we could build around.
+
+Our design direction aimed to capture a sleek, “hacker-style” aesthetic—something that felt sharp and modern without overcomplicating the visuals.
+The frontend team tested several themes that balanced readability and contrast while keeping the interface lightweight.
+% List theme designs below:
+% Talk about the struggle to find good themes.
+
+Here are some theme designs that we decided on (note subject to change until due date)
+\begin{itemize}
+    \item Bootswatch Cyborg:
+    \item Bootswatch Lux:
+    \item Bootswatch Zephyr:
+    \item Bootswatch Pulse:
+\end{itemize}
+\begin{figure}[H]
+  \centering
+  \begin{minipage}{0.25\textwidth}
+    \simplegraphic{cyborg}{}{fig:cyborg}
+  \end{minipage}\hfill
+  \begin{minipage}{0.25\textwidth}
+    \simplegraphic{lux}{}{fig:lux}
+  \end{minipage}\hfill
+  \begin{minipage}{0.25\textwidth}
+    \simplegraphic{zephyr}{}{fig:zephyr}
+  \end{minipage}\hfill
+  \begin{minipage}{0.25\textwidth}
+    \simplegraphic{pulse}{}{fig:pulse}
+  \end{minipage}
+\end{figure}
+Since Bootstrap isn’t exactly known for wild creativity, we relied on Bootswatch to inject variety while keeping the codebase clean.
+When a specific design wasn’t available, we customized the Bootswatch SCSS files to match our desired color palette and maintain a consistent style across components.
 
 \subsection{Wireframing}
 Wireframing is an essential component of front-end development; it serves as the blueprint from which all design and implementation decisions follow.  Like all blueprints, its primary goal is to serve as a medium of communication. Communication is the foundation of any collaborative effort, and wireframing provides the first stage of communication for the front-end team. It is important that the frontend team uses a tool that will allow us to work together on designs to ensure we are on the same page before implementation. It is much easier to tackle a large problem with a clear objective in mind prior to implementation. This will improve efficiency and lead to a better overall result. It is also important that we have the flexibility to make changes and add to designs as we progress further into the project and gain a better understanding of our end goals.
