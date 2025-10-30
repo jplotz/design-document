@@ -423,11 +423,11 @@ Postman is a popular API testing tool with one of its main selling points being 
 
 Some of the main advantages of using Postman include:
 \begin{itemize}
-\item User-Friendly Interface: Postman has its own application with an intuitive interface, making it easy to quickly set up and execute API tests without extensive configuration.
+\item User-Friendly Interface: Postman has its own application with a straightfoward interface, making it easy to quickly set up and execute API tests without extensive configuration.
 \item Collaborative Workspaces: Postman offers shared workspaces where tests can be easily shared with other team members, ensuring consistent and repeatable testing across the development team.
-\item Scripted Testing with JavaScript: Postman allows automated test scripts to be written in JavaScript, enabling the creation of reusable testing routines and smoother integration into development workflows.
-\item CI/CD Pipeline Integration: Postman tests can be run within Continuous Integration and Continuous Deployment (CI/CD) pipelines, allowing automated testing as part of the deployment process.
-\item Cost: The basic version of Postman is free to use while providing all the features required for our current testing needs.
+\item Scripted Testing with JavaScript: Postman allows automated test scripts to be written in JavaScript, enabling the creation of reusable testing routines and smoother integration.
+\item CI/CD Pipeline Integration: Postman tests can be run within CI/CD pipelines, allowing for automated testing as part of the deployment process.
+\item Cost: The basic version of Postman is free to use many helpful features to suit our current testing needs.
 \end{itemize}
 
 \subsubsection{cURL}
@@ -442,19 +442,29 @@ Some advantages of using cURL include:
 \end{itemize}
 
 \subsubsection{Summary: cURL and Postman in Our Testing Workflow}
-Overall, cURL complements Postman well. While Postman is best at collaborative testing and visualization, cURL is better suited for automation of tests as well as integration with the CI/CD pipeline. Together, they provide more flexibility for our testing purposes.
+Overall, cURL complements Postman well. While Postman is best at collaborative testing and visualization, cURL is better suited for automation of tests as well as integration with the CI/CD pipeline. Together, they provide more flexibility for our testing purposes. It is possible that we use both, however, we will primarily use cURL, as it better integrates with other API documentation tools.
 
 \subsection{API Documentation}
-%TODO
+API documentation is often an overlooked aspect of software development, yet it is one of the most important. Thorough and accurate documentation provides clear communication between the API development team and anyone who needs to interact with the API. This includes front-end developers, testers, and even future developers so they can properly understand the API functions. Without proper documentation, using an API can feel like trying to build a piece of furniture out of the without an instruction manual. While it is technically possible, it can be slow, confusing, and prone to error.
 
+Comprehensive API documentation saves time and preserves sanity, by providing a formal description of how each endpoint works, what data it expects, and what responses it returns. This is especially important for complex APIs, where multiple endpoints interact with each other. For our project, maintaining detailed API documentation will also make it easier for future teams to continue development and troubleshoot any issues in a more efficient way.
+
+We considered two tools for documenting our APIs, Hopscotch and SwaggerHub. Both providesda standardized way to describe REST APIs. However, they differ in cost, accessibility, and integration capabilities within our existing testing structure.
 \subsubsection{Hoppscotch}
-%TODO
-free and open-source
+Hoppscotch is a free and open-source platform for testing and documenting APIs. It is entirely browser-based, making it easy for all team members to access without any need for additional installation. One of Hoppscotch’s biggest advantages for our project is its ability to integrate with our API testing tools such as cURL.
 
+As we test our APIs, Hoppscotch will allow us to document each endpoint directly within the same environment, which can be very convenient. Hoppscotch can also generate cURL commands for each request. This makes it simple to copy those commands into scripts for automated or mode advanced testing in the future. This allows for the ability to keep our documentation and testing closely aligned throughout the development process, rather than writing APIs and documenting at the end. Because cURL can be used in our CI/CD pipeline, this integration also helps to ensure that what we have documented remains consistent with what is being actively tested.
+
+Endpoints can also be grouped into collections which help to organize the different APIs, rather than having one large list of different endpoints. Any documentation, alongside any additional notes, can be easily shared with its Share feature.
 \subsubsection{SwaggerHub}
-%TODO
-I don't like swaggerhub
+SwaggerHub is well-known platform for designing and documenting APIs, which incorporates the OpenAPI Specification or OAS. This specification provides a standardized format for describing REST APIs. These descriptions are defined within a YAML or JSON document and are used to define all aspects of the API, such as the endpoints and their corresponding response formats, status codes and example payloads. The goal of these OAS schemas is to provide a structure that can clearly be understood by anyone reading it.
 
+SwaggerHub offers additional advanced features such as version control, various collaboration tools, and even automatic documentation generation. It can also be integrated with CI/CD tools to keep API documentation in synch with live deployments. 
+
+While SwaggerHub does offer many helpful features, it does have a significant drawback, its high cost. While a 30-day free trial is available, the Team plan, which includes the collaboration features, costs \$29 per month.
+
+\subsubsection{HoppScotch or SwaggerHub?}
+Both Hoppscotch and SwaggerHub provide suitable options for our API documentation needs. While SwaggerHub offers more professional-grade collaboration and versioning tools, it also comes with a high monthly cost. This is a long-term project, so we would be required to maintain documentation well beyond the free trial period and thus would have to pay \$29 per month for the Team package. This high cost makes SwaggerHub not feasible in the long term, as we are college students trying to avoid unnecessarily high out of pocket costs. Hoppscotch by contrast, is free, yet it still provides the tools we need to properly document our APIs. It also can integrate directly with cURL, allowing us to import cURL commands directly into Hoppscotch. Additionally, it supports real-time documentation alongside testing. This makes Hoppscotch the more practical tool for our API documentation.
 \subsection{API Performance Testing}
 %TODO
 
