@@ -431,6 +431,131 @@ Sticking with our existing setup allowed us to keep the development process simp
 %TODO
 good
 
+\subsection{Vulnerable Web Application Selection}
+
+\subsubsection{Selection Criteria}
+The goal of the Web App Deployment Tooling (WADT) project is to provide a catalog of intentionally and unintentionally vulnerable web applications that together expose students to a broad, representative set of real-world security issues. We are aiming to maximize educational value while remaining practical to deploy and maintain. We selected target applications according to the following criteria:
+
+\begin{itemize}
+    \item \textbf{Vulnerability breadth:} Each application should expose multiple common vulnerability classes (for example, the OWASP Top 10) so students can practice exploiting and patching different kinds of flaws.
+    \item \textbf{Technology diversity:} The set should span several technology stacks (e.g., JavaScript/Node, Python/Django, PHP, LAMP, PostgreSQL) to expose students to language and framework-specific security issues and tooling.
+    \item \textbf{Educational maturity:} Preference for well-documented, actively maintained projects with clear lab-friendly features (hints, adjustable difficulty, reset functionality).
+    \item \textbf{Container friendliness:} Applications must be reliably containerizable and suitable for running in isolated, resource-constrained environments.
+    \item \textbf{Practical relevance:} The application scenarios should reflect realistic application classes (API-driven services, single-page apps, e-commerce platforms, CMS, legacy stacks) so students learn transferable skills.
+\end{itemize}
+
+\subsubsection{Intentional vs. Unintentional Vulnerabilities}
+
+\paragraph{Intentional (Designed) Vulnerabilities}
+Intentional or designed vulnerable applications are created specifically to teach security concepts. They are instrumented to contain a wide variety of exploitable flaws, often include challenge scaffolding or hints, and are typically packaged to be easy to reset and reproduce. Examples in our catalog (e.g., OWASP Juice Shop, DVWA, PyGoat) fall into this category. These apps prioritize discoverability and repeatability of vulnerabilities so students can quickly attack and patch vulnerabilities to varying extents.
+
+\paragraph{Unintentional (Real-world) Vulnerabilities}
+Unintentional vulnerabilities are real production defects discovered in mainstream software: they were not created for teaching but were found and disclosed (often with CVEs). Including intentionally insecure apps alongside examples of unintentional vulnerabilities (e.g., a historical path traversal or file upload RCE) gives students exposure to the kinds of high-impact bugs that affect real services. These examples teach vulnerability discovery techniques, incident response workflows (patching, CVE analysis, key rotation), and the ethical responsibilities of disclosure and remediation. Although these vulnerabilities may be harder to exploit or reset, they provide invaluable context for understanding the stakes of security in practice. Hints and path to reproduce vulnerabilities will be offered to aid students.
+
+\subsubsection{Selected Applications}
+
+\subsubsection{OWASP Juice Shop}
+
+\paragraph{Overview and stack}
+OWASP Juice Shop is a modern intentionally insecure web application implemented with a Node.js/Express backend and an Angular frontend. It is designed as a single-page application that emulates contemporary web development patterns.
+
+\paragraph{Educational value}
+Juice Shop covers a very wide set of vulnerabilities (many items from the OWASP Top 10) in a modern application context: authentication/authorization flaws, insecure direct object references, broken access control, XSS, CSRF, injection issues, and client-side security problems. Because it is SPA-based, it is particularly good for teaching students about the interaction between frontend frameworks and backend APIs, token storage, and client-side attack surfaces.
+
+\paragraph{Deployment notes and Docker considerations}
+For WADT we will prefer pinned image tags or build images from a known commit to ensure reproducibility. Typical deployment will require exposing the application port and mapping any data volume used for persistence. Resource usage is moderate; containers may be run with constrained CPU and memory limits without impairing lab exercises.
+
+\paragraph{Why chosen}
+Juice Shop provides a modern, realistic lab with a polished UI and a comprehensive set of built-in challenges. It is ideal for intermediate-to-advanced students who need practice against up-to-date web stacks.
+
+
+\subsubsection{PyGoat}
+
+\paragraph{Overview and stack}
+PyGoat is a Django-based intentionally vulnerable web application implemented in Python and Django. It is generally smaller in scope than other applications but focuses on server-side vulnerabilities common to Python web frameworks.
+
+\paragraph{Educational value}
+PyGoat is useful for students who want to explore issues in Python/Django applications specifically: insecure ORM usage, improper authentication/authorization, template injection, and misconfigured middleware. Its smaller codebase makes it easier for students to read the source, trace control flow, and implement fixes.
+
+\paragraph{Deployment notes and Docker considerations}
+PyGoat can be containerized with a lightweight image based on an official Python base image. The database backend for PyGoat is typically SQLite or a lightweight DB by default, but we may run it against PostgreSQL in a secondary container (or a single container with the DB bundled).
+
+\paragraph{Why chosen}
+PyGoat focuses on server-side Python/Django security, offering a clear environment for students to practice code-level remediation and gain familiarity with a widely-used backend framework.
+
+
+\subsubsection{Damn Vulnerable Web Application (DVWA)}
+\paragraph{Overview and stack}
+DVWA is a classic PHP/MySQL vulnerable web application widely used in education. It intentionally exposes a set of vulnerabilities and allows the security level to be adjusted to tune difficulty.
+
+\paragraph{Educational value}
+DVWA is particularly well-suited for beginners and intermediate students because exercises are simple to understand and reproduce: SQL injection, cross-site scripting (XSS), command injection, file inclusion, and authentication bypasses. The adjustable security level makes DVWA a flexible tool for progressive lab assignments, starting from smaller exploits and advancing to realistic variations.
+
+\paragraph{Deployment notes and Docker considerations}
+DVWA is typically deployed as a LAMP-style container or with separate containers for PHP and MySQL. Because it is lightweight, DVWA is easy to run on constrained hosts. We must ensure default credentials and debug features are documented and reset between sessions.
+
+\paragraph{Why chosen}
+DVWA’s long-standing presence in security education, its adjustable difficulty, and its simplicity make it an ideal entry point for students learning web vulnerabilities and exploitation basics.
+
+
+
+\subsubsection{Ghost CMS (Unintentionally Vulnerable Example)}
+\paragraph{Overview and stack}
+Ghost is a widely used open-source blogging and publishing platform built on Node.js. It represents a realistic production-grade content management system (CMS) that students might encounter in the wild.
+
+\paragraph{Vulnerability detail}
+A historical path traversal vulnerability (CWE-22) was disclosed for Ghost (CVE-2023-32235). Affected versions prior to 5.42.1 allowed an attacker to read arbitrary files on the web server (for example, system configuration files) without authentication by exploiting an improper input path normalization issue.
+
+\paragraph{Educational value}
+Including Ghost with this specific CVE gives students a real-world case study in how a seemingly small file-path handling bug can lead to critical information disclosure. Labs can cover:
+\begin{itemize}
+    \item How path traversal vulnerabilities arise (unsafe file path concatenation, insufficient input validation).
+    \item How to reproduce the issue in a controlled environment using crafted requests.
+    \item Incident response steps: responsible disclosure, patching strategy, and post-exposure mitigation (rotate secrets, review logs).
+    \item Differences between exploiting intentional educational vulnerabilities and analyzing disclosed CVEs in production software.
+\end{itemize}
+
+\paragraph{Deployment notes and Docker considerations}
+Because this is a production-grade application, resource and configuration considerations (storage for themes, filesystem access, and user content directories) must be handled carefully to avoid leaking host state. For lab purposes, the container will be run in an isolated network with seeded content and no external persistence unless explicitly required.
+
+\paragraph{Why chosen}
+Ghost demonstrates a realistic, unintentional vulnerability in a contemporary platform and teaches practical incident-handling skills in addition to exploitation techniques.
+
+\subsubsection{PrestaShop (Unintentionally Vulnerable Example)}
+
+\paragraph{Overview and stack}
+PrestaShop is an open-source PHP e-commerce platform used for online stores. It is representative of a PHP-based web applications that manages business workflows.
+
+\paragraph{Vulnerability detail}
+A high-severity vulnerability (CVE-2023-3882) affecting PrestaShop versions such as 8.1.1-apache was disclosed that allows arbitrary file write and potentially remote code execution. Typical exploitation involves a 'Zip Slip' or unsafe file upload path that permits an authenticated or misconfigured flow to write a webshell or malicious file. This enables arbitrary command execution on the server.
+
+\paragraph{Educational value}
+PrestaShop with this CVE illustrates real-world risks in file handling and upload features on e-commerce platforms. Lab objectives include:
+\begin{itemize}
+    \item Demonstrating how improper validation on file uploads and archive extraction can lead to arbitrary file write and RCE.
+    \item Teaching safe file handling patterns (validate file names, use safe extraction libraries, enforce strict upload directories with no execute permissions).
+    \item Practicing mitigation steps for production systems: patching, credential rotation, integrity checks, and rollbacks.
+\end{itemize}
+
+\paragraph{Deployment notes and Docker considerations}
+For lab reproducibility we will ensure database seeding is deterministic. Because this scenario can involve writeable filesystem areas, containers will be carefully sandboxed (no host mounts, strict filesystem permissions) to avoid any risk to the host.
+
+\paragraph{Why chosen}
+PrestaShop is a high-impact, real-world example of how file handling vulnerabilities in feature-heavy web applications can lead to full server compromise. It complements our intentional-vulnerability apps by demonstrating production failures.
+
+\subsubsection{Deployment and catalog-level considerations}
+For each selected application, we plan to:
+\begin{itemize}
+    \item \textbf{Prefer reproducible images:} Use images from known commits to ensure identical lab environments across sessions.
+    \item \textbf{Use ephemeral containers by default:} Configure deployments so containers can be reset or destroyed and recreated from a clean image to avoid state drift between student sessions.
+    \item \textbf{Manage persistence intentionally:} When persistent state is required (for example, seeded content in Ghost or database state for PrestaShop), provide documented seed fixtures and automated reset scripts.
+    \item \textbf{Resource planning:} Assign resource limits (CPU, memory) to each container type and test concurrent runs to validate the AWS instance sizing for class workloads.
+    \item \textbf{Documentation and lab guides:} Provide short, focused lab instructions and expected learning outcomes for each app so instructors can map exercises to teaching objectives.
+\end{itemize}
+
+\subsubsection{Summary}
+Our chosen catalog (OWASP Juice Shop, PyGoat, DVWA, Ghost CMS, and PrestaShop) provides a balanced mix of intentionally crafted educational targets and real-world, unintentional vulnerabilities. This mixed approach allows students to practice both guided exploitation and code-level fixes in pedagogical environments, while also learning to analyze, reproduce, and respond to actual CVEs found in production software. The container-based WADT architecture and the python-on-whales backed orchestration are well-suited to host this catalog in a reproducible, isolated, and instructor-friendly manner.
+
 \subsection{Asynchronous Support}
 
 \subsubsection{Celery}
