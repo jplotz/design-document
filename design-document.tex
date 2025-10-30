@@ -365,15 +365,41 @@ what's meant here is using Django to create an API that just sends and receives 
 
 
 \subsection{API Testing}
-%TODO
 
-\subsubsection{cURL}
-%TODO
-yay!
+API testing is an essential step in the development process. API testing serves multiple functions, and through testing will be a necessity throughout the development process. The most relevant types of testing for WADT are:
+\begin{itemize}
+\item Functionality Testing. This is the most important function of API testing. It answers the simple question, Does the API work as intended? For our project, this includes verifying that container deployment, stopping, restarting, resetting, and logging functions work correctly and return the expected information. 
+\item Security Testing. Given that our application manages containers running intentionally vulnerable web applications, security testing is crucial. We need to ensure that the API itself cannot be exploited to bypass container restrictions and compromise our AWS server
+\item Interoperability Testing. Our API communicates with Docker through the Python Docker SDK. If there is a mismatch between SDK versions or Docker versions, this could cause errors when attempting to manage containers. It is important that we thoroughly test this to make sure these interactions work as expected.
+\end{itemize}
+
+It is important that we use the right technologies for such an important step in development. The two technologies we considered for API testing are cURL and Postman. Both come with their own benefits and disadvantages.
 
 \subsubsection{Postman}
-%TODO
-ew
+Postman is a popular API testing tool with one of its main selling points being its graphical user interface and collaboration tools. The interface simplifies the process of creating, sending, and managing API requests. This makes it especially useful for our projects’ collaborative development.
+
+Some of the main advantages of using Postman include:
+\begin{itemize}
+\item User-Friendly Interface: Postman has its own application with an intuitive interface, making it easy to quickly set up and execute API tests without extensive configuration.
+\item Collaborative Workspaces: Postman offers shared workspaces where tests can be easily shared with other team members, ensuring consistent and repeatable testing across the development team.
+\item Scripted Testing with JavaScript: Postman allows automated test scripts to be written in JavaScript, enabling the creation of reusable testing routines and smoother integration into development workflows.
+\item CI/CD Pipeline Integration: Postman tests can be run within Continuous Integration and Continuous Deployment (CI/CD) pipelines, allowing automated testing as part of the deployment process.
+\item Cost: The basic version of Postman is free to use while providing all the features required for our current testing needs.
+\end{itemize}
+
+\subsubsection{cURL}
+cURL is another tool used for testing REST APIs. Unlike Postman, which provides a graphical user interface, cURL operates entirely from the command line. This makes it better for scripting and automating tests.
+
+Some advantages of using cURL include:
+\begin{itemize}
+    \item No setup required or cost. cURL is preinstalled on most UNIX-based systems, so there is no need for additional configuration prior to testing.
+    \item More versatility. It supports protocols beyond HTTP and HTTPS, such as FTP, FTPS, SCP, and SFTP. However, these are not likely to be needed for our application.
+    \item Efficiency Using the command line can be faster than using an interface, particularly for quick testing or repeated API calls.
+    \item Automation and scripting. cURL can easily be integrated into shell scripts and CI/CD pipelines to more efficiently confirm that our Docker containers and backend APIs are functioning properly.
+\end{itemize}
+
+\subsubsection{Summary: cURL and Postman in Our Testing Workflow}
+Overall, cURL complements Postman well. While Postman is best at collaborative testing and visualization, cURL is better suited for automation of tests as well as integration with the CI/CD pipeline. Together, they provide more flexibility for our testing purposes.
 
 \subsection{API Documentation}
 %TODO
