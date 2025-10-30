@@ -36,6 +36,16 @@ First, a short demo was created that essentially listed and used the main parts 
 	\label{fig:docker-compose-up-python}
 \end{figure}
 
+The key failures of this prototype related to the scope. A standard Python program has a synchronous top-down control flow, meaning that a given sequence of method calls to a single DockerClient object in memory will occur as expected. However, a web server aiming to provide the same service cannot use this model of execution.
+
+Instead, the DockerClient object cannot be shared in memory between REST API endpoints without mechanisms for data persistence (serialization and storage in the session, cache, database, etc.) and data integrity (preventing race conditions or invalid states).
+
+At a deeper level, HTTP is a stateless protocol. Specific to the project, shared state between requests needs to be managed by a separate system server-side. Sharing data between views as a global variable, such as providing a global DockerClient for all views to access, is not a sufficient solution due to the potential for data corruption.
+
+A WSGI server typically assigns each request to a worker process or thread, meaning that sharing global variables in memory would break down upon deployment. While python-on-whales guarantees that their DockerClient object does not store any state that will affect program execution, docker-py does not make a similar guarantee. In the end, the potential for the ``share global variables in memory" approach is bad design which may or may not work depending on the Docker library used.
+
+
+
 
 \subsubsection{Django}
 
