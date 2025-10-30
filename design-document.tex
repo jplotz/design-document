@@ -507,9 +507,33 @@ the problem of figuring out which container is which. container name and contain
 
 \subsection{Docker Compose}
 %TODO
-docker compose afaik requires a different python library than just
+Docker compose afaik requires a different python library than just
 one-container-at-a-time, which means if any webapps we want on WADT
 use compose, we need a way to use a different library to control them.
+
+\subsubsection{Benefits for Vulnerable App Deployment}
+
+Docker Compose is pretty much valuable when deploying vulnerable applications consisting of multiple interconnected components, such as a web server, a database, and a proxy. Compose makes it easy to spin up and manage lots of web apps, which helps us quickly test and reset vulnerable setups.
+
+\begin{itemize}
+    \item{Service grouping} – Compose enables us to define and launch multiple services as a single unit. This is ideal for vulnerable app stacks that require coordinated startup of frontend, backend, and supporting components.
+    
+    \item{Network isolation} – Each Compose project creates its own virtual network, isolating services from the host and other containers. This containment reduces the risk of unintended interactions and supports controlled exploit testing.
+    
+    \item{Volume sharing} – Shared volumes allow services to store and access data that remains on restarts of containers. We use them to collect logs, exploit payloads, and forensic traces without modifying the container internals.
+    
+    \item{Environment reproducibility} – The \texttt{docker-compose.yml} file serves as a portable blueprint for the entire application stack. It ensures consistent deployment across different machines, operating systems, and CI/CD pipelines.
+    
+    \item{Simplified teardown and reset} – With a single command, we can stop and remove all services, networks, and volumes. This makes it easy to reset the environment between test runs or restore a clean state after exploitation.
+\end{itemize}
+
+\subsubsection{Compose Workflow}
+Compose operates in three main stages:
+\begin{itemize}
+    \item{Definition} – Services are declared in a YAML file, specifying images, ports, variables, volumes, and dependencies.
+    \item{Build and Up} – The \texttt{docker compose up} command builds images and starts all services in the correct order.
+    \item{Teardown} – The \texttt{docker compose down} command stops and removes containers, networks, and volumes, which allows to have a clean resets.
+\end{itemize}
 
 \subsection{Docker Architecture}
 % Docker team content follows
