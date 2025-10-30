@@ -1,0 +1,24 @@
+\documentclass[../design-document.tex]{subfiles}
+\begin{document}
+
+\subsection{ProtoWADT v0}
+The first prototype was created to explore controlling Docker containers programmatically and gain familiarity with Django. This prototype was timeboxed to a 1-day sprint to prohibit overanalysis and decision paralysis.
+
+The scope was intentionally basic and focused on only programmatically controlling one container, instead of the usual 7-10. It ran local-only,
+depended on a specific vulnerable app (DVWA), and was intended to be thrown away.
+
+ProtoWADT v0 was also a vital exploration of some of the invalid assumptions the team had made previously about our tech stack. Different libraries were depended on than originally predicted as a result of this exploration. This prototype also began the thinking which led to further design exploration and investigation of hidden complexity in the next prototype.
+
+The prototype's definition of done required that at least the core states of Docker containers could be manipulated through API endpoints. Start, Restart, Logs, Stop, and Down were initially required.
+
+A crucial oversight of this prototype was the lack of a database, which hid further problems with state and storage that were not discovered until the second prototype. The decision to store important data in memory for a local-only demo sidestepped issues of data corruption, handling asynchronous connections, and scaling that are discussed in more detail in \ref{api-considerations} and \ref{container-identity-management}.
+
+\subsubsection{Programmatic Control}
+The first goal of v0 was to programmatically control Docker containers with a suitable programming language. For Python, two main libraries exist that fit this purpose: python-on-whales and docker-py. Broadly, docker-py is intended for applications that run as a single container, and python-on-whales is intended for applications that run as a group of containers with Docker Compose.
+
+\subsubsection{Django}
+
+\subsection{ProtoWADT v1}
+
+
+\end{document}
