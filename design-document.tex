@@ -329,10 +329,6 @@ WebSockets are a key part of the project to provide live status updates for each
 
 The ecosystem of extensions to Django was found to be more actively developed. Since the project is timeboxed to a 9-month time frame, the "batteries included" features of Django were chosen over Flask.
 
-\subsubsection{Golang and Gin}
-%TODO
-Too minimal. Also golang is a new language for i assume most or all of the team
-
 \subsubsection{Python and Django}
 Django is a web framework for Python which was chosen for its sensible architecture and useful features. Django's ORM and admin panel made configuring the database a one-day job, while its migrations feature ensures that any changes are tracked along with the project.
 
@@ -583,8 +579,11 @@ Our chosen catalog (OWASP Juice Shop, PyGoat, DVWA, Ghost CMS, and PrestaShop) p
 \subsection{Asynchronous Support}
 
 \subsubsection{Celery}
-%TODO
-too complex
+Celery is a task queue that's compatible with Django. While it is capable of efficiently handling the asynchronous message-passing needed to send real-time status messages for each container, it involves many features that aren't needed for the project.
+
+Celery requires the choice of a message transport (another dependency and another source of complexity). Its performance features are excellent, even beyond the scope of the MVP. "Millions of tasks a minute" \cite{celery} are not likely to happen within the project scope.
+
+Due to the high complexity associated with a sophisticated solution for concurrent computation, the team opted for a simpler solution, Django Channels.
 
 \subsection{Django Channels}
 Django Channels is a project that will take Django and extend its abilities beyond HTTP so it may handle
