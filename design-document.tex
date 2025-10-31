@@ -726,6 +726,17 @@ Both Hoppscotch and SwaggerHub provide suitable options for our API documentatio
 \subsection{API Performance Testing}
 %TODO
 
+\subsection{Implementing Webhooks}
+Webhooks are one-way calls that originate from the backend and notify another system when a specific event has occurred. They differ from traditional API requests in that they are push-based rather than pull-based—instead of the frontend constantly asking for updates, the backend automatically sends information when something changes. For instance, when a user makes a purchase on Amazon, an API call first records the transaction in the backend’s database; once the payment is verified, a webhook is sent to confirm the successful purchase and update the user interface in real time.
+
+In our project, webhooks serve as infrastructure-driven callbacks—functions triggered by the underlying container orchestration system. These callbacks are sent to our backend whenever key container events occur, such as when a container is created, becomes healthy, or is terminated. The frontend then receives the corresponding status updates through WebSockets or Server-Sent Events (SSE), ensuring the interface reflects container activity immediately without the need for repeated polling requests. Each webhook carries structured information relevant to the event (for example, the container name, event type, and associated identifiers), which the backend processes before relaying to the user interface.
+
+Security is a central consideration in implementing webhooks. Every webhook request includes an HMAC (Hash-based Message Authentication Code) signature—a cryptographic hash that verifies the integrity and authenticity of the message. The payload also contains a timestamp, allowing the backend to reject outdated or replayed requests. All webhook traffic is transmitted over HTTPS to protect data in transit. Additionally, minimal error logs are maintained for debugging purposes, with sensitive or privileged information redacted to prevent accidental exposure.
+
+Together, these mechanisms make webhooks a reliable and secure method for synchronizing system state across components. By leveraging webhooks alongside real-time channels like WebSockets, our frontend remains responsive and accurate, reflecting infrastructure changes the moment they occur while maintaining strong security guarantees.
+
+
+
 \subsection{Secrets Management}
 
 \subsubsection{Overview}
@@ -785,23 +796,34 @@ For the framework some of the biggest concerns were ensuring that authentication
 \subsection{API Considerations} \label{subsec:api-considerations}
 Some other considerations were the usage of web-sockets for our communication protocols as they would provide continuous streaming of live logs or container stats. This was also considered due to the concern of "heisenbugs", race conditions and other overhead related issues such as our client initialization with each user who may be using the application. After research the decision to not utilize web-sockets was that the REST API would be able to handle this much better with less complications of writing and implementing these systems ourselves. The research also provided insight on Docker itself. The realization was that rather than initializing multiple clients when we have multiple users, instead initializing a single shared client would be the best option. This is because Docker already uses different request threads which will help us prevent race conditions or any "heisenbugs" that were anticipated at first. Using this Docker client management we also avoid high overhead costs as the clients are only created once the app boots up, it is inherently designed to be shared across threads while keeping user data separate, and prevents the need for database space being taken.
 
-\subsection{Database}
+\section{Database}
+When choosing our database we have a few options:
+\begin{itemize}
+	\item MongoDB
+	\item MySQL
+	\item MariaDB
+	\item PostgreSQL
+\end{itemize}
+\subsection{MongoDB}
+MongoDB is a document-oriented NoSQL database that stores data in flexible, JSON-like objects called BSON. It’s great when you need to move fast and don’t want to commit to a strict table structure — data can evolve as the project does. MongoDB supports ACID transactions and comes with solid security features like role-based access control and built-in encryption. It can also scale horizontally, letting data spread across multiple servers for speed and redundancy.
 
-\subsubsection{MySQL}
-%TODO
-bruh absolutely not
+For our project, though, MongoDB’s flexibility was more than we needed. We wanted something with stronger relational consistency and a clear schema, since our data follows predictable relationships. MongoDB shines when the data structure constantly changes; ours doesn’t. So we passed on it.
 
-\subsubsection{MariaDB}
-%TODO
-better but still MySQL is kinda clunky
+\subsection{MySQL}
+MySQL is the classic open-source SQL database — structured, reliable, and familiar. It organizes data into tables, rows, and columns, all defined by schemas that make relationships clear and enforce consistency. It’s been the backbone of web apps for decades, and for good reason.
 
-\subsubsection{MongoDB}
-%TODO
-requires a third-party backend to be used with Django
+That said, MySQL starts to stumble when handling massive datasets or tons of concurrent users. Stored procedures are clunky, and scaling beyond a single node takes work. It’s good, but not great for what we’re building. We needed something with stronger concurrency handling and more flexibility under pressure.
 
-\subsubsection{PostgreSQL}
-%TODO
-well-supported, easy to install and once you figure out how to set it up, it's not that hard to reproduce those steps.
+\subsection{MariaDB}
+MariaDB is basically MySQL’s smarter, faster cousin. It was forked from MySQL after Oracle bought it out, keeping full compatibility but improving performance and adding more modern features. It handles queries faster, offers more storage engines, and supports parallel replication for better scaling. It’s a solid choice for web-based apps that expect high traffic.
+
+We considered it seriously — it performs better than MySQL across the board — but PostgreSQL still beat it out in terms of handling complex queries and maintaining data integrity. MariaDB is fast, but PostgreSQL is deep.
+
+\subsection{PostgreSQL}
+PostgreSQL ended up being our pick. It’s open-source, built for reliability, and supports everything from basic relational data to advanced types like JSONB and arrays. It follows SQL standards closely but still gives room for flexibility. Transactions are fully ACID-compliant, and its concurrency control (MVCC) keeps things smooth even when multiple operations hit at once.
+
+Performance-wise, PostgreSQL can scale well and handle complex queries without breaking a sweat. It’s secure by default, supports role-based permissions, and encrypts traffic between the server and clients. For our project — managing user data, container metadata, and system events — PostgreSQL just makes sense. It gives us structure without limiting what we can do later.
+
 
 \subsection{Container Identity Management} \label{subsec:container-identity-management}
 %TODO
