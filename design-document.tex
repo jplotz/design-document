@@ -2,6 +2,13 @@
 
 \usepackage{minted}
 
+\usepackage{biblatex}
+\addbibresource{bibliography.bib}
+
+% Prevent overfull hbox in bibliography
+% must be located *after* loading biblatex
+\usepackage{xurl}
+
 % for clickable ToC
 \usepackage[hidelinks]{hyperref}
 
@@ -232,10 +239,24 @@ In addition to concerns that users could compromise the WADT site through any on
 
 This problem is especially difficult to solve since blocking all outgoing requests will break any dependencies that target vulnerable webapps have on external services.
 
-%TODO provide example
+While a simple whitelist based on a search could whitelist each domain that a given target vulnerable app depends on, it would be easily exploitable by users. Given that users need write access to application source code in order to apply certain kinds of bugfixes, users would be able to add whatever external domains they wish, and therefore have them whitelisted.
 
-\subsection{XSS}
-%TODO explain how users mess with other users through XSS
+As an example, the OWASP Juice Shop webapp makes external requests to CloudFlare to provide cookie consent forms. Disabling all outgoing requests and responses would break this dependency. In principle, individual apps cannot be relied on to provide an exhaustive list of the third-party domains they attempt to access. Whitelisting all domains that appear in a regex search has a few notable issues:
+
+\begin{itemize}
+	\item Easily exploitable. Any form of write access to the source code of the application means full control of the whitelist
+	\item Not dynamic. Any attempts to patch vulnerabilities by modifying source code which contacts third parties will be blocked until the whitelist is manually updated
+	\item Not complete. Users may still make malicious requests to the domains that the application already requires
+\end{itemize}
+
+These problems are still an open issue for the team until a better solution is discovered.
+
+\subsection{Cross-Site Scripting (XSS)}
+XSS created problems for the original scope of WADT. These problems were discovered when researching target vulnerable webapps. OWASP hosts a Juice Shop instance that is shared between all users on the public internet. For this instance, all XSS challenges are disabled because of the potential consequences of XSS for users.
+
+The Juice Shop project has taken the time already to detect container-based environments and disable the "danger zone" challenges to prevent XSS attacks on other users. However, for other target projects, or for real vulnerabilities, the demarcation of vulnerabilities into "safer" and "dangerous" is not preemptively done. A full audit of each selected application of the WADT project is outside of the scope of Senior Design.
+
+As a result of these constraints, the WADT project is limited to a single-user scope. In principle, XSS attacks on other users cannot occur if only one user is active on the system. In this scenario, the user would have to deliver a malicious payload to the target vulnerable app that would harm their own machine. However, in practice, small groups of students are going to collaborate and be supervised by an instructor. The level of trust placed in the students with the potential for delivering malicious payloads to the target apps is similar to the level of trust to grant access to the original instance, meaning that this problem requires a social rather than technical solution.
 
 \subsection{2-Factor Authentication}
 In addition to previous security methods, it is desirable to add 2-factor authentication upon login. There are multiple approaches which solve the problem.
@@ -270,9 +291,6 @@ All users who access WADT may be required to have SSH access to the underlying s
 Traditional auth providers are available, most notably Microsoft Authenticator and Google Authenticator, that can provide the same service as \texttt{pass-otp} for users. However, since these traditional providers are not linked to the underlying hosting, they do not provide the same kind of security that the previous solution affords.
 
 Traditional 2FA providers are primarily concerned with verifying the identity of users. Microsoft authenticator in and of itself will verify that the individual attempting a sign-on is the identity they claim to be. However, a solution with \texttt{pass-otp} also incidentally verifies that the individual attempting sign-on has access to the resources the WADT project is looking to protect.
-%TODO explain how adding traditional auth provider would work
-
-%TODO add more to security section
 
 \subsection{Containerization Tools}
 \subsubsection{OCI Compliance}
@@ -283,8 +301,7 @@ Podman is a drop-in replacement for Docker which is both daemonless and rootless
 
 For comparison, plain Docker functions interacts with plain containers, not pods. Docker Compose can be used to run multiple containers together for a project.
 
-\simplegraphic{podman-pod-architecture}{Pod architecture}{fig:podman}
-% TODO source: https://developers.redhat.com/blog/2019/01/15/podman-managing-containers-pods#
+\simplegraphic{podman-pod-architecture}{Pod architecture \cite{podman}}{fig:podman}
 
 Podman's daemonless design means that it does not require a running background process (daemon) to function. Instead, Podman relies on systemd. This is in contrast to Docker, which requires a daemon with root privileges.
 
@@ -306,12 +323,11 @@ Docker is a widely-used set of container tools. A number of features made Docker
 \subsection{Programming Language and Web Framework}
 
 \subsubsection{Python and Flask}
-%TODO
-Too minimal
+Flask is a micro web framework for Python. Since it's a micro framework, it lacks certain key features the team finds valuable for developing. Primarily, there is no built-in admin interface for interacting with the project's database given a model (it must be added using Flask Admin).
 
-\subsubsection{Golang and Gin}
-%TODO
-Too minimal. Also golang is a new language for i assume most or all of the team
+WebSockets are a key part of the project to provide live status updates for each container. Unfortunately, the support for WebSockets with Flask is relatively dated. The Flask-Websockets repository was archived last year, and the tutorial for Flask-SocketIO, an alternative library, was last updated in 2014.
+
+The ecosystem of extensions to Django was found to be more actively developed. Since the project is timeboxed to a 9-month time frame, the "batteries included" features of Django were chosen over Flask.
 
 \subsubsection{Python and Django}
 Django is a web framework for Python which was chosen for its sensible architecture and useful features. Django's ORM and admin panel made configuring the database a one-day job, while its migrations feature ensures that any changes are tracked along with the project.
@@ -347,7 +363,7 @@ When a user initiates a deployment from the frontend, Django processes the API r
 One major reason for selecting python-on-whales over the traditional Docker SDK docker-py is its built-in thread safety and high-level abstractions. WADT often handles multiple container deployments simultaneously—one per vulnerable web application, and in the future, potentially one per user session. Python-on-whales manages Docker operations safely in multi-threaded or asynchronous contexts, preventing race conditions and socket contention that can occur when using the lower-level SDK. This makes it ideal for our multi-user educational environment, where concurrency is common.
 
 The backend uses the library to manage all stages of the container lifecycle, including creation, execution, stopping, and log retrieval. Example commands include:
-\begin{verbatim}
+\begin{minted}{python}
 from python_on_whales import docker
 
 # Create and start a container
@@ -359,7 +375,7 @@ logs = docker.logs(container)
 # Stop and remove container
 docker.stop(container)
 docker.remove(container)
-\end{verbatim}
+\end{minted}
 
 These operations are wrapped in Django view functions or background tasks, ensuring consistent control flow and error handling. Additionally, since python-on-whales mirrors the actual Docker CLI syntax, developers can more easily reason Docker commands and debug them both in our local environment and in our production environment.
 
@@ -412,9 +428,10 @@ Some of its main features include:
 \item Contains a fully typed API
 \item All docker objects and the docker client are safe to use with multithreading and multiprocessing
 \end{itemize}
+
 Python-on-Whales basically turns docker automation into something readable, testable, and smooth to
 integrate with larger python projects, no weird bash script required.
-More details from python-on-whales can be found on their official website at: https://gabrieldemarmiesse.github.io/python-on-whales/
+More details from python-on-whales can be found on their official website \cite{pythononwhales}.
 
 \subsection{Go, and Go-sdk}
 Go is an open-source programming language developed by Google, built for efficiency in cloud computing, networking, and large-scale distributed systems.
@@ -428,8 +445,11 @@ However, we ultimately decided against it, as Go wasn’t part of our primary ba
 Sticking with our existing setup allowed us to keep the development process simpler and avoid unnecessary integration overhead.
 
 \subsubsection{docker-py}
-%TODO
-good
+\texttt{docker-py} has two problems that make it a poor choice for the project:
+\begin{itemize}
+	\item Lack of built-in support for Docker Compose. This means additional libraries must be installed for a number of the selected target vulnerable apps
+	\item Lack of guarantee of thread-safety for core data structures. The DockerClient class provided by \texttt{docker-py} is not documented as thread-safe, and appears to store mutable state that affects program execution. Compared to python-on-whales, which makes a guarantee of thread-safety for the core client data structure, docker-py requires more overhead to manage
+\end{itemize}
 
 \subsection{Vulnerable Web Application Selection}
 
@@ -630,8 +650,11 @@ Our chosen catalog (OWASP Juice Shop, PyGoat, DVWA, Ghost CMS, and PrestaShop) p
 \subsection{Asynchronous Support}
 
 \subsubsection{Celery}
-%TODO
-too complex
+Celery is a task queue that's compatible with Django. While it is capable of efficiently handling the asynchronous message-passing needed to send real-time status messages for each container, it involves many features that aren't needed for the project.
+
+Celery requires the choice of a message transport (another dependency and another source of complexity). Its performance features are excellent, even beyond the scope of the MVP. "Millions of tasks a minute" \cite{celery} are not likely to happen within the project scope.
+
+Due to the high complexity associated with a sophisticated solution for concurrent computation, the team opted for a simpler solution, Django Channels.
 
 \subsection{Django Channels}
 Django Channels is a project that will take Django and extend its abilities beyond HTTP so it may handle
@@ -723,6 +746,7 @@ While SwaggerHub does offer many helpful features, it does have a significant dr
 
 \subsubsection{HoppScotch or SwaggerHub?}
 Both Hoppscotch and SwaggerHub provide suitable options for our API documentation needs. While SwaggerHub offers more professional-grade collaboration and versioning tools, it also comes with a high monthly cost. This is a long-term project, so we would be required to maintain documentation well beyond the free trial period and thus would have to pay \$29 per month for the Team package. This high cost makes SwaggerHub not feasible in the long term, as we are college students trying to avoid unnecessarily high out of pocket costs. Hoppscotch by contrast, is free, yet it still provides the tools we need to properly document our APIs. It also can integrate directly with cURL, allowing us to import cURL commands directly into Hoppscotch. Additionally, it supports real-time documentation alongside testing. This makes Hoppscotch the more practical tool for our API documentation.
+
 \subsection{API Performance Testing}
 %TODO
 
@@ -1076,5 +1100,7 @@ Our logs will only capture information required for necessary functions and will
 
 
 \section{Timeline and Milestones}
+
+\printbibliography
 
 \end{document}
