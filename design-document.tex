@@ -2,6 +2,9 @@
 
 \usepackage{minted}
 
+\usepackage{biblatex}
+\addbibresource{bibliography.bib}
+
 % for clickable ToC
 \usepackage[hidelinks]{hyperref}
 
@@ -284,9 +287,6 @@ All users who access WADT may be required to have SSH access to the underlying s
 Traditional auth providers are available, most notably Microsoft Authenticator and Google Authenticator, that can provide the same service as \texttt{pass-otp} for users. However, since these traditional providers are not linked to the underlying hosting, they do not provide the same kind of security that the previous solution affords.
 
 Traditional 2FA providers are primarily concerned with verifying the identity of users. Microsoft authenticator in and of itself will verify that the individual attempting a sign-on is the identity they claim to be. However, a solution with \texttt{pass-otp} also incidentally verifies that the individual attempting sign-on has access to the resources the WADT project is looking to protect.
-%TODO explain how adding traditional auth provider would work
-
-%TODO add more to security section
 
 \subsection{Containerization Tools}
 \subsubsection{OCI Compliance}
@@ -297,8 +297,7 @@ Podman is a drop-in replacement for Docker which is both daemonless and rootless
 
 For comparison, plain Docker functions interacts with plain containers, not pods. Docker Compose can be used to run multiple containers together for a project.
 
-\simplegraphic{podman-pod-architecture}{Pod architecture}{fig:podman}
-% TODO source: https://developers.redhat.com/blog/2019/01/15/podman-managing-containers-pods#
+\simplegraphic{podman-pod-architecture}{Pod architecture \cite{podman}}{fig:podman}
 
 Podman's daemonless design means that it does not require a running background process (daemon) to function. Instead, Podman relies on systemd. This is in contrast to Docker, which requires a daemon with root privileges.
 
@@ -999,5 +998,7 @@ Our logs will only capture information required for necessary functions and will
 
 
 \section{Timeline and Milestones}
+
+\printbibliography
 
 \end{document}
