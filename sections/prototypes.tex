@@ -1,0 +1,58 @@
+\documentclass[../design-document.tex]{subfiles}
+\begin{document}
+
+\subsection{ProtoWADT v0}
+The first prototype was created to explore controlling Docker containers programmatically and gain familiarity with Django. This prototype was timeboxed to a 1-day sprint to prohibit overanalysis and decision paralysis.
+
+The scope was intentionally basic and focused on only programmatically controlling one container, instead of the usual 7-10. It ran local-only,
+depended on a specific vulnerable app (DVWA), and was intended to be thrown away.
+
+ProtoWADT v0 was also a vital exploration of some of the invalid assumptions the team had made previously about our tech stack. Different libraries were depended on than originally predicted as a result of this exploration. This prototype also began the thinking which led to further design exploration and investigation of hidden complexity in the next prototype.
+
+The prototype's definition of done required that at least the core states of Docker containers could be manipulated through API endpoints. Start, Restart, Logs, Stop, and Down were initially required.
+
+A crucial oversight of this prototype was the lack of a database, which hid further problems with state and storage that were not discovered until the second prototype. The decision to store important data in memory for a local-only demo sidestepped issues of data corruption, handling asynchronous connections, and scaling that are discussed in more detail in \ref{subsec:api-considerations} and \ref{subsec:container-identity-management}.
+
+\subsubsection{Programmatic Control}
+The first goal of v0 was to programmatically control Docker containers with a suitable programming language. For Python, two main libraries exist that fit this purpose: python-on-whales and docker-py. Broadly, docker-py is intended for applications that run as a single container, and python-on-whales is intended for applications that run as a group of containers with Docker Compose as well as single-container applications. Since DVWA specifically uses Docker Compose to run multiple containers, python-on-whales was selected for the prototype.
+
+First, a short demo was created that essentially listed and used the main parts of the python-on-whales API that the project would depend on. python-on-whales has essentially a one-to-one correspondence beteween its API and the Docker CLI command structure, meaning that finding these endpoints was often as easy as typing the command with Python syntax.
+
+\begin{figure}[H]
+	\centering
+	\begin{minted}{console}
+	docker compose up --detach
+	\end{minted}
+	\caption{\texttt{docker} command syntax}
+	\label{fig:docker-compose-up-cli}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\begin{minted}{python}
+	docker.compose.up(detach=True)
+	\end{minted}
+	\caption{python-on-whales API}
+	\label{fig:docker-compose-up-python}
+\end{figure}
+
+The key failures of this prototype related to the scope. A standard Python program has a synchronous top-down control flow, meaning that a given sequence of method calls to a single DockerClient object in memory will occur as expected. However, a web server aiming to provide the same service cannot use this model of execution.
+
+Instead, the DockerClient object cannot be shared in memory between REST API endpoints without mechanisms for data persistence (serialization and storage in the session, cache, database, etc.) and data integrity (preventing race conditions or invalid states).
+
+At a deeper level, HTTP is a stateless protocol. Specific to the project, shared state between requests needs to be managed by a separate system server-side. Sharing data between views as a global variable, such as providing a global DockerClient for all views to access, is not a sufficient solution due to the potential for data corruption.
+
+A WSGI server typically assigns each request to a worker process or thread, meaning that sharing global variables in memory would break down upon deployment. While python-on-whales guarantees that their DockerClient object does not store any state that will affect program execution, docker-py does not make a similar guarantee. In the end, the potential for the ``share global variables in memory" approach is bad design which may or may not work depending on the Docker library used.
+
+\subsubsection{Django}
+The second goal of v0 was to understand how Django is used to build webapps. A basic demo site was created with views to control the DVWA container. The completion criteria involved creating URLs for each Docker action and writing a view to achieve each. Completion was manually tested by monitoring container state with Docker Desktop while using the written views. Start, restart, stop, down, and logs views were required.
+
+Each of these endpoints was simple due to the lack of complexity of the scope of the prototype. More complex requests for continuous information like container CPU usage were not considered. As a result, the prototype v0 didn't reveal much about how to write the views of our project, but did teach the team how to structure a Django project overall.
+
+Gaps in the team's understanding, resulting from an insufficiently detailed prototype, were (partially) corrected by the second which was developed.
+
+\subsection{ProtoWADT v1}
+Crucially, the second prototype included a database. This inclusion revealed a series of issues with the initial design of the project that needed to be corrected to reach our MVP.
+
+
+\end{document}
