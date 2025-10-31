@@ -1097,6 +1097,9 @@ Our logs will only capture information required for necessary functions and will
 
 
 \section{System Architecture}
+\subsection{Use Case Diagram}
+The use case diagram illustrates the interactions between the two primary actors, students and instructors, inside the web application system. Students can browse available vulnerable web applications, deploy containers with automatic 24-hour timeouts, and manage their containers through stop, restart, and reset operations. Students also have access to timestamped logs specific to their container activities. Instructors inherit all student capabilities, but have additional privileges which include, access to more comprehensive instructor logs, the ability to view statuses across all student containers, disabling containers to restrict student access, and overriding student actions with race condition prevention.
+\complexgraphic{WADT_Use_Case.pdf}{WADT Web Application Use Case Diagram}{fig:usecase}
 
 
 \section{Timeline and Milestones}
