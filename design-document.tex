@@ -442,8 +442,11 @@ However, we ultimately decided against it, as Go wasn’t part of our primary ba
 Sticking with our existing setup allowed us to keep the development process simpler and avoid unnecessary integration overhead.
 
 \subsubsection{docker-py}
-%TODO
-good
+\texttt{docker-py} has two problems that make it a poor choice for the project:
+\begin{itemize}
+	\item Lack of built-in support for Docker Compose. This means additional libraries must be installed for a number of the selected target vulnerable apps
+	\item Lack of guarantee of thread-safety for core data structures. The DockerClient class provided by \texttt{docker-py} is not documented as thread-safe, and appears to store mutable state that affects program execution. Compared to python-on-whales, which makes a guarantee of thread-safety for the core client data structure, docker-py requires more overhead to manage
+\end{itemize}
 
 \subsection{Vulnerable Web Application Selection}
 
@@ -666,6 +669,7 @@ While SwaggerHub does offer many helpful features, it does have a significant dr
 
 \subsubsection{HoppScotch or SwaggerHub?}
 Both Hoppscotch and SwaggerHub provide suitable options for our API documentation needs. While SwaggerHub offers more professional-grade collaboration and versioning tools, it also comes with a high monthly cost. This is a long-term project, so we would be required to maintain documentation well beyond the free trial period and thus would have to pay \$29 per month for the Team package. This high cost makes SwaggerHub not feasible in the long term, as we are college students trying to avoid unnecessarily high out of pocket costs. Hoppscotch by contrast, is free, yet it still provides the tools we need to properly document our APIs. It also can integrate directly with cURL, allowing us to import cURL commands directly into Hoppscotch. Additionally, it supports real-time documentation alongside testing. This makes Hoppscotch the more practical tool for our API documentation.
+
 \subsection{API Performance Testing}
 %TODO
 
