@@ -549,7 +549,7 @@ PrestaShop is a high-impact, real-world example of how file handling vulnerabili
 vAPI (Vulnerable Adversely Programmed Interface) is a self-hosted lab that shows common API security issues from the OWASP Top 10. It uses PHP and MySQL, built with the Laravel framework. The project includes Postman collections for testing and supports Docker Compose and Helm for deployment.
 
 \paragraph{Educational value}
-vAPI helps users learn about real-world API vulnerabilities like broken access control, data leaks, and insecure input handling. Each issue is set up as a hands-on challenge, making it useful for students, ethical hackers, and security testers. Postman files make it easy to follow and repeat tests.
+vAPI helps users learn about real-world API vulnerabilities like broken access control, data leaks, and insecure input handling. Each issue is set up as a hands-on challenge, making it useful for students, ethical hackers, and security testers. Postman files make it easy to follow and repeat tests. Some vulnerabilities stimulated in vAPI are lack of resources, injection flaws, and broken authentication.
 
 \paragraph{Deployment notes and Docker considerations}
 vAPI comes with a Docker Compose setup that runs both the Laravel app and MySQL database. Users should set up the \texttt{.env} file with correct database settings and match passwords across files. Using volumes helps save logs and exploit data. After setup, the app runs at \texttt{http://localhost/vapi/}.
@@ -563,7 +563,7 @@ vAPI was chosen because it focuses on API-specific security issues, which are co
 NIVA is a simple web application built to demonstrate NoSQL injection vulnerabilities in MongoDB. It uses Java as the backend language and connects to a MongoDB database using the official driver. The app allows users to search for contact records by email, and includes both secure and insecure query implementations to show how different coding practices affect security.
 
 \paragraph{Educational value}
-This app is designed to help users understand how NoSQL injection works and why it matters. It shows how attackers can manipulate query inputs to access or modify data they shouldn’t be able to. By comparing safe and unsafe query methods, learners can see the impact of poor input validation and insecure query construction. NIVA is useful for students, ethical hackers, and developers who want hands-on experience with NoSQL security issues.
+This app is designed to help users understand how NoSQL injection works and why it matters. It shows how attackers can manipulate query inputs to access or modify data they shouldn’t be able to. By comparing safe and unsafe query methods, learners can see the impact of poor input validation and insecure query construction. NIVA is useful for students, ethical hackers, and developers who want hands-on experience with NoSQL security issues. Its vulnerabilities are Data extraction, NoSQL Injection, and Privilege escalation.
 
 \paragraph{Deployment notes and Docker considerations}
 NIVA is easy to run using Docker. A prebuilt image is available on Docker Hub, and the app can be launched with a single command: \texttt{docker run -p 8080:8080 aabashkin/niva}. Once running, it’s accessible at \texttt{http://localhost:8080}, where users can test both secure and insecure endpoints. No extra setup is required, but you can add volumes if you want to save logs or test data. The app runs as a standalone container, making it simple to reset and reuse in different testing scenarios.
@@ -577,10 +577,10 @@ We chose NIVA because it focuses on NoSQL injection, which is a type of vulnerab
 VulnerableApp-facade is a Java-based tool that helps manage and launch multiple vulnerable applications from one place. It’s built using Spring Boot and provides a web interface and API to control apps like OWASP Juice Shop. Instead of running each app separately, this facade lets users start, stop, and switch between them easily. It acts like a central dashboard for security labs.
 
 \paragraph{Educational value}
-This tool is useful for learners, trainers, and testers who want to explore different types of web vulnerabilities without setting up each app manually. By combining several vulnerable apps into one interface, it can save time and helps users to focus on learning. It also supports tracking progress and organizing exercises, which is helpful in classroom or workshop settings. Users can compare how different apps handle similar vulnerabilities and learn from the differences.
+This app has vulnerabilities like SQL injection, weak login flows, and session handling. This tool is useful for learners, trainers, and testers who want to explore different types of web vulnerabilities without setting up each app manually. By combining several vulnerable apps into one interface, it can save time and helps users to focus on learning. It also supports tracking progress and organizing exercises, which is helpful in classroom or workshop settings. Users can compare how different apps handle similar vulnerabilities and learn from the differences.
 
 \paragraph{Deployment notes and Docker considerations}
-This app has vulnerabilities like SQL injection, weak login flows, and session handling. VulnerableApp-facade supports Docker and includes a Docker Compose file to run the facade along with selected vulnerable apps. Users can choose which apps to enable by editing the configuration file. The default port is \texttt{9090}, and the web interface is available at \texttt{http://localhost:9090}. The setup is straightforward, and no customization is needed to get started. 
+VulnerableApp-facade supports Docker and includes a Docker Compose file to run the facade along with selected vulnerable apps. Users can choose which apps to enable by editing the configuration file. The default port is \texttt{9090}, and the web interface is available at \texttt{http://localhost:9090}. The setup is straightforward, and no customization is needed to get started. 
 
 \paragraph{Why chosen}
 We chose VulnerableApp-facade because it makes working with multiple vulnerable apps much easier. Instead of setting up each app manually, users can launch everything from one place. It’s simple to use, works well with Docker, and supports a wide range of popular security labs. This makes it a great fit for WADT’s goal of building a flexible and user-friendly environment for learning, testing, and teaching web application security.
@@ -591,10 +591,10 @@ We chose VulnerableApp-facade because it makes working with multiple vulnerable 
 The BodgeIt Store is a purposely insecure web application created to help people learn about web security. It’s written in Java and uses JSP (JavaServer Pages) for the frontend. The app runs on a servlet container like Apache Tomcat and uses an in-memory database, which means it doesn’t need any external database setup. It simulates a basic online store with features like user login, product listings, and a shopping cart. These features are intentionally built with security flaws to make them easier to test and exploit.
 
 \paragraph{Educational value}
-This app is great for beginners who want to practice finding and understanding common web vulnerabilities. It includes examples of issues like cross-site scripting (XSS), SQL injection, cross-site request forgery (CSRF), and insecure direct object references. There are also hidden pages and functions that can be discovered through testing. One helpful feature is the scoring page, which shows which vulnerabilities have been found, making it useful for self-paced learning or classroom challenges. It’s a good starting point for anyone new to ethical hacking or penetration testing.
+BodgeIt Store includes common web vulnerabilities like SQL injection, XSS, CSRF, and IDOR, all exposed by default for testing. This app is great for beginners who want to practice finding and understanding common web vulnerabilities. It includes examples of issues like cross-site scripting (XSS), SQL injection, cross-site request forgery (CSRF), and insecure direct object references. There are also hidden pages and functions that can be discovered through testing. One helpful feature is the scoring page, which shows which vulnerabilities have been found, making it useful for self-paced learning or classroom challenges. It’s a good starting point for anyone new to ethical hacking or penetration testing.
 
 \paragraph{Deployment notes and Docker considerations}
-BodgeIt Store includes common web flaws like SQL injection, XSS, CSRF, and IDOR, all exposed by default for testing. It is easy to run using Docker, which makes it simple to set up and reset. A prebuilt Docker image is available on Docker Hub. To start the app, users can run the command: \texttt{docker run -p 9090:8080 psiinon/bodgeit}. After that, the app will be available at \texttt{http://localhost:9090
+It is easy to run using Docker, which makes the app simple to set up and reset. A prebuilt Docker image is available on Docker Hub. To start the app, users can run the command: \texttt{docker run -p 9090:8080 psiinon/bodgeit}. After that, the app will be available at \texttt{http://localhost:9090
 /bodgeit}. Since it uses an in-memory database, all data is lost when the container stops, which is useful for resetting the environment between tests. If needed, users can attach volumes to store logs or other data. No extra configuration is required, making it quick to get started.
 
 \paragraph{Why chosen}
@@ -606,10 +606,10 @@ We chose the BodgeIt Store because it’s simple and easy to use, especially for
 Damn Vulnerable RESTaurant is a Python-based API training app built with FastAPI and PostgreSQL. It includes REST and GraphQL endpoints and simulates a restaurant system with user roles and data access.
 
 \paragraph{Educational value}
-The app teaches API security through hands-on challenges. Users explore vulnerabilities like broken authentication, insecure access control, and data exposure while progressing through game-like levels.
+The app teaches API security through hands-on challenges. Users explore vulnerabilities like broken authentication, insecure access control, and data exposure while progressing through game-like levels. It also has vulnerabilities such as Broken Function Level Authorization (BFLA), Broken Object Level Authorization (BOLA), and Server-Side Request Forgery (SSRF).
 
 \paragraph{Deployment notes and Docker considerations}
-It has vulnerabilities like Information disclosure and Remote code execution. It supports Docker Compose and includes scripts for developer and hacker modes. The API runs on port \texttt{8091}, with Swagger and Redoc docs available. Data persists across sessions, and volumes can be added for logging.
+It supports Docker Compose and includes scripts for developer and hacker modes. The API runs on port \texttt{8091}, with Swagger and Redoc docs available. Data persists across sessions, and volumes can be added for logging.
 
 \paragraph{Why chosen}
 We chose this app for its modern stack, interactive design, and strong focus on API-specific flaws. It fits WADT’s goal of providing practical, containerized labs for security learning.
