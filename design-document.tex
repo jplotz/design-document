@@ -331,6 +331,68 @@ Django's MVC architecture and template system enforces clear separation of conce
 
 \subsection{Docker Integration}
 
+\subsubsection{Overview}
+Docker integration lies at the core of the Web App Deployment Tooling (WADT) project. Every feature from container deployment to logging, resetting, and shutting down a container relies on Docker’s ability to build and manage isolated environments quickly and consistently. While previous sections discuss why Docker was chosen over alternatives like Podman, this section focuses on how Docker is practically integrated into our system architecture and development workflow.
+
+At a high level, Docker serves as the layer that bridges our backend application logic and the intentionally vulnerable web applications being deployed for users. When a user interacts with the WADT frontend, such as clicking “Deploy,” “Stop,” or “Reset”, these requests travel through our Django-based API to the Docker engine via the python-on-whales library. The backend then performs the necessary Docker operations, returning live container states, logs, and connection details to the frontend. This structure allows us to abstract away all of Docker’s complexity while maintaining full control and observability over the containerized environments.
+
+Docker integration most importantly ensures reproducibility. Each vulnerable web application is built from a deterministic Dockerfile and versioned image, which guarantees that students and instructors see identical environments across sessions. This is vital in cybersecurity labs where even small configuration differences could lead to inconsistent or misleading results. By leveraging Docker’s lightweight image system, we achieve repeatable deployments without sacrificing speed, isolation, or complicated library version overhead.
+
+
+\subsubsection{Integration with Backend (Django + Python-on-Whales)}
+The WADT backend, built with Django, uses the python-on-whales library to communicate directly with the Docker engine. Python-on-whales is a high-level, Pythonic interface to Docker that wraps the standard Docker CLI, allowing developers to invoke container operations using clean Python syntax while retaining access to the full range of Docker functionality. 
+
+When a user initiates a deployment from the frontend, Django processes the API request and uses python-on-whales to start a container from the appropriate image. Each container is instantiated from a predefined image stored locally on the AWS instance. Metadata such as the container ID, image name, network configuration, and timestamps are recorded in the project’s database, ensuring synchronization between Django’s logic layer and Docker’s runtime state.
+
+One major reason for selecting python-on-whales over the traditional Docker SDK docker-py is its built-in thread safety and high-level abstractions. WADT often handles multiple container deployments simultaneously—one per vulnerable web application, and in the future, potentially one per user session. Python-on-whales manages Docker operations safely in multi-threaded or asynchronous contexts, preventing race conditions and socket contention that can occur when using the lower-level SDK. This makes it ideal for our multi-user educational environment, where concurrency is common.
+
+The backend uses the library to manage all stages of the container lifecycle, including creation, execution, stopping, and log retrieval. Example commands include:
+\begin{verbatim}
+from python_on_whales import docker
+
+# Create and start a container
+container = docker.run("bkimminich/juice-shop", detach=True, name="student_1")
+
+# Retrieve logs
+logs = docker.logs(container)
+
+# Stop and remove container
+docker.stop(container)
+docker.remove(container)
+\end{verbatim}
+
+These operations are wrapped in Django view functions or background tasks, ensuring consistent control flow and error handling. Additionally, since python-on-whales mirrors the actual Docker CLI syntax, developers can more easily reason Docker commands and debug them both in our local environment and in our production environment.
+
+\subsubsection{Security Considerations}
+Security within this integration layer is enforced by restricting which Docker operations Django is permitted to execute. Containers are never launched with privileged flags or mounted host directories, and Docker’s network isolation ensures that containers cannot access the host or each other unless explicitly configured. This keeps intentionally vulnerable applications securely contained while preserving functionality for testing and instruction.
+
+\subsubsection{Container Lifecycle Management}
+Every container deployed through WADT follows a clearly defined lifecycle managed by the backend. Understanding this lifecycle is crucial for maintaining predictable behavior, preventing resource exhaustion, and ensuring a secure sandboxed experience for users.
+
+\begin{enumerate}
+    \item \textbf{Creation:} When a user selects a vulnerable web application and clicks “Deploy,” Django instructs Docker to create a new container from the corresponding image. Environment variables, network parameters, and resource limits (CPU, memory, bandwidth) are configured during this stage.
+    \item \textbf{Execution:} Once created, the container is started in detached mode. The user is provided with access details, such as connection URLs and exposed ports. Docker isolates the container using Linux namespaces and cgroups, ensuring strong separation from the host.
+    \item \textbf{Logging:} All container logs are streamed through the backend using the docker.logs() function. These logs are relayed to both student and instructor dashboards, allowing visibility into application behavior, debugging messages, and exploitation attempts.
+    \item \textbf{Timeout and Auto-Stop:} Containers are automatically stopped after a set period of inactivity (e.g., 5 hours). This prevents long-running containers from consuming excessive resources or remaining exposed unnecessarily. The backend periodically polls Docker for container statuses to enforce these limits.
+    \item \textbf{Reset and Cleanup:} Users can reset their environment at any time, triggering Django to stop and remove the existing container and redeploy a clean instance. When containers are stopped or deleted, associated volumes and networks are also removed to avoid leftover data or stale configurations.
+\end{enumerate}
+
+This lifecycle model ensures reliability and safety. It keeps container environments limited in lifespan, prevents resource leaks, and allows users to repeatedly practice deployments and exploitations in clean, reproducible environments.
+
+\subsubsection{Future Improvements and Stretch Goals}
+While Docker currently provides the foundation for container management in WADT, several future enhancements could further increase performance, scalability, and flexibility.
+
+A major planned improvement is the implementation of per-user dynamic container allocation. Currently, containers are managed centrally, but expanding this to associate containers with specific user sessions will allow simultaneous isolated environments for multiple students. Python-on-Whales concurrency support and thread-safe design make this a feasible upgrade path.
+
+Another enhancement would involve adopting Docker Compose or Kubernetes for orchestration. Docker Compose could simplify management of multi-container environments, while Kubernetes would enable automatic scaling, health monitoring, and load balancing—features especially useful for larger educational deployments. Since python-on-whales supports Compose commands directly, this transition could be made incrementally without rewriting backend logic.
+
+Finally, the team could also automate image rebuilding and vulnerability patching. A nightly rebuild process could use docker.build() to refresh base images, integrate new security updates, and revalidate application configurations. Combined with continuous secret scanning and monitoring, these improvements will make WADT more robust and sustainable as an educational security platform.
+
+We also could host a wider array and wider number of vulnerable web applications by automating the Dockerfile creation process. By programmatically generating Dockerfiles from application metadata, we could rapidly expand the catalog of available targets without manual intervention. This would greatly enhance the learning opportunities for students and ease the work of whoever wants to contribute a vulnerable web application to our platform.
+
+In summary, Docker integration—implemented through python-on-whales is central to WADT’s architecture. It enables safe, concurrent, and repeatable container management while providing a clear, maintainable Python interface for future growth.
+
+
 % In progress
 \subsection{python-on-whales}
 Python-on-Whales is a clean, one-to-one bridge between the Docker command-line interface (CLI) and Python. 
@@ -368,6 +430,131 @@ Sticking with our existing setup allowed us to keep the development process simp
 \subsubsection{docker-py}
 %TODO
 good
+
+\subsection{Vulnerable Web Application Selection}
+
+\subsubsection{Selection Criteria}
+The goal of the Web App Deployment Tooling (WADT) project is to provide a catalog of intentionally and unintentionally vulnerable web applications that together expose students to a broad, representative set of real-world security issues. We are aiming to maximize educational value while remaining practical to deploy and maintain. We selected target applications according to the following criteria:
+
+\begin{itemize}
+    \item \textbf{Vulnerability breadth:}\\ Each application should expose multiple common vulnerability classes (for example, the OWASP Top 10) so students can practice exploiting and patching different kinds of flaws.
+    \item \textbf{Technology diversity:}\\ The set should span several technology stacks (e.g., JavaScript/Node, Python/Django, PHP, LAMP, PostgreSQL) to expose students to language and framework-specific security issues and tooling.
+    \item \textbf{Educational maturity:}\\ Preference for well-documented, actively maintained projects with clear lab-friendly features (hints, adjustable difficulty, reset functionality).
+    \item \textbf{Container friendliness:}\\ Applications must be reliably containerizable and suitable for running in isolated, resource-constrained environments.
+    \item \textbf{Practical relevance:}\\ The application scenarios should reflect realistic application classes (API-driven services, single-page apps, e-commerce platforms, CMS, legacy stacks) so students learn transferable skills.
+\end{itemize}
+
+\subsubsection{Intentional vs. Unintentional Vulnerabilities}
+
+\subsubsection*{Intentional (Designed) Vulnerabilities}
+Intentional or designed vulnerable applications are created specifically to teach security concepts. They are instrumented to contain a wide variety of exploitable flaws, often include challenge scaffolding or hints, and are typically packaged to be easy to reset and reproduce. Examples in our catalog (e.g., OWASP Juice Shop, DVWA, PyGoat) fall into this category. These apps prioritize discoverability and repeatability of vulnerabilities so students can quickly attack and patch vulnerabilities to varying extents.
+
+\subsubsection*{Unintentional (Real-world) Vulnerabilities}
+Unintentional vulnerabilities are real production defects discovered in mainstream software: they were not created for teaching but were found and disclosed (often with CVEs). Including intentionally insecure apps alongside examples of unintentional vulnerabilities (e.g., a historical path traversal or file upload RCE) gives students exposure to the kinds of high-impact bugs that affect real services. These examples teach vulnerability discovery techniques, incident response workflows (patching, CVE analysis, key rotation), and the ethical responsibilities of disclosure and remediation. Although these vulnerabilities may be harder to exploit or reset, they provide invaluable context for understanding the stakes of security in practice. Hints and path to reproduce vulnerabilities will be offered to aid students.
+
+\subsubsection{Selected Applications}
+
+\subsubsection{OWASP Juice Shop}
+
+\subsubsection*{Overview and stack}
+OWASP Juice Shop is a modern intentionally insecure web application implemented with a Node.js/Express backend and an Angular frontend. It is designed as a single-page application that emulates contemporary web development patterns.
+
+\subsubsection*{Educational value}	
+Juice Shop covers a very wide set of vulnerabilities (many items from the OWASP Top 10) in a modern application context: authentication/authorization flaws, insecure direct object references, broken access control, XSS, CSRF, injection issues, and client-side security problems. Because it is SPA-based, it is particularly good for teaching students about the interaction between frontend frameworks and backend APIs, token storage, and client-side attack surfaces.
+
+\subsubsection*{Deployment notes and Docker considerations}
+For WADT we will prefer pinned image tags or build images from a known commit to ensure reproducibility. Typical deployment will require exposing the application port and mapping any data volume used for persistence. Resource usage is moderate; containers may be run with constrained CPU and memory limits without impairing lab exercises.
+
+\subsubsection*{Why chosen}
+Juice Shop provides a modern, realistic lab with a polished UI and a comprehensive set of built-in challenges. It is ideal for intermediate-to-advanced students who need practice against up-to-date web stacks.
+
+
+\subsubsection{PyGoat}
+
+\subsubsection*{Overview and stack}
+PyGoat is a Django-based intentionally vulnerable web application implemented in Python and Django. It is generally smaller in scope than other applications but focuses on server-side vulnerabilities common to Python web frameworks.
+
+\subsubsection*{Educational value}
+PyGoat is useful for students who want to explore issues in Python/Django applications specifically: insecure ORM usage, improper authentication/authorization, template injection, and misconfigured middleware. Its smaller codebase makes it easier for students to read the source, trace control flow, and implement fixes.
+
+\subsubsection*{Deployment notes and Docker considerations}
+PyGoat can be containerized with a lightweight image based on an official Python base image. The database backend for PyGoat is typically SQLite or a lightweight DB by default, but we may run it against PostgreSQL in a secondary container (or a single container with the DB bundled).
+
+\subsubsection*{Why chosen}
+PyGoat focuses on server-side Python/Django security, offering a clear environment for students to practice code-level remediation and gain familiarity with a widely-used backend framework.
+
+
+\subsubsection{Damn Vulnerable Web Application (DVWA)}
+\subsubsection*{Overview and stack}
+DVWA is a classic PHP/MySQL vulnerable web application widely used in education. It intentionally exposes a set of vulnerabilities and allows the security level to be adjusted to tune difficulty.
+
+\subsubsection*{Educational value}
+DVWA is particularly well-suited for beginners and intermediate students because exercises are simple to understand and reproduce: SQL injection, cross-site scripting (XSS), command injection, file inclusion, and authentication bypasses. The adjustable security level makes DVWA a flexible tool for progressive lab assignments, starting from smaller exploits and advancing to realistic variations.
+
+\subsubsection*{Deployment notes and Docker considerations}
+DVWA is typically deployed as a LAMP-style container or with separate containers for PHP and MySQL. Because it is lightweight, DVWA is easy to run on constrained hosts. We must ensure default credentials and debug features are documented and reset between sessions.
+
+\subsubsection*{Why chosen}
+DVWA’s long-standing presence in security education, its adjustable difficulty, and its simplicity make it an ideal entry point for students learning web vulnerabilities and exploitation basics.
+
+
+
+\subsubsection{Ghost CMS (Unintentionally Vulnerable Example)}
+\subsubsection*{Overview and stack}
+Ghost is a widely used open-source blogging and publishing platform built on Node.js. It represents a realistic production-grade content management system (CMS) that students might encounter in the wild.
+
+\subsubsection*{Vulnerability detail}
+A historical path traversal vulnerability (CWE-22) was disclosed for Ghost (CVE-2023-32235). Affected versions prior to 5.42.1 allowed an attacker to read arbitrary files on the web server (for example, system configuration files) without authentication by exploiting an improper input path normalization issue.
+
+\subsubsection*{Educational value}
+Including Ghost with this specific CVE gives students a real-world case study in how a seemingly small file-path handling bug can lead to critical information disclosure. Labs can cover:
+\begin{itemize}
+    \item How path traversal vulnerabilities arise (unsafe file path concatenation, insufficient input validation).
+    \item How to reproduce the issue in a controlled environment using crafted requests.
+    \item Incident response steps: responsible disclosure, patching strategy, and post-exposure mitigation (rotate secrets, review logs).
+    \item Differences between exploiting intentional educational vulnerabilities and analyzing disclosed CVEs in production software.
+\end{itemize}
+
+\subsubsection*{Deployment notes and Docker considerations}
+Because this is a production-grade application, resource and configuration considerations (storage for themes, filesystem access, and user content directories) must be handled carefully to avoid leaking host state. For lab purposes, the container will be run in an isolated network with seeded content and no external persistence unless explicitly required.
+
+\subsubsection*{Why chosen}
+Ghost demonstrates a realistic, unintentional vulnerability in a contemporary platform and teaches practical incident-handling skills in addition to exploitation techniques.
+
+\subsubsection{PrestaShop (Unintentionally Vulnerable Example)}
+
+\subsubsection*{Overview and stack}
+PrestaShop is an open-source PHP e-commerce platform used for online stores. It is representative of a PHP-based web applications that manages business workflows.
+
+\subsubsection*{Vulnerability detail}	
+A high-severity vulnerability (CVE-2023-3882) affecting PrestaShop versions such as 8.1.1-apache was disclosed that allows arbitrary file write and potentially remote code execution. Typical exploitation involves a 'Zip Slip' or unsafe file upload path that permits an authenticated or misconfigured flow to write a webshell or malicious file. This enables arbitrary command execution on the server.
+
+\subsubsection*{Educational value}
+PrestaShop with this CVE illustrates real-world risks in file handling and upload features on e-commerce platforms. Lab objectives include:
+\begin{itemize}
+    \item Demonstrating how improper validation on file uploads and archive extraction can lead to arbitrary file write and RCE.
+    \item Teaching safe file handling patterns (validate file names, use safe extraction libraries, enforce strict upload directories with no execute permissions).
+    \item Practicing mitigation steps for production systems: patching, credential rotation, integrity checks, and rollbacks.
+\end{itemize}
+
+\subsubsection*{Deployment notes and Docker considerations}
+For lab reproducibility we will ensure database seeding is deterministic. Because this scenario can involve writeable filesystem areas, containers will be carefully sandboxed (no host mounts, strict filesystem permissions) to avoid any risk to the host.
+
+\subsubsection*{Why chosen}
+PrestaShop is a high-impact, real-world example of how file handling vulnerabilities in feature-heavy web applications can lead to full server compromise. It complements our intentional-vulnerability apps by demonstrating production failures.
+
+\subsubsection{Deployment and catalog-level considerations}
+For each selected application, we plan to:
+\begin{itemize}
+    \item \textbf{Prefer reproducible images:}\\ Use images from known commits to ensure identical lab environments across sessions.
+    \item \textbf{Use ephemeral containers by default:}\\ Configure deployments so containers can be reset or destroyed and recreated from a clean image to avoid state drift between student sessions.
+    \item \textbf{Manage persistence intentionally:}\\ When persistent state is required (for example, seeded content in Ghost or database state for PrestaShop), provide documented seed fixtures and automated reset scripts.
+    \item \textbf{Resource planning:}\\ Assign resource limits (CPU, memory) to each container type and test concurrent runs to validate the AWS instance sizing for class workloads.
+    \item \textbf{Documentation and lab guides:}\\ Provide short, focused lab instructions and expected learning outcomes for each app so instructors can map exercises to teaching objectives.
+\end{itemize}
+
+\subsubsection{Summary}
+Our chosen catalog (OWASP Juice Shop, PyGoat, DVWA, Ghost CMS, and PrestaShop) provides a balanced mix of intentionally crafted educational targets and real-world, unintentional vulnerabilities. This mixed approach allows students to practice both guided exploitation and code-level fixes in pedagogical environments, while also learning to analyze, reproduce, and respond to actual CVEs found in production software. The container-based WADT architecture and the python-on-whales backed orchestration are well-suited to host this catalog in a reproducible, isolated, and instructor-friendly manner.
 
 \subsection{Asynchronous Support}
 
@@ -469,8 +656,52 @@ Both Hoppscotch and SwaggerHub provide suitable options for our API documentatio
 %TODO
 
 \subsection{Secrets Management}
-%TODO
-TruffleHog
+
+\subsubsection{Overview}
+Secrets management refers to the secure handling of sensitive information such as API keys, passwords, encryption keys, and database credentials used throughout an application's infrastructure. Without proper management, secrets stored in code or config files can expose vulnerabilities to attackers. Proper secrets management minimizes these risks by ensuring that secrets are secure, access is restricted, and exposure is quickly detected and remediated. 
+
+In our project, secrets management is especially important because we host intentionally vulnerable applications on an Amazon Web Services (AWS) cloud environment. Any leaked credentials, tokens, or access keys could allow malicious users to gain control of containers, the host instance, or associated AWS resources. Therefore, we must adopt proactive scanning and detection measures as part of our security workflow. After all, if the whole point of this application is to teach students about vulnerable web applications, ours has to be secure.
+
+\subsubsection{TruffleHog}
+TruffleHog is an open-source security tool designed to detect secrets and credentials within source code repositories, config files, and commit histories. It scans files for high-entropy strings (values that look like random keys) and known credential patterns (such as AWS access keys, GitHub tokens, or private keys). It can be used locally or integrated into CI/CD pipelines to automatically flag and block commits that contain sensitive information. This allows our secrets management to be proactive rather than reactive. We want our application to be secure from the start, rather than trying to patch vulnerabilities after they are discovered. 
+
+TruffleHog’s main features include:
+\begin{itemize}
+    \item \textbf{Pattern-based and entropy-based scanning:} Detects both known secret formats and unknown high-entropy strings that might be secrets. 
+    \item \textbf{Version-history scanning:} Inspects the entire Git commit history, preventing exposure from older commits.
+    \item \textbf{Extensive detector library:} Includes hundreds of predefined detectors for cloud providers, APIs, and services.
+    \item \textbf{Integration support:} Can be run manually or automatically in CI/CD workflows to enforce security policies before deployment.
+\end{itemize}
+
+\subsubsection{Importance for WADT}
+For the Web App Deployment Tooling (WADT) project, TruffleHog helps prevent accidental credential leakage in our public or shared codebase. Because our team uses AWS for hosting and relies on Docker for containerization, we routinely work with environment variables, API keys, and access credentials that could cause significant damage if exposed.
+
+Integrating TruffleHog allows us to:
+\begin{itemize}
+    \item Automatically scan our Git repository before merges or deployments.
+    \item Detect hard-coded credentials or tokens in Django configuration files, Dockerfiles, or environment files.
+    \item Prevent compromised access to our AWS instance or container registry.
+    \item Enforce best practices for secure development across the team.
+\end{itemize}
+
+\subsubsection{Integration Plan}
+We plan to integrate TruffleHog as part of our CI/CD security checks:
+\begin{enumerate}
+    \item \textbf{Local Pre-Commit Hook:} Developers will install a pre-commit hook that runs TruffleHog before code is committed. If any secrets are detected, the commit will be blocked until the secret is removed or replaced with an environment variable.
+    \item \textbf{Pipeline Integration:} TruffleHog will also run in our CI/CD pipeline to scan each pull request or branch before merging into main. This ensures that no secrets are introduced even if local checks are bypassed.
+    \item \textbf{Periodic Scans:} Scheduled scans of the repository history will be conducted to ensure that no historical commits contain exposed secrets. If any are found, they will be invalidated, rotated, and removed using Git history rewriting tools.
+\end{enumerate}
+
+\subsubsection{Best Practices and Maintenance}
+\begin{itemize}
+    \item All secrets (AWS credentials, Django secret keys, database passwords) will be stored in environment variables, never directly in code.
+    \item A .env file will be used locally and excluded from version control through the use of a .gitignore file.
+    \item Compromised keys will be immediately rotated, and TruffleHog scan reports will be reviewed regularly to verify compliance.
+    \item Access to secrets will be limited to authorized team members only, following the principle of least privilege.
+\end{itemize}
+
+\subsubsection{Summary}
+By integrating TruffleHog into our development workflow, we create a proactive defense layer against one of the most common and dangerous security oversights—hard-coded secrets. This integration not only protects our AWS infrastructure and project data but also helps enforce professional software-security practices within the development team.
 
 \subsection{CI/CD Pipeline}
 %TODO
