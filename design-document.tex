@@ -323,8 +323,11 @@ Docker is a widely-used set of container tools. A number of features made Docker
 \subsection{Programming Language and Web Framework}
 
 \subsubsection{Python and Flask}
-%TODO
-Too minimal
+Flask is a micro web framework for Python. Since it's a micro framework, it lacks certain key features the team finds valuable for developing. Primarily, there is no built-in admin interface for interacting with the project's database given a model (it must be added using Flask Admin).
+
+WebSockets are a key part of the project to provide live status updates for each container. Unfortunately, the support for WebSockets with Flask is relatively dated. The Flask-Websockets repository was archived last year, and the tutorial for Flask-SocketIO, an alternative library, was last updated in 2014.
+
+The ecosystem of extensions to Django was found to be more actively developed. Since the project is timeboxed to a 9-month time frame, the "batteries included" features of Django were chosen over Flask.
 
 \subsubsection{Golang and Gin}
 %TODO
