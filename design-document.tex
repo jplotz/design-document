@@ -5,6 +5,10 @@
 \usepackage{biblatex}
 \addbibresource{bibliography.bib}
 
+% Prevent overfull hbox in bibliography
+% must be located *after* loading biblatex
+\usepackage{xurl}
+
 % for clickable ToC
 \usepackage[hidelinks]{hyperref}
 
@@ -360,7 +364,7 @@ When a user initiates a deployment from the frontend, Django processes the API r
 One major reason for selecting python-on-whales over the traditional Docker SDK docker-py is its built-in thread safety and high-level abstractions. WADT often handles multiple container deployments simultaneously—one per vulnerable web application, and in the future, potentially one per user session. Python-on-whales manages Docker operations safely in multi-threaded or asynchronous contexts, preventing race conditions and socket contention that can occur when using the lower-level SDK. This makes it ideal for our multi-user educational environment, where concurrency is common.
 
 The backend uses the library to manage all stages of the container lifecycle, including creation, execution, stopping, and log retrieval. Example commands include:
-\begin{verbatim}
+\begin{minted}{python}
 from python_on_whales import docker
 
 # Create and start a container
@@ -372,7 +376,7 @@ logs = docker.logs(container)
 # Stop and remove container
 docker.stop(container)
 docker.remove(container)
-\end{verbatim}
+\end{minted}
 
 These operations are wrapped in Django view functions or background tasks, ensuring consistent control flow and error handling. Additionally, since python-on-whales mirrors the actual Docker CLI syntax, developers can more easily reason Docker commands and debug them both in our local environment and in our production environment.
 
@@ -425,9 +429,10 @@ Some of its main features include:
 \item Contains a fully typed API
 \item All docker objects and the docker client are safe to use with multithreading and multiprocessing
 \end{itemize}
+
 Python-on-Whales basically turns docker automation into something readable, testable, and smooth to
 integrate with larger python projects, no weird bash script required.
-More details from python-on-whales can be found on their official website at: https://gabrieldemarmiesse.github.io/python-on-whales/
+More details from python-on-whales can be found on their official website \cite{pythononwhales}.
 
 \subsection{Go, and Go-sdk}
 Go is an open-source programming language developed by Google, built for efficiency in cloud computing, networking, and large-scale distributed systems.
