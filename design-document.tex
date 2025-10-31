@@ -232,7 +232,8 @@ In addition to concerns that users could compromise the WADT site through any on
 
 This problem is especially difficult to solve since blocking all outgoing requests will break any dependencies that target vulnerable webapps have on external services.
 
-%TODO provide example
+While a simple whitelist based on a search could whitelist each domain that a given target vulnerable app depends on, it would be easily exploitable by users. Given that users need write access to application source code in order to apply certain kinds of bugfixes, users would be able to add whatever external domains they wish, and therefore have them whitelisted.
+
 
 \subsection{XSS}
 %TODO explain how users mess with other users through XSS
