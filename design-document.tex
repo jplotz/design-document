@@ -234,9 +234,22 @@ This problem is especially difficult to solve since blocking all outgoing reques
 
 While a simple whitelist based on a search could whitelist each domain that a given target vulnerable app depends on, it would be easily exploitable by users. Given that users need write access to application source code in order to apply certain kinds of bugfixes, users would be able to add whatever external domains they wish, and therefore have them whitelisted.
 
+As an example, the OWASP Juice Shop webapp makes external requests to CloudFlare to provide cookie consent forms. Disabling all outgoing requests and responses would break this dependency. In principle, individual apps cannot be relied on to provide an exhaustive list of the third-party domains they attempt to access. Whitelisting all domains that appear in a regex search has a few notable issues:
 
-\subsection{XSS}
-%TODO explain how users mess with other users through XSS
+\begin{itemize}
+	\item Easily exploitable. Any form of write access to the source code of the application means full control of the whitelist
+	\item Not dynamic. Any attempts to patch vulnerabilities by modifying source code which contacts third parties will be blocked until the whitelist is manually updated
+	\item Not complete. Users may still make malicious requests to the domains that the application already requires
+\end{itemize}
+
+These problems are still an open issue for the team until a better solution is discovered.
+
+\subsection{Cross-Site Scripting (XSS)}
+XSS created problems for the original scope of WADT. These problems were discovered when researching target vulnerable webapps. OWASP hosts a Juice Shop instance that is shared between all users on the public internet. For this instance, all XSS challenges are disabled because of the potential consequences of XSS for users.
+
+The Juice Shop project has taken the time already to detect container-based environments and disable the "danger zone" challenges to prevent XSS attacks on other users. However, for other target projects, or for real vulnerabilities, the demarcation of vulnerabilities into "safer" and "dangerous" is not preemptively done. A full audit of each selected application of the WADT project is outside of the scope of Senior Design.
+
+As a result of these constraints, the WADT project is limited to a single-user scope. In principle, XSS attacks on other users cannot occur if only one user is active on the system. In this scenario, the user would have to deliver a malicious payload to the target vulnerable app that would harm their own machine. However, in practice, small groups of students are going to collaborate and be supervised by an instructor. The level of trust placed in the students with the potential for delivering malicious payloads to the target apps is similar to the level of trust to grant access to the original instance, meaning that this problem requires a social rather than technical solution.
 
 \subsection{2-Factor Authentication}
 In addition to previous security methods, it is desirable to add 2-factor authentication upon login. There are multiple approaches which solve the problem.
