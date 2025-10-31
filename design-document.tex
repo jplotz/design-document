@@ -855,12 +855,14 @@ The Docker architecture offers several advantages for deploying and managing int
   \begin{itemize}
     \item {Fast setup and teardown} – Containers can be launched or removed in seconds, enabling rapid iteration and testing of exploit scenarios.
     \item {Safe and isolated experimentation} – Vulnerable apps run in sandboxed environments, allowing controlled execution of payloads without affecting the host system.
+	\item {Scalability for labs} – Multiple instances of the same app can be launched with different configurations for parallel testing.
     \item {Cross-platform reproducibility} – Docker ensures consistent behavior across Windows and Linux, reducing platform-specific bugs and simplifying collaboration.
     \item {Seamless CI/CD and cloud integration} – Containerized apps can be easily integrated into automated pipelines and deployed to cloud platforms for scalable testing.
+	\item {Resource control} – Docker allows limiting CPU, memory, and network usage, which helps simulate constrained environments or prevent abuse during testing.
   \end{itemize}
 
 \subsubsection{Security Isolation}
-Docker uses built-in Linux features to keep containers separate and safe. Namespaces and cgroups help in isolating processes and controlling resource usage. We also improve security by removing extra permissions and applying system call filters to block risky operations. This helps prevent containers from affecting the host system.
+Docker uses built-in Linux features to keep containers separate and safe. Namespaces and cgroups help in isolating processes and controlling resource usage. We also improve security by removing extra permissions and applying system call filters to block risky operations. This helps prevent containers from affecting the host system. Containers also run with their own network stack, which limits exposure to external threats unless explicitly configured.
 
 \subsubsection{Container Management Process}
 Our deployment pipeline handles every stage of container management. We build images from Dockerfiles, launch containers with secure configurations, and use volumes in order to retain logs and exploit traces. Containers are stopped and removed cleanly, enabling quick resets between test cycles.
