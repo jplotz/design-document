@@ -1103,6 +1103,23 @@ After evaluating the most practical tools for our needs, our team ultimately sel
 
 Figma’s collaboration tools, and ease of sharing designs and information made it especially effective for the needs of this project. Its easy-to-use interface lowered the learning curve for members who were new to working with the tool. Additionally, its extensive library of community resources and templates enabled us to quickly build and refine wireframes that align with our project’s goals and communicate the front-end vision with the rest of the team.
 
+\subsection{Figma Designs}
+Below are several of the mock-up pages designed in Figma along with a discussion of their purpose within the application. While these designs are subject to change as implementation of the project progresses, the goals and requirements for each page will likely remain the same. 
+
+\subsubsection{Login Page}
+A login page is necessary as both students and instructor users will need different levels of access and capabilities. User accounts will also allow students to save their work and return to it later. Although containers will automatically stop after 24 hours, this approach will provide students the flexibility to work in intervals rather than needing to complete everything in a single session.
+\simplegraphic{Login.png}{Example login page design}{fig:login}
+
+\subsubsection{Vulnerable Applications Dashboard}
+Students need a clear and easily accessible way to work with vulnerable applications. Therefore, the webapp will have a dashboard which will contain all available vulnerable applications. Each listed application will include a description of the application alongside the relevant skills that are being tested when attempting to patch any vulnerabilities. The front-end team will work with the sponsor and docker team to rank the difficulty as well. 
+\simplegraphic{WebAppDashboard.png}{Example dashboard design}{fig:dashboard}
+
+\subsubsection{Container Logs}
+The container logs page is crucial, as it will provide all of the information needed to resolve any issues related to any relevant container actions or events. Logs will be maintained for the entire lifespan of each container until it is stopped manually or automatically. Since feedback is critical for an educational tool, the logs page must present information clearly and simply. Only relevant troubleshooting information will be included to avoid overwhelming the user.
+\complexgraphic{ContainerLogs.png}{Example Container Logs}{fig:containerLogs}
+
+The designs shown above represent only some of the pages created throughout the planning of this project. Over the course of development, many of our original ideas have been adjusted, or expanded as we learned more about the requirements and how each page would function within the application. Figma has been especially helpful in this process, as it allows us to quickly draft new ideas and revise our designs without needing to commit to coding right away. While not every design can be included in this document, the mock-ups we have shown highlight the core pages necessary for the application and reflect the overall direction of the project.
+
 \section{Ethical Concerns and Considerations}
 
 WADT will host intentionally vulnerable applications, which come with its own unique ethical and security challenges. We have a responsibility to protect our users, and systems from foul play and misuse. The most prominent ethical consideration for this project revolves around limiting potential harm to protect our users in order to promote responsible cybersecurity education. 
@@ -1178,6 +1195,13 @@ The following milestones represent the major deliverables and functional achieve
     \item \textbf{Apr 26:} Instructor features implemented and system testing
     \item \textbf{Apr 27:} Final presentation and Final Design Document delivered
 \end{itemize}
+
+\section{What's Next?}
+Our group is the first to work on the Web App Deployment Tool, and while the project has a relatively small set of core features, there is a lot of room for additional features. Once we begin testing the application and receiving feedback, the relevance of additional features will become clearer. By the end of Senior Design II, we will have a functional website with all of the core features, but the project is designed so that future groups can continue building on what we have created. As implementation progresses, we plan to add extra features whenever possible, based on feedback and any additional ideas that emerge as the application becomes more complete. This will create a strong foundation for later groups to extend.
+
+Cybersecurity education evolves constantly, especially as new vulnerabilities, technologies, and industry practices emerge. With that in mind, there is a lot of potential to expand the catalog of vulnerable applications beyond the initial seven we will include. Future groups will be able to update the tool to introduce new applications, new vulnerability types, and new skills for students to practice. Our team is essentially starting the process and establishing the structure, leaving plenty of room for refinement as more students and instructors interact with the application. While we will make updates based on early feedback, the most meaningful insights will come from long-term use in educational settings. Over time, future teams together with the sponsor will be able to use that feedback to set new goals and evolve the project further.
+
+There are also additional features outside our core requirements that later teams could explore. One major possibility is adding automated checks to determine whether a vulnerable application has been successfully patched. Even if this isn’t part of our team minimum viable product, another group could create a companion tool to evaluate student work more thoroughly. Our focus is on giving students the environment they need to work on vulnerabilities, but a complementary system that provides automated feedback without requiring instructor involvement would make the tool even more useful. The overarching goal of this project is to make the learning process more efficient, and giving students fast, and thorough feedback would help them learn more independently. We are supplying the core environment, but there is significant room to elevate the project by expanding the amount of guidance, assessment, and feedback available to students.
 \printbibliography
 
 \end{document}
