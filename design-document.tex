@@ -88,11 +88,17 @@
 \tableofcontents
 
 \section{Executive Summary}
-Imagine you have an epiphany: I need to practice SQL injection. Suppose this is an immediate need. What is your next step?
+Imagine you have an epiphany: you need to practice SQL injection or test a newly learned web-security technique, and you need an intentionally vulnerable web application right now. For most students and web-security practitioners, the next hour is spent searching through GitHub, cloning repositories, troubleshooting dependency errors, configuring Dockerfiles, and resolving version mismatches before any real security testing can begin. The setup process becomes the main barrier, not the learning itself.
 
-If you're anything like the typical student, you will turn to a search engine and find small, toy examples which have little relation to real-world examples, or labs hiding behind paywalls. You might opt for a self-hosted solution, but in that case, be prepared to take an hour or more setting up your target application.
+Our Web App Deployment Tool (WADT) project addresses this problem by providing a streamlined platform for deploying intentionally and unintentionally vulnerable web applications with minimal effort. WADT offers a unified toolchain that removes the complexity typically associated with configuring, running, and managing these applications. Instead of navigating obscure documentation or manually assembling Docker environments, users can select a target application and launch it through a standardized, reliable workflow.
 
-Enter the Web App Deployment Tooling (WADT) project. WADT provides an easy-to-use GUI that hides the details of setup and installation so that students can practice as soon as they sit down, no tedium required. A number of preconfigured target applications are available for use, all using a robust open-source tech stack.
+WADT is built on a robust open-source stack designed for extensibility, reproducibility, and ease of maintenance. Applications are containerized and orchestrated using Docker, allowing each vulnerable web app to run in a consistent sandboxed environment. This ensures that students, instructors, or security professionals can expect consistent and predictable behavior across deployments and platforms. The technical architecture supports a modular catalog of apps, enabling new vulnerable applications to be added without redesigning the system.
+
+The objectives of this project are threefold. First, WADT seeks to reduce friction in cybersecurity education by allowing users to immediately interact with target applications rather than waste time on environment setup. Second, it aims to create a scalable base where an expanding library of intentionally vulnerable applications can be deployed through a common interface. Third, the project emphasizes security, reliability, and user experience. These are critical aspects when dealing with tools meant to support penetration testing and vulnerability analysis.
+
+The technical approach integrates a Django-based backend for orchestration logic and user-facing functionality, a React frontend for intuitive interaction, and Docker-driven infrastructure for application deployment. This layered design ensures that WADT remains maintainable, testable, and capable of evolving as the catalog of applications grows. Each component of the system is selected to balance performance, usability, and long-term sustainability.
+
+In summary, WADT transforms the tedious process of launching vulnerable web applications into a fast, accessible, and standardized experience. By removing setup barriers, the platform empowers learners and practitioners to focus on what truly matters: developing hands-on skills in real-world web security.
 
 \section{Project Description}
 
