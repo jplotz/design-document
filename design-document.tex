@@ -140,6 +140,54 @@ Another major factor in my decision was the involvement of Docker, as this was t
 
 I was also drawn to the idea behind the project itself. I liked the idea of a project that was made by students for other students. It also helped that the sponsor was a recent graduate who had worked with other senior design teams. That familiarity with the process made the project feel approachable, and I felt much more comfortable committing to a project with a sponsor who understood both the technical and academic expectations. Choosing a senior design project is a long-term commitment, and knowing I would be working with someone experienced in the process made the decision to work on this project much easier.
 
+\section{Broader Societal Impacts}
+
+The Web App Deployment Tooling (WADT) project has implications that extend beyond its technical implementation. By lowering barriers to cybersecurity practice, standardizing deployment workflows, and creating a safe environment for exploring vulnerabilities, the platform supports broader goals in education, ethics, public safety, and digital accessibility. The following section outlines the societal impacts of WADT and how the project contributes to the development of a more secure, informed, and equitable technological landscape. We are mainly building for a classroom environment, but the implications of our work extend beyond that as our code is open source and has minimal technical requirements.
+
+\subsection{Advancing Cybersecurity Education}
+
+A central societal benefit of WADT is its ability to improve the accessibility and effectiveness of hands-on cybersecurity education. Students often face steep learning curves when configuring environments for security practice, with setup errors consuming valuable instructional time. WADT eliminates this friction by providing a streamlined interface that instantly deploys vulnerable applications in reproducible containers. As a result, students and cybersecurity learners can engage more deeply with core security concepts rather than technical logistics.
+
+Furthermore, instructors can leverage a consistent platform to design labs, assessments, and demonstrations without worrying about dependency issues or system inconsistencies. This creates a more stable foundation for curriculum development and improves both the quality and scalability of cybersecurity instruction. 
+
+Another key factor when considering cybersecurity education is the ability to keep up with the rapidly evolving threat landscape. WADT's modular architecture allows new vulnerable applications to be added easily, enabling educators to incorporate emerging vulnerabilities and attack vectors into their teaching. This adaptability ensures that learners are exposed to relevant, up-to-date challenges that reflect real-world security concerns as they are uncovered. 
+
+\subsection{Strengthening the Future Workforce}
+
+As cyber threats grow in both frequency and complexity, industries increasingly depend on professionals with practical, tool-driven experience. WADT contributes to workforce readiness by exposing students to real-world technologies such as Docker, container orchestration, structured logging, and distributed system workflows. This alignment with industry practices ensures that learners who train on WADT gain marketable skills and familiarity with the same tools used across engineering, DevOps, and security operations teams.
+
+By creating an environment that mirrors professional infrastructure patterns, the platform helps bridge the gap between academic theory and operational reality. This ultimately supports a more resilient and capable cybersecurity workforce.
+
+\subsection{Promoting Safer Software and Responsible Practices}
+
+WADT helps cultivate a culture of safe and ethical experimentation. Many aspiring developers and security practitioners lack access to environments where they can explore vulnerabilities without risk. By providing isolated containers that can be reset, expired, and audited, WADT encourages responsible hacking practices and discourages unsafe experimentation on unauthorized systems.
+
+The platform also empowers future engineers to understand how vulnerabilities emerge in the first place. As students gain experience interacting with unintentionally vulnerable components, they become better equipped to follow secure coding practices, evaluate risk, and recognize problematic design patterns. This knowledge, when carried into industry, can contribute to reducing the prevalence of preventable vulnerabilities in consumer and enterprise software.
+
+\subsection{Ethical Considerations}
+
+Although WADT supports learning in a safe environment, working with vulnerable systems inherently raises ethical questions. It is essential that any platform facilitating exploitation techniques reinforces proper intent, scope, and responsibility. WADT’s architecture—isolated containers, automatic cleanup, controlled user sessions, and audit logging—provides guardrails that promote ethical use while minimizing the potential for misuse.
+
+The project also encourages best practices in ethical hacking education, including responsible disclosure, respect for system boundaries, and an emphasis on consent-based testing environments. By embedding these lessons early, WADT helps shape ethical instincts and responsible behaviors in the next generation of cybersecurity professionals.
+
+\subsection{Environmental and Sustainability Impact}
+
+While WADT relies on compute resources, its design can contribute to more sustainable educational infrastructure. The use of short-lived containers that automatically expire after 24 hours prevents resource waste and minimizes idle CPU usage. Automated cleanup routines ensure that unused environments do not persist indefinitely, helping reduce the platform’s overall energy footprint. When considering large-scale deployments across multiple institutions, these efficiencies can add up to significant reductions in resource consumption. Developing a system that takes energy and resource into account will only become more important as cloud computing continues to grow.
+
+Containerization itself is also more resource-efficient than running full virtual machines for each student. By packaging only the minimal runtime environment needed for a specific lab, WADT reduces overhead, encourages lighter deployments, and supports more sustainable use of cloud or on-premise compute resources. Over time, institutions adopting containerized labs may reduce electricity consumption, cooling demands, and hardware wear associated with heavier virtualization strategies.
+
+\subsection{Accessibility and Educational Equity}
+
+WADT can help broaden participation in cybersecurity by reducing technical barriers that disproportionately affect beginners or students without prior systems administration experience. By removing setup challenges, the platform allows learners of varying backgrounds, including those without powerful personal hardware, to participate fully in hands-on labs.
+
+Additionally, because WADT can be hosted in the cloud, students who rely on public devices, low-cost laptops, or university lab computers can still access full-featured environments. This supports a more equitable academic experience and expands opportunities for students in under-resourced programs.
+
+\subsection{Long-Term Maintainability and Community Benefit}
+
+Beyond the classroom, WADT has potential value for the broader security community. Its modular design allows new vulnerable applications to be onboarded with minimal overhead, enabling the platform to grow into a lasting resource. If released openly or adopted by multiple institutions, WADT could become a shared ecosystem for standardized, safe, and easily deployable security labs.
+
+This fosters cross-institution collaboration, reduces duplicated effort, and supports long-term sustainability. By contributing tooling and documentation that others can build upon, the project reinforces the open-source philosophy that underpins much of modern cybersecurity research and development.
+
 \section{Minimum Viable Product}
 
 \subsection{Scope and Limitations}
