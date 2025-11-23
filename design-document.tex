@@ -905,19 +905,19 @@ It is important that we use the right technologies for such an important step in
 \subsubsection{Postman}
 Postman is a popular API testing tool with one of its main selling points being its graphical user interface and collaboration tools. The interface simplifies the process of creating, sending, and managing API requests. This makes it especially useful for our projects’ collaborative development.
 
-Some of the main advantages of using Postman include:
+Postman's documentation overview includes resources describing all of the functionalities of the software \cite{postman-overview}. The functions that are naoteable for use in our projectinclude:
 \begin{itemize}
 \item User-Friendly Interface: Postman has its own application with a straightfoward interface, making it easy to quickly set up and execute API tests without extensive configuration.
 \item Collaborative Workspaces: Postman offers shared workspaces where tests can be easily shared with other team members, ensuring consistent and repeatable testing across the development team.
 \item Scripted Testing with JavaScript: Postman allows automated test scripts to be written in JavaScript, enabling the creation of reusable testing routines and smoother integration.
 \item CI/CD Pipeline Integration: Postman tests can be run within CI/CD pipelines, allowing for automated testing as part of the deployment process.
-\item Cost: The basic version of Postman is free to use many helpful features to suit our current testing needs.
+\item Cost: The basic version of Postman is free to use many helpful features to suit our current testing needs \cite{postman-pricing}.
 \end{itemize}
 
 \subsubsection{cURL}
 cURL is another tool used for testing REST APIs. Unlike Postman, which provides a graphical user interface, cURL operates entirely from the command line. This makes it better for scripting and automating tests.
 
-Some advantages of using cURL include:
+cURL provides comprehensive documentation for all of its features and capabilities on their online book \cite{everything-curl}. The most appealing aspects of working cURL in our situation include:
 \begin{itemize}
     \item No setup required or cost. cURL is preinstalled on most UNIX-based systems, so there is no need for additional configuration prior to testing.
     \item More versatility. It supports protocols beyond HTTP and HTTPS, such as FTP, FTPS, SCP, and SFTP. However, these are not likely to be needed for our application.
@@ -935,17 +935,17 @@ Comprehensive API documentation saves time and preserves sanity, by providing a 
 
 We considered two tools for documenting our APIs, Hopscotch and SwaggerHub. Both providesda standardized way to describe REST APIs. However, they differ in cost, accessibility, and integration capabilities within our existing testing structure.
 \subsubsection{Hoppscotch}
-Hoppscotch is a free and open-source platform for testing and documenting APIs. It is entirely browser-based, making it easy for all team members to access without any need for additional installation. One of Hoppscotch’s biggest advantages for our project is its ability to integrate with our API testing tools such as cURL.
+Hoppscotch is a free and open-source platform for testing and documenting APIs \cite{hoppscotch}. It is entirely browser-based, making it easy for all team members to access without any need for additional installation. One of Hoppscotch’s biggest advantages for our project is its ability to integrate with our API testing tools such as cURL.
 
 As we test our APIs, Hoppscotch will allow us to document each endpoint directly within the same environment, which can be very convenient. Hoppscotch can also generate cURL commands for each request. This makes it simple to copy those commands into scripts for automated or mode advanced testing in the future. This allows for the ability to keep our documentation and testing closely aligned throughout the development process, rather than writing APIs and documenting at the end. Because cURL can be used in our CI/CD pipeline, this integration also helps to ensure that what we have documented remains consistent with what is being actively tested.
 
 Endpoints can also be grouped into collections which help to organize the different APIs, rather than having one large list of different endpoints. Any documentation, alongside any additional notes, can be easily shared with its Share feature.
 \subsubsection{SwaggerHub}
-SwaggerHub is well-known platform for designing and documenting APIs, which incorporates the OpenAPI Specification or OAS. This specification provides a standardized format for describing REST APIs. These descriptions are defined within a YAML or JSON document and are used to define all aspects of the API, such as the endpoints and their corresponding response formats, status codes and example payloads. The goal of these OAS schemas is to provide a structure that can clearly be understood by anyone reading it.
+SwaggerHub is well-known platform for designing and documenting APIs, which incorporates the OpenAPI Specification or OAS. This specification provides a standardized format for describing REST APIs. These descriptions are defined within a YAML or JSON document and are used to define all aspects of the API, such as the endpoints and their corresponding response formats, status codes and example payloads. The goal of these OAS schemas is to provide a structure that can clearly be understood by anyone reading it \cite{swagger-explore}.
 
 SwaggerHub offers additional advanced features such as version control, various collaboration tools, and even automatic documentation generation. It can also be integrated with CI/CD tools to keep API documentation in synch with live deployments. 
 
-While SwaggerHub does offer many helpful features, it does have a significant drawback, its high cost. While a 30-day free trial is available, the Team plan, which includes the collaboration features, costs \$29 per month.
+While SwaggerHub does offer many helpful features, it does have a significant drawback, its high cost. While a 30-day free trial is available, the Team plan, which includes the collaboration features, costs \$29 per month \cite{swagger-pricing}.
 
 \subsubsection{HoppScotch or SwaggerHub?}
 Both Hoppscotch and SwaggerHub provide suitable options for our API documentation needs. While SwaggerHub offers more professional-grade collaboration and versioning tools, it also comes with a high monthly cost. This is a long-term project, so we would be required to maintain documentation well beyond the free trial period and thus would have to pay \$29 per month for the Team package. This high cost makes SwaggerHub not feasible in the long term, as we are college students trying to avoid unnecessarily high out of pocket costs. Hoppscotch by contrast, is free, yet it still provides the tools we need to properly document our APIs. It also can integrate directly with cURL, allowing us to import cURL commands directly into Hoppscotch. Additionally, it supports real-time documentation alongside testing. This makes Hoppscotch the more practical tool for our API documentation.
@@ -1133,7 +1133,7 @@ Our deployment pipeline handles every stage of container management. We build im
 \subsubsection{React}
 The front-end of our application is built using React. React employs a virtual Document Object Model, or DOM, to more efficiently manage updates to the UI. Only the components that have changed are updated, rather than needing to re-render the entire page to make changes. This makes the application faster and more responsive, which is an important quality for any web application.
 
-React provides several benefits that we found attractive:
+React provides several benefits that we found attractive \cite{react-legacy-getting-started,}:
 \begin{itemize}
 	\item Reusability: Components can be reused across different parts of the application, improving consistency and helping us avoid the DRY principle as much as possible. This will also make it easier for future development teams to extend or modify the project.
 	\item Flexibility and Maintainability: Individual components can be updated or replaced without affecting the rest of the system, allowing for simpler debugging, testing, and any future changes. 
@@ -1268,7 +1268,7 @@ Figma was the first technology we considered, as it is one of the most widely us
 
 Sharing designs is also extremely easy with Figma, as links can be shared with anyone, including non-front-end team members, for feedback or review of designs. Figma also offers a large collection of community resources, like templates, plug-ins, and tutorials, which help users get acclimated to the software quickly. While Figma is capable of supporting more high-level designs, its basic functionality is straightforward and practical for our project.
 
-Our main concern with Figma was its potential cost. While there is a free version, we were unsure if the free version would be overly limiting. Fortunately, we found that the free plan provided all the core features we needed for the project. The paid version, priced at around 15 dollars per month, could be considered later if premium features became necessary. The month-to-month payments would be manageable if deemed necessary. Figma also works well on all major operating systems, so it would be easily accessible for everyone on the team. Overall, Figma met nearly all our criteria as it is collaborative, user-friendly, and cost-effective given our current scope.
+Our main concern with Figma was its potential cost. While there is a free version, we were unsure if the free version would be overly limiting. Fortunately, we found that the free plan provided all the core features we needed for the project. The paid version, priced at around 15 dollars per month, could be considered later if premium features became necessary \cite{figma-pricing}. The month-to-month payments would be manageable if deemed necessary. Figma also works well on all major operating systems, so it would be easily accessible for everyone on the team. Overall, Figma met nearly all our criteria as it is collaborative, user-friendly, and cost-effective given our current scope.
 
 \subsubsection{Canva}
 Another tool we considered was Canva. Although Canva is not a traditional UI/UX design platform, it can be used effectively for wireframing, especially for projects with simpler design requirements, such as this. Canva's biggest strength is its ease of use. It has an easy-to-use drag-and-drop interface. It also has a large variety of templates, icons, and pre-made design elements, making it extremely approachable for beginners. This allows team members to quickly create clear layouts without needing extensive design experience with the tool.
