@@ -119,6 +119,12 @@ WADT aims to eliminate redundant setup work by providing a standardized environm
 \subsection{Dusitn Allen}
 \subsection{Daniel Armas}
 \subsection{Rithik Dhakshnamoorthy}
+When I began considering options for senior design, I wanted a project that would give me the chance to develop skills I hadn’t yet mastered. I liked a lot of the projects shown to me that are sometimes related to computer science, but this project stood out because it was new, open‑ended, and offered plenty of space for some creativity. It also introduced technologies I didn’t work with before, which makes it an excellent challenge. Cybersecurity and Docker stood out to me, since both are widely used in today’s industry and tied to my future work after graduation.
+
+This semester I am taking several cybersecurity courses, which has given me a stronger academic foundation in the subject. However, most of that learning has been theoretical, focused on concepts, frameworks, and case studies rather than doing hands‑on application. Because it revolves around intentionally vulnerable web applications, it provides a unique opportunity to connect what I am learning in class with practical, real‑world scenarios. I see this as a chance to reinforce my coursework by applying security principles directly, gaining experience with how vulnerabilities are created, exploited, and mitigated in systems that are similar to professional environments.
+
+Another reason I chose WADT was the chance to work and understand computer engines like Docker. At the time, I had no direct experience with containerization, but I was aware of its growing importance in professional environments. As part of the Docker team, my role is to dockerize vulnerable web applications so they can be deployed consistently and reproduced across different systems. This responsibility allows me to learn how to manage different services, simplify builds, and keep the project dependable for teaching purposes. I am motivated by the challenge of building deployment tooling that not only coordinates multiple services but also supports security testing in a controlled environment. 
+
 \subsection{Jacob Plotz}
 \subsection{Luke Samuel Sandoval}
 I chose to take on the challenge of Dockerizing our vulnerable web applications because containerization has become a foundational skill in modern software engineering and cybersecurity. As I approach graduation and prepare to enter industry, I want hands-on experience with the same tooling used to deploy, isolate, and scale real-world systems. This project offers a direct way to build those skills while contributing something genuinely useful to students who need reliable practice environments.
@@ -712,6 +718,28 @@ It supports Docker Compose and includes scripts for developer and hacker modes. 
 
 \paragraph{Why chosen}
 We chose this app for its modern stack, interactive design, and strong focus on API-specific flaws. It fits WADT’s goal of providing practical, containerized labs for security learning.
+
+\subsubsection{Ghost Kit (Unintentionally Vulnerable Example)}
+\subsubsection*{Overview and stack}
+Ghost Kit is a WordPress plugin that extends the block editor with page builder blocks, motion effects, and layout tools. WordPress uses many third‑party plugins to add features, and since WordPress runs much of the web, any plugin vulnerability can affect a lot of sites. Ghost Kit integrates directly into the PHP based WordPress stack, running on PHP/MySQL, and is commonly deployed in production sites for design flexibility.
+
+\subsubsection*{Vulnerability detail}
+A medium severity vulnerability (CVE-2025-9992) was disclosed by Wordfence in August 2025. Versions up to and including 3.4.13 are affected. The flaw lies in the icon block title field, which fails to sanitize user input and does not escape output. As a result, authenticated users with Contributor or higher privileges can inject arbitrary JavaScript into posts. When these posts are published or viewed, the malicious script executes in the browser of any visitor. This is a classic Stored Cross Site Scripting (CWE-79) scenario. Exploitation requires only Contributor access, which is often granted to content creators, making the attack realistic in multi author environments.
+
+\subsubsection*{Educational value}
+Ghost Kit illustrates how seemingly harmless design features can introduce serious security risks. Lab objectives include:
+\begin{itemize}
+    \item Demonstrating how stored XSS works in practice: a Contributor submits a payload, an Admin publishes it, and the script executes.
+    \item Teaching secure coding practices for plugin developers: always sanitize input, escape output, and enforce strict role based permissions.
+    \item Practicing mitigation steps: updating to Ghost Kit up to and including 3.4.14, auditing user roles, and deploying a Web Application Firewall to block malicious payloads.
+    \item Highlighting the importance of plugin patch management in WordPress ecosystems, where third party code is often trusted without review.
+\end{itemize}
+
+\subsubsection*{Deployment notes and Docker considerations}
+For reproducibility, the lab uses a WordPress container seeded with Ghost Kit. A Contributor account is created to inject the payload, while an Admin account publishes the post. The Dockerfile installs required PHP extensions, which include mySQL and soap, and copies the vulnerable plugin into the container. Containers are sandboxed with no host mounts and strict file permissions to isolate the exploit. This ensures that the stored XSS remains contained within the lab environment and cannot affect the host system.
+
+\subsubsection*{Why chosen}
+Ghost Kit is a strong unintentionally vulnerable example because it demonstrates how real world plugin flaws can compromise production systems. Ghost Kit was not designed for training due to its vulnerability being discovered in the wild. This makes it valuable for teaching students and practitioners how to handle actual plugin security failures.
 
 \subsubsection{Deployment and catalog-level considerations}
 For each selected application, we plan to:
