@@ -504,7 +504,11 @@ Specifically, Ubuntu by default enforces an externally-managed Python environmen
 PostgreSQL is also available in Ubuntu's default repositories, simplifying project setup when compared to CentOS or Amazon Linux.
 
 \subsection{General Security Concerns}
-Security was one of the biggest concerns as hosting intentionally vulnerable applications inherently has many risks that need to be narrowed down and handled before pushed to a live server. Docker has some very strong security primitives that will be utilized to help the application be as secure as possible. Linux namespaces will be used to help ensure that each container has its own isolated process tree, filesystem, and network stack, ensuring that the containers are self-contained and unaware of the host system. A dedicated, isolated Docker bridge network will be used for each student's session. Containers will not be attached to the default bridge or the host network. Using this will aid in preventing these containers from scanning or attacking other services on the host machine/other containers. This essentially enforces a "deny by default" policy for communication within the containers and system itself.
+Security was one of the biggest concerns as hosting intentionally vulnerable applications inherently has many risks that need to be narrowed down and handled before pushed to a live server.
+
+Docker has some very strong security primitives that will be utilized to help the application be as secure as possible. Linux namespaces will be used to help ensure that each container has its own isolated process tree, filesystem, and network stack, ensuring that the containers are self-contained and unaware of the host system. A dedicated, isolated Docker bridge network will be used for each student's session. Containers will not be attached to the default bridge or the host network.
+
+Using this will aid in preventing these containers from scanning or attacking other services on the host machine/other containers. This essentially enforces a "deny by default" policy for communication within the containers and system itself.
 
 One of the other main concerns was the containers not shutting down on time or a student potentially forgetting to shut down the container itself. Not only would this potentially lead to high overhead costs, it would also potentially leave an opening for a security breach to happen. Due to this, a life time limit will be implemented on the containers to automatically run a stop command to ensure that the containers do not run for extended periods of time. This will help us cleanup our resources along with limiting the potentials for misuse.
 
@@ -593,11 +597,11 @@ Podman is a drop-in replacement for Docker which is both daemonless and rootless
 
 For comparison, plain Docker functions interacts with plain containers, not pods. Docker Compose can be used to run multiple containers together for a project.
 
-\simplegraphic{podman-pod-architecture}{Pod architecture \cite{podman}}{fig:podman}
-
 Podman's daemonless design means that it does not require a running background process (daemon) to function. Instead, Podman relies on systemd. This is in contrast to Docker, which requires a daemon with root privileges.
 
 Podman is also rootless, meaning that system root privileges are not required by any part of Podman to run containers. This feature is the biggest draw of Podman over Docker for a security-focused project. With Podman, WADT would never require root privileges to run containers or be forced to interact with a privileged daemon process.
+
+\simplegraphic{podman-pod-architecture}{Pod architecture \cite{podman}}{fig:podman}
 
 Although Podman is intended as a drop-in replacement for Docker, there are minor differences which ultimately led to the team's selection of Docker instead. Docker can perform pulls from DockerHub with short image names, while Podman requires additional configuration to do so. So while \texttt{docker pull postgres} will run successfully, \texttt{podman pull postgres} will throw an error.
 
@@ -1059,7 +1063,9 @@ SwaggerHub offers additional advanced features such as version control, various 
 While SwaggerHub does offer many helpful features, it does have a significant drawback, its high cost. While a 30-day free trial is available, the Team plan, which includes the collaboration features, costs \$29 per month \cite{swagger-pricing}.
 
 \subsubsection{HoppScotch or SwaggerHub?}
-Both Hoppscotch and SwaggerHub provide suitable options for our API documentation needs. While SwaggerHub offers more professional-grade collaboration and versioning tools, it also comes with a high monthly cost. This is a long-term project, so we would be required to maintain documentation well beyond the free trial period and thus would have to pay \$29 per month for the Team package. This high cost makes SwaggerHub not feasible in the long term, as we are college students trying to avoid unnecessarily high out of pocket costs. Hoppscotch by contrast, is free, yet it still provides the tools we need to properly document our APIs. It also can integrate directly with cURL, allowing us to import cURL commands directly into Hoppscotch. Additionally, it supports real-time documentation alongside testing. This makes Hoppscotch the more practical tool for our API documentation.
+Both Hoppscotch and SwaggerHub provide suitable options for our API documentation needs. While SwaggerHub offers more professional-grade collaboration and versioning tools, it also comes with a high monthly cost. This is a long-term project, so we would be required to maintain documentation well beyond the free trial period and thus would have to pay \$29 per month for the Team package. This high cost makes SwaggerHub not feasible in the long term, as we are college students trying to avoid unnecessarily high out of pocket costs.
+
+Hoppscotch by contrast, is free, yet it still provides the tools we need to properly document our APIs. It also can integrate directly with cURL, allowing us to import cURL commands directly into Hoppscotch. Additionally, it supports real-time documentation alongside testing. This makes Hoppscotch the more practical tool for our API documentation.
 
 \subsection{API Performance Testing}
 %TODO
@@ -1127,14 +1133,24 @@ By integrating TruffleHog into our development workflow, we create a proactive d
 %TODO
 
 \subsection{Chosen API Tools}
-For API implementation, some of the biggest considerations are what will potential students need to have access too and what will make this project the easiest to utilize. Along with this we also had to ensure that interfacing with Docker would be seamless to ensure that we could control the container instances while minimizing the potential risks of security issues. Due to this the project was decided to run on Python as Docker SDK for python was the most feature-rich and had the best integration with the Docker engine.  With the integration this project will have much easier implementation of the core operations needed to control the containers i.e. start, stop, logs, restart, etc. 
+For API implementation, some of the biggest considerations are what will potential students need to have access too and what will make this project the easiest to utilize. Along with this we also had to ensure that interfacing with Docker would be seamless to ensure that we could control the container instances while minimizing the potential risks of security issues.
 
-For the framework some of the biggest concerns were ensuring that authentication, admin control and security all had proper components available, which is why the final decision was to use Django as our framework for the API. One of the biggest motivators was that Django already has built in authentication features such as password hashing and session managment via HTTP only cookies. This allows for users to have secure registration, login, and allows the application to have session management features including user identification without having the need to build up the authorization system from scratch. Django also offers a built-in admin panel along with object relational mapper will help associate users with the containers they are utilizing, and manage user data leading to simpler database operations. We will also be implementing distinct roles for the users of the program and the admins to help ensure that users can only run commands that they are authorized to run. 
+Due to this the project was decided to run on Python as Docker SDK for python was the most feature-rich and had the best integration with the Docker engine.  With the integration this project will have much easier implementation of the core operations needed to control the containers i.e. start, stop, logs, restart, etc. 
 
-REST architecture is also being used as it is the industry standard for web API which will allow us to update and rework the frontend without having to change the backend API logic. Another benefit to this is that the API remains stateless in regards to the dockerized containers. This means that rather than relying on old data that is cached, it will instead query the Docker engine in real time for status updates. This can help us prevent possible errors when pulling containers statuses and checking to see if containers are having any runtime issues or aren't connecting properly, as if we were looking at older cached data we might not be getting an accurate picture of what's going on.
+For the framework some of the biggest concerns were ensuring that authentication, admin control and security all had proper components available, which is why the final decision was to use Django as our framework for the API. One of the biggest motivators was that Django already has built in authentication features such as password hashing and session managment via HTTP only cookies. This allows for users to have secure registration, login, and allows the application to have session management features including user identification without having the need to build up the authorization system from scratch.
+
+Django also offers a built-in admin panel along with object relational mapper will help associate users with the containers they are utilizing, and manage user data leading to simpler database operations. We will also be implementing distinct roles for the users of the program and the admins to help ensure that users can only run commands that they are authorized to run. 
+
+REST architecture is also being used as it is the industry standard for web API which will allow us to update and rework the frontend without having to change the backend API logic. Another benefit to this is that the API remains stateless in regards to the dockerized containers. This means that rather than relying on old data that is cached, it will instead query the Docker engine in real time for status updates.
+
+This can help us prevent possible errors when pulling containers statuses and checking to see if containers are having any runtime issues or aren't connecting properly, as if we were looking at older cached data we might not be getting an accurate picture of what's going on.
 
 \subsection{API Considerations} \label{subsec:api-considerations}
-Some other considerations were the usage of web-sockets for our communication protocols as they would provide continuous streaming of live logs or container stats. This was also considered due to the concern of "heisenbugs", race conditions and other overhead related issues such as our client initialization with each user who may be using the application. After research the decision to not utilize web-sockets was that the REST API would be able to handle this much better with less complications of writing and implementing these systems ourselves. Rather than getting live updates instead we will be using client sided polling of the endpoints to get the container statuses and logs. The research also provided insight on Docker itself. The realization was that rather than initializing multiple clients when we have multiple users, instead initializing a single shared client would be the best option. This is because Docker already uses different request threads which will help us prevent race conditions or any "heisenbugs" that were anticipated at first. Using this Docker client management we also avoid high overhead costs as the clients are only created once the app boots up, it is inherently designed to be shared across threads while keeping user data separate, and prevents the need for database space being taken.
+Some other considerations were the usage of web-sockets for our communication protocols as they would provide continuous streaming of live logs or container stats. This was also considered due to the concern of "heisenbugs", race conditions and other overhead related issues such as our client initialization with each user who may be using the application.
+
+After research the decision to not utilize web-sockets was that the REST API would be able to handle this much better with less complications of writing and implementing these systems ourselves. Rather than getting live updates instead we will be using client sided polling of the endpoints to get the container statuses and logs. The research also provided insight on Docker itself. The realization was that rather than initializing multiple clients when we have multiple users, instead initializing a single shared client would be the best option. This is because Docker already uses different request threads which will help us prevent race conditions or any "heisenbugs" that were anticipated at first.
+
+Using this Docker client management we also avoid high overhead costs as the clients are only created once the app boots up, it is inherently designed to be shared across threads while keeping user data separate, and prevents the need for database space being taken.
 
 \section{Database Research}
 When choosing our database we have a few options:
@@ -1365,7 +1381,9 @@ Since Bootstrap isn’t exactly known for wild creativity, we relied on Bootswat
 When a specific design wasn’t available, we customized the Bootswatch SCSS files to match our desired color palette and maintain a consistent style across components.
 
 \subsection{Wireframing}
-Wireframing is an essential component of front-end development; it serves as the blueprint from which all design and implementation decisions follow.  Like all blueprints, its primary goal is to serve as a medium of communication. Communication is the foundation of any collaborative effort, and wireframing provides the first stage of communication for the front-end team. It is important that the frontend team uses a tool that will allow us to work together on designs to ensure we are on the same page before implementation. It is much easier to tackle a large problem with a clear objective in mind prior to implementation. This will improve efficiency and lead to a better overall result. It is also important that we have the flexibility to make changes and add to designs as we progress further into the project and gain a better understanding of our end goals.
+Wireframing is an essential component of front-end development; it serves as the blueprint from which all design and implementation decisions follow.  Like all blueprints, its primary goal is to serve as a medium of communication. Communication is the foundation of any collaborative effort, and wireframing provides the first stage of communication for the front-end team.
+
+It is important that the frontend team uses a tool that will allow us to work together on designs to ensure we are on the same page before implementation. It is much easier to tackle a large problem with a clear objective in mind prior to implementation. This will improve efficiency and lead to a better overall result. It is also important that we have the flexibility to make changes and add to designs as we progress further into the project and gain a better understanding of our end goals.
 
 While we are the first group to work on this project, it is entirely possible that future Senior Design teams will continue our work. Therefore, documenting and wireframing all of our designs serves as an important organizational tool, not only for our current team but also for any future teams to draw inspiration from or build upon our designs.
 
@@ -1411,8 +1429,12 @@ Students need a clear and easily accessible way to work with vulnerable applicat
 \simplegraphic{WebAppDashboard.png}{Example dashboard design}{fig:dashboard}
 
 \subsubsection{Container Logs}
-The container logs page (figure \ref{fig:containerLogs}) is crucial, as it will provide all of the information needed to resolve any issues related to any relevant container actions or events. Logs will be maintained for the entire lifespan of each container until it is stopped manually or automatically. Since feedback is critical for an educational tool, the logs page must present information clearly and simply. Only relevant troubleshooting information will be included to avoid overwhelming the user.
+The container logs page (figure \ref{fig:containerLogs}) is crucial, as it will provide all of the information needed to resolve any issues related to any relevant container actions or events.
+
+
 \complexgraphic{ContainerLogs.png}{Example Container Logs}{fig:containerLogs}
+
+Logs will be maintained for the entire lifespan of each container until it is stopped manually or automatically. Since feedback is critical for an educational tool, the logs page must present information clearly and simply. Only relevant troubleshooting information will be included to avoid overwhelming the user.
 
 The designs shown above represent only some of the pages created throughout the planning of this project. Over the course of development, many of our original ideas have been adjusted, or expanded as we learned more about the requirements and how each page would function within the application. Figma has been especially helpful in this process, as it allows us to quickly draft new ideas and revise our designs without needing to commit to coding right away. While not every design can be included in this document, the mock-ups we have shown highlight the core pages necessary for the application and reflect the overall direction of the project.
 
@@ -1447,16 +1469,14 @@ The database requires two tables: Container and LogEntry. Container encapsulates
 
 As visible in figure \ref{fig:erd}, each container has a name and description. These are user-provided metadata which will display on the site.
 
+\complexgraphic{erd.png}{WADT ERD}{fig:erd}
+
 Each container also requires an id, which is needed for making requests through the Docker API.
 
 Each log entry has its contents, a timestamp, and a foreign key which links back to the container the log is sourced from.
 
 Other portions of the ERD are automatically generated by Django.
 
-\begin{figure}[H]
-	\centering
-	\complexgraphic{erd.png}{WADT ERD}{fig:erd}
-\end{figure}
 
 Examples of each field type can be seen in table \ref{fig:erdtable}.
 
@@ -1502,25 +1522,27 @@ The use case diagram (figure \ref{fig:usecase}) illustrates the interactions bet
 \subsection{Deploying Containers}
 The activity diagram (figure \ref{fig:deployContainer}) details the process behind deployment of a container, from catalog selection through backend processing. 
 
-\complexgraphic{AD-deploying-containers.png}{Container Deployment Activity Diagram}{fig:deployContainer}
 
 The backend applies security configurations automatically during deployment, ensuring each container runs in an isolated network with enforced lifetime limits. If an image is unavailable, the system returns an error rather than proceeding with a partial deployment.
+
+\complexgraphic{AD-deploying-containers.png}{Container Deployment Activity Diagram}{fig:deployContainer}
+
 \subsection{Interactions with Containers}
 The figure below illustrates the management actions available to users during an active session.
 
-\complexgraphic{AD-interacting-w-containers.png}{Interacting with Containers}{fig:interactContainers}
-
 During an active session, users can view logs, reset to a clean state, restart with any changes made preserved, or stop containers entirely. The system monitors lifetime limits in the background and triggers automatic shutdown if a container exceeds its allocated time.
+
+\complexgraphic{AD-interacting-w-containers.png}{Interacting with Containers}{fig:interactContainers}
 
 \subsection{Container Cleanup Process}
 The following figure describes the cleanup process that occurs when a container session ends.
 
-\complexgraphic{AD-container-cleanup.png}{Container Cleanup}{fig:cleanup}
-
 The system attempts a graceful shutdown before forcing termination if necessary. All associated resources, network bridges, database metadata, and allocated ports are released to maintain system integrity for subsequent deployments.
 
+\complexgraphic{AD-container-cleanup.png}{Container Cleanup}{fig:cleanup}
+
 \section{Design Summary}
-%TODO
+%TODO text summary of the design based on the previous diagrams
 
 \section{Timeline and Milestones}
 \subsection{Project Timeline}
