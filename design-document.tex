@@ -4,6 +4,8 @@
 
 \usepackage{multirow}
 
+\usepackage[shortcuts]{extdash}
+
 \usepackage{biblatex}
 \addbibresource{bibliography.bib}
 
@@ -868,7 +870,7 @@ vAPI (Vulnerable Adversely Programmed Interface) is a self-hosted lab that shows
 vAPI helps users learn about real-world API vulnerabilities like broken access control, data leaks, and insecure input handling. Each issue is set up as a hands-on challenge, making it useful for students, ethical hackers, and security testers. Postman files make it easy to follow and repeat tests. Some vulnerabilities stimulated in vAPI are lack of resources, injection flaws, and broken authentication.
 
 \paragraph{Deployment notes and Docker considerations}
-vAPI comes with a Docker Compose setup that runs both the Laravel app and MySQL database. Users should set up the \texttt{.env} file with correct database settings and match passwords across files. Using volumes helps save logs and exploit data. After setup, the app runs at \texttt{http://localhost/vapi/}.
+vAPI comes with a Docker Compose setup that runs both the Laravel app and MySQL database. Users should set up the \texttt{.env} file with correct database settings and match passwords across files. Using volumes helps save logs and exploit data. After setup, the app runs at \url{http://localhost/vapi/}.
 
 \paragraph{Why chosen}
 vAPI was chosen because it focuses on API-specific security issues, which are common in modern apps. It’s easy to deploy, well-documented, and recognized by the security community. It fits WADT’s goal of offering practical, container-based labs for learning and testing.
@@ -882,7 +884,7 @@ NIVA is a simple web application built to demonstrate NoSQL injection vulnerabil
 This app is designed to help users understand how NoSQL injection works and why it matters. It shows how attackers can manipulate query inputs to access or modify data they shouldn’t be able to. By comparing safe and unsafe query methods, learners can see the impact of poor input validation and insecure query construction. NIVA is useful for students, ethical hackers, and developers who want hands-on experience with NoSQL security issues. Its vulnerabilities are Data extraction, NoSQL Injection, and Privilege escalation.
 
 \paragraph{Deployment notes and Docker considerations}
-NIVA is easy to run using Docker. A prebuilt image is available on Docker Hub, and the app can be launched with a single command: \texttt{docker run -p 8080:8080 aabashkin/niva}. Once running, it’s accessible at \texttt{http://localhost:8080}, where users can test both secure and insecure endpoints. No extra setup is required, but you can add volumes if you want to save logs or test data. The app runs as a standalone container, making it simple to reset and reuse in different testing scenarios.
+NIVA is easy to run using Docker. A prebuilt image is available on Docker Hub, and the app can be launched with a single command: \texttt{docker run -p 8080:8080 aabashkin/niva}. Once running, it’s accessible at \url{http://localhost:8080}, where users can test both secure and insecure endpoints. No extra setup is required, but you can add volumes if you want to save logs or test data. The app runs as a standalone container, making it simple to reset and reuse in different testing scenarios.
 
 \paragraph{Why chosen}
 We chose NIVA because it focuses on NoSQL injection, which is a type of vulnerability that’s becoming more common as NoSQL databases grow in popularity. The app is lightweight, easy to deploy, and clearly shows the difference between secure and insecure code. Its Docker compatibility and minimal setup make it a great fit for WADT’s goal of providing practical, container-based labs for learning and experimentation.
@@ -890,13 +892,15 @@ We chose NIVA because it focuses on NoSQL injection, which is a type of vulnerab
 \subsubsection{VulnerableApp-facade}
 
 \paragraph{Overview and stack}
-VulnerableApp-facade is a Java-based tool that helps manage and launch multiple vulnerable applications from one place. It’s built using Spring Boot and provides a web interface and API to control apps like OWASP Juice Shop. Instead of running each app separately, this facade lets users start, stop, and switch between them easily. It acts like a central dashboard for security labs.
+VulnerableApp\-/facade is a Java-based tool that helps manage and launch multiple vulnerable applications from one place. It’s built using Spring Boot and provides a web interface and API to control apps like OWASP Juice Shop. Instead of running each app separately, this facade lets users start, stop, and switch between them easily. It acts like a central dashboard for security labs.
 
 \paragraph{Educational value}
 This app has vulnerabilities like SQL injection, weak login flows, and session handling. This tool is useful for learners, trainers, and testers who want to explore different types of web vulnerabilities without setting up each app manually. By combining several vulnerable apps into one interface, it can save time and helps users to focus on learning. It also supports tracking progress and organizing exercises, which is helpful in classroom or workshop settings. Users can compare how different apps handle similar vulnerabilities and learn from the differences.
 
 \paragraph{Deployment notes and Docker considerations}
-VulnerableApp-facade supports Docker and includes a Docker Compose file to run the facade along with selected vulnerable apps. Users can choose which apps to enable by editing the configuration file. The default port is \texttt{9090}, and the web interface is available at \texttt{http://localhost:9090}. The setup is straightforward, and no customization is needed to get started. 
+VulnerableApp-facade
+
+supports Docker and includes a Docker Compose file to run the facade along with selected vulnerable apps. Users can choose which apps to enable by editing the configuration file. The default port is \texttt{9090}, and the web interface is available at \url{http://localhost:9090}. The setup is straightforward, and no customization is needed to get started. 
 
 \paragraph{Why chosen}
 We chose VulnerableApp-facade because it makes working with multiple vulnerable apps much easier. Instead of setting up each app manually, users can launch everything from one place. It’s simple to use, works well with Docker, and supports a wide range of popular security labs. This makes it a great fit for WADT’s goal of building a flexible and user-friendly environment for learning, testing, and teaching web application security.
@@ -910,7 +914,11 @@ The BodgeIt Store is a purposely insecure web application created to help people
 BodgeIt Store includes common web vulnerabilities like SQL injection, XSS, CSRF, and IDOR, all exposed by default for testing. This app is great for beginners who want to practice finding and understanding common web vulnerabilities. It includes examples of issues like cross-site scripting (XSS), SQL injection, cross-site request forgery (CSRF), and insecure direct object references. There are also hidden pages and functions that can be discovered through testing. One helpful feature is the scoring page, which shows which vulnerabilities have been found, making it useful for self-paced learning or classroom challenges. It’s a good starting point for anyone new to ethical hacking or penetration testing.
 
 \paragraph{Deployment notes and Docker considerations}
-It is easy to run using Docker, which makes the app simple to set up and reset. A prebuilt Docker image is available on Docker Hub. To start the app, users can run the command: \texttt{docker run -p 9090:8080 psiinon/bodgeit}. After that, the app will be available at \texttt{http://localhost:9090
+It is easy to run using Docker, which makes the app simple to set up and reset. A prebuilt Docker image is available on Docker Hub. To start the app, users can run the command:
+
+\texttt{docker run -p 9090:8080 psiinon/bodgeit}.
+
+After that, the app will be available at \url{http://localhost:9090
 /bodgeit}. Since it uses an in-memory database, all data is lost when the container stops, which is useful for resetting the environment between tests. If needed, users can attach volumes to store logs or other data. No extra configuration is required, making it quick to get started.
 
 \paragraph{Why chosen}
@@ -1213,7 +1221,7 @@ Docker Compose is pretty much valuable when deploying vulnerable applications co
     
     \item{Volume sharing} – Compose makes it easy to define shared volumes between services, allowing them to persist and exchange data across container restarts. This is particularly valuable for vulnerable app deployments, where we often need to collect logs, exploit payloads, or forensic traces without modifying the container internals. By mounting volumes, we can store evidence of exploitation, track changes over time, and preserve artifacts for analysis or reporting. These volumes also support reproducibility, as they allow us to reset containers while retaining critical data, making it easier to rerun tests or compare outcomes across different attack attempts.
     
-    \item{Environment reproducibility} – The \texttt{docker-compose.yml} file acts as a portable blueprint for the entire application stack, capturing all service definitions, environment variables, ports, volumes, and dependencies in a single declarative format. This reproducibility is essential for vulnerable app testing, as it ensures that the same environment can be deployed consistently across different machines, operating systems, and CI/CD pipelines. Whether we're running tests locally, in a lab, or on a remote server, Compose guarantees that the setup behaves the same way every time. This consistency reduces debugging overhead, supports collaborative testing, and enables version-controlled infrastructure for security research and education.
+    \item{Environment reproducibility} – The \texttt{docker-compose.yml} file acts as a portable blue\-print for the entire application stack, capturing all service definitions, environment variables, ports, volumes, and dependencies in a single declarative format. This reproducibility is essential for vulnerable app testing, as it ensures that the same environment can be deployed consistently across different machines, operating systems, and CI/CD pipelines. Whether we're running tests locally, in a lab, or on a remote server, Compose guarantees that the setup behaves the same way every time. This consistency reduces debugging overhead, supports collaborative testing, and enables version-controlled infrastructure for security research and education.
     
     \item{Simplified teardown and reset} – One of the most practical advantages of Docker Compose is the ability to tear down and reset an entire environment with a single command. By running \texttt{docker compose down}, we can stop and remove all services, networks, and volumes associated with a project, restoring a clean slate for the next test run. This is especially helpful when working with vulnerable applications, where repeated exploitation and analysis require frequent resets. Compose’s teardown capability ensures that no residual data or configuration persists between runs, allowing for reliable, repeatable testing and faster iteration during exploit development or forensic analysis.
 \end{itemize}
@@ -1486,7 +1494,7 @@ Examples of each field type can be seen in table \ref{fig:erdtable}.
 \hline
 \textbf{Table} & \textbf{Field} & \textbf{Type} & \textbf{Example} \\
 \hline
-\multirow{6}{*}{\textbf{wadtapp\_container}} 
+\multirow{6}{*}{\textbf{Container}} 
 & id & bigint (PK) & 42 \\
 \cline{2-4}
 & name & character varying(30) & DVWA \\
@@ -1499,7 +1507,7 @@ Examples of each field type can be seen in table \ref{fig:erdtable}.
 \cline{2-4}
 & user\_id & integer (FK) & 15 \\
 \hline
-\multirow{5}{*}{\textbf{wadtapp\_logentry}} 
+\multirow{5}{*}{\textbf{LogEntry}} 
 & id & bigint (PK) & 1337 \\
 \cline{2-4}
 & contents & character varying(200) & Container started successfully on port 8080 \\
@@ -1545,8 +1553,9 @@ The system attempts a graceful shutdown before forcing termination if necessary.
 %TODO text summary of the design based on the previous diagrams
 
 \section{Timeline and Milestones}
+
 \subsection{Project Timeline}
-The following timeline outlines the weekly tasks and objectives throughout Senior Design I and II.\\
+The following timeline outlines the weekly tasks and objectives throughout Senior Design I and II.
 
 \noindent\textbf{Senior Design I}
 \begin{itemize}
@@ -1572,7 +1581,7 @@ The following timeline outlines the weekly tasks and objectives throughout Senio
 \end{itemize}
 
 \subsection{Project Milestones}
-The following milestones represent the major deliverables and functional achievements of the project. Reaching milestones will help us ensure we reach our Definition of Done and have all of the required features and functions.\\
+The following milestones represent the major deliverables and functional achievements of the project. Reaching milestones will help us ensure we reach our Definition of Done and have all of the required features and functions.
 
 \noindent\textbf{Senior Design I}
 \begin{itemize}
