@@ -1886,6 +1886,19 @@ There are also additional features outside our core requirements that later team
 \complexgraphic{gantt}{Projected Milestone Chart (End of SD2)}{diagram:future-timeline}
 
 \subsection{Setbacks}
+\begin{itemize}
+	\item Security research - didn't fit into original timebox. Team fell behind on first spike.
+		Adapt through simplifying requirements and communicating with sponsor.
+	\item Deployment - delayed due to issues with team members accessing hosting. Slight delay on first sprint.
+		Adapt through creating team-internal documentation.
+	\item Early Security vulnerability - due to an error in planning early sprints, repository created before security measures fully in place. Django secret keys accidentally leaked due to human error. No delay, but would be problematic if site active at time of leak.
+		Adapt through committing to spike of research on security scanning tools and CI/CD pipeline.
+\end{itemize}
+
+\subsubsection{Lessons Learned}
+Early rapid prototyping and constant communication have been vital for the team.
+As we uncover oversights in our original plans, we are able to quickly adapt and modify our sprints.
+We are fully equipped to continue the development cycle through SD2 while fulfillng our MVP.
 
 \section{Acknowledgements}
 The members of the WADT project wish to thank our sponsor Chris Fischer for providing hosting, guidance, and valuable advice and insight. Fischer was able to impart his relevant development experience to the team and assist us with beginning our study of the project technologies. He contributed to our design by giving loose guidance on system architecture.
