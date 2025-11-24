@@ -1418,67 +1418,140 @@ React primarily uses JavaScript, but it also supports TypeScript, which we chose
 	\item Easier maintainability: As the project grows, TypeScript will help maintain consistency across components and reduce the risk of introducing hard to find errors.
 \end{itemize}
 
-\subsection{CSS Libraries}
-When it comes to frontend work, part of the problem is making sure that a website looks appealing enough to attract users, providing a more enjoyable coding experience for the developer and ensure pleasurable user experience. %Maybe rethink this line here
+\section{CSS Libraries}
 
-With this in mind, we wanted to choose a professional CSS library that provides the user with good readability and accessibility.
+When it comes to frontend work, part of the problem is making sure that a website looks appealing enough to attract users, providing a more enjoyable coding experience for the developer and ensure pleasurable user experience. %Maybe rethink this line here
+With this in mind, we wanted to choose a professional CSS library that provides the user with good readablliy and accessablity.
 There were a lot of options for CSS libraries, but we narrowed the options down to three: Bootstrap, Tailwind and Chakra UI.
 
-\subsubsection{Bootstrap}
-This one was our first consideration, as bootstrap is a very popular CSS library.
+\subsubsection{Bootstrap} 
+This one was our first consideration, as bootstrap is a very popular CSS library. 
+We considered bootstrap due to the high synergy with react. 
 Bootstrap and REACT have their own merged CSS library that makes coding the project smoother called 'REACT-Bootstrap'.
-REACT-Bootstrap utilizes the bootstrap visuals with REACT type programming to ensure a coherent coding experience.
+REACT-Bootstrap utilizes the bootstrap visuals with REACT type programming to ensure a coherent coding experiece.
 
-Bootstrap's reviews are overall positive, with extensive praise on the use of child themes.
+Bootstrap's reviews are overall possitive, with extensive praise on the use of child themes.
 Its REACT-Bootstrap also gets pretty high reviews, being praised for it's developer friendly nature.
-The only major complaint on Bootstrap is it's lack of flexibility, requiring the developer to edit the CSS code themselves to achieve the desired look.
+The only major complaint on Bbootstrap is it's lack of flexability, requiring the developer to edit the CSS code themselves to achieve the desired look.
 
-There are also custom themes for bootstrap to use that can be found online.
 
+Bellow is some code that shows how to make a button component using Bootstrap and REACT-Bootstrap.
+\begin{verbatim}
+import Button from 'react-bootstrap/Button';
+function BootstrapButton() {
+  return <Button variant="primary">Click Me!</Button>;
+}
+
+\end{verbatim}
+
+Bootstrap simplifies the process of designing a website with REACT, allowing the developer to focus on functionality rather than asthetic.
+
+
+During research, one of our developers found custom bootstrap themes that would help offset the non-flexable nature of bootstrap.
 One example is 'Bootswatch', which provides free themes for bootstrap that can be easily implemented into the project.
 Utilizing these themes can help us achieve a more unique look for our project, and possibly implement different themes for the user to choose from.
 
+
 \subsubsection{Tailwind}
-Tailwind is another popular CSS library containing many good options for CSS design.
+Tailwind is another popular CSS library containing many good options for css design.
 Through research, we found that tailwind operated very differently from bootstrap, as it is a utility-first CSS library.
-This means that instead of having pre-designed components like bootstrap, tailwind gives a lot of freedom to the developer to design their own components using CSS.
+Instead of having pre-designed components like bootstrap, tailwind gives a lot of freedom to the developer to design their own components using CSS.
 
 Tailwind reviews are good, with 63\% of the reviews on their website being 5 star.
-A complaint that we have noticed when it came to tailwind is that while it is versatile and useful, there is a learning curve.
+A complaint that we have noticed when it came to tailwind is that while it is versitile and useful, there is a learning curve.
 It suggested that those who don't have extensive knowledge on CSS will struggle a little to utilize tailwind's components.
+
+Here is an example of a button component using tailwind CSS in REACT:
+\begin{verbatim}
+function TailwindButton() {
+	  return (
+		<button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+		  Click Me!
+		</button>
+	);
+}
+
+\end{verbatim}
+
+
+Tailwind allows the developer more creative freedom when it comes to frontend designs.
+However, as shown in the code above, it's learning curve is dependent on the developer's knowledge of CSS.
+If we decide to use tailwind, our frontend team will have to dedicate extra time to understand CSS code, as well as tailwind's unique utility-first approach.
 
 Unlike Bootstrap which has it's own REACT library, tailwind does not have one.
 Instead, tailwind has it's own third party library called Tailwind UI that integrates tailwind with REACT.
 However, this third party library is locked behind a paywall, requiring the developer to pay to use it.
-Our research concludes that tailwind is extremely versatile for CSS design, however requires a learning curve.
+Our research concludes that tailwind is extremely versitile for CSS design, however requires a learning curve.
 
 \subsubsection{Chakra UI}
-Chakra UI also came across our radar as a popular CSS library.
-On Chakra's website, there was a page that showcased the professional websites made using Chakra UI.
-This was a nice way to look at what a fully developed website using Chakra UI can do.
+Chakra UI also came accross our radar as a popular CSS library.
+On chakra's website, there was a page that showcased the professional websites made using Chakra UI. 
+This was a nice way to look at what a fully fletched website using Chakra UI can do.
 
-Chakra UI's reviews are mostly positive, with emphasis on good developer experience.
+
+Chakra UI's reviews are mostly possitive, with emphasise on good developer experience.
 A downside to Chakra UI is a lack of certain components (one example is the search bar component), as well
-as good ways to change the themes of the components.
+as good ways to change the themes of the componenets.
 
 % Chakra UI + Figma Kit?
-Chakra UI is also developer friendly with Figma with their Chakra UI + Figma Kit.
-We found it interesting that there was a Figma page that showed us exactly what to use for certain components.
+Chakra UI is also developer friendly with Figma with their Charka UI + Figma Kit. 
+We found it interesting that there was a figma page that showed us exactly what to use for certain components.
 This was a nice touch that made us consider Chakra UI more seriously since we used Figma for our design mockups.
 
+Here is an example of a button component using Chakra UI in REACT:
+\begin{verbatim}
+import { Button } from "@chakra-ui/react";
+function ChakraButton() {
+  return <Button colorScheme="blue">Click Me!</Button>;
+}
+\end{verbatim}
+
+Chakra UI is similar to bootstrap in the sense that it provides pre-designed components for the developer to use. 
+
+\subsubsection{Comparison Summary}
+Each of the frontend CSS libraries we researched had their own pros and cons.
+Here is a chart that summarizes our findings:
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{CSS Library} & \textbf{Pros} & \textbf{
+Cons} \\ \hline
+Bootstrap &
+\begin{tabular}[c]{@{}l@{}}- Popular and well-documented\\ - REACT-Bootstrap integration\\ - Child themes available\end{tabular} & \begin{tabular}[c]{@{}l@{}}- Less flexible design\\ - Requires CSS overrides for uniqueness\end{tabular} \\ \hline
+Tailwind &
+\begin{tabular}[c]{@{}l@{}}- Highly flexible and customizable
+\\ - Utility-first approach\\ - Large community support\end{tabular} & \begin{tabular}[c]{@{}l@{}}- Steeper learning curve\\ - No official REACT library\\ - Third-party REACT library is paid\end{tabular} \\ \hline
+Chakra UI &
+\begin{tabular}[c]{@{}l@{}}- Developer-friendly\\ -
+	 Good Figma integration\\ - Modern component design\end{tabular} & \begin{tabular}[c]{@{}l@{}}- Lacks some components\\ - Limited theming options\end{tabular} \\ \hline
+\end{tabular}
+\end{table}
+
+
+
 \subsubsection{What we chose}
-After weighing all considerations, our team selected \textbf{REACT-Bootstrap} as our primary CSS framework.
-It offers a familiar structure, excellent documentation, and seamless integration with React,
+From our findings, we narrowed down the decision to REACT-Bootstrap and Chakra UI, as both libraries provided a good developer experience.
+Tailwind is a strong contender, allowing the developer more creative freedom with their component designs.
+
+However, ultimately decided against due to is lack of an official REACT library, and steep learning curve.
+We also felt that this website prioritized functionality over creative design, making the other options more suitable.
+
+After weighing all considerations, our team selected \textbf{REACT-Bootstrap} as our primary CSS framework. 
+It offers a familiar structure, excellent documentation, and seamless integration with React, 
 enabling us to focus on functionality without getting bogged down in complex setup processes.
 
-Additionally, having a developer with prior Bootstrap experience allowed us to accelerate onboarding
-and maintain consistency across our components.
-While Tailwind and Chakra UI both provide unique advantages — creative freedom and modern theming,
-respectively — React-Bootstrap strikes the most effective balance between stability, usability, and developer productivity.
+Chakra UI was a strong contender and was also a good option. 
+Ultimately, the deciding factor was previous developer experience with Bootstrap, as both libraries provided a good developer experience,
+and good dynamic components.
+
+Our frontend team plans to compensate for Bootstrap's less flexible design by utilizing Bootswatch themes and customizing CSS as needed.
+Overall, Tailwind and Chakra UI both provide unique advantages — creative freedom and modern theming — 
+React-Bootstrap strikes the most effective balance between stability, usability, and developer productivity.
+
 
 \subsection{Themes}
 Since we decided to use React-Bootswatch for our CSS library, the goal was to find themes that actually fit our project’s personality.
-%Rethink line below
 We wanted a setup that not only looked clean but gave users the option to tweak the website’s vibe to their liking.
 We ended up utilizing bootswatch, a theme library made for bootstrap and can be utilized with react-bootstrap.
 Bootswatch made that easy—it’s built for Bootstrap, works smoothly with React-Bootstrap, and comes loaded with theme options we could build around.
@@ -1487,13 +1560,13 @@ Our design direction aimed to capture a sleek, “hacker-style” aesthetic—so
 The frontend team tested several themes that balanced readability and contrast while keeping the interface lightweight.
 % List theme designs below:
 % Talk about the struggle to find good themes.
-
-Here are some theme designs that we decided on (note subject to change until due date)
+\subsection{Theme Designs}
+Here are some theme designs that we decided on (note: these themes are subject to change as we continue developement):
 \begin{itemize}
-	\item Bootswatch Cyborg (\ref{fig:cyborg}):
-	\item Bootswatch Lux (\ref{fig:lux}):
-	\item Bootswatch Zephyr (\ref{fig:zephyr}):
-	\item Bootswatch Pulse (\ref{fig:pulse}):
+    \item Bootswatch Cyborg: Figure 1
+    \item Bootswatch Lux: Figure 2
+    \item Bootswatch Zephyr: Figure 3
+    \item Bootswatch Pulse: Figure 4
 \end{itemize}
 \begin{figure}[H]
   \centering
@@ -1511,7 +1584,41 @@ Here are some theme designs that we decided on (note subject to change until due
   \end{minipage}
 \end{figure}
 Since Bootstrap isn’t exactly known for wild creativity, we relied on Bootswatch to inject variety while keeping the codebase clean.
-When a specific design wasn’t available, we customized the Bootswatch SCSS files to match our desired color palette and maintain a consistent style across components.
+If the design that we are looking for isn't available in Bootswatch, we plan to customize the SCSS files provided by Bootswatch to better fit our desired asthetic.
+
+\subsection{Lighthouse Test}
+Lighthouse Testing is an open source tool run by Google that helps developers improve the quality of their web applications.
+Lighthouse can be run from Chrome DevTools, from the command line, or as a Node module.
+
+For testing, we plan to use Chrome DevTools to run Lighthouse on our web application. 
+Lighthouse runs a series of audits against the web application, and then generates a report on how well the application did.
+The report includes scores for performance, accessibility, best practices, SEO, and PWA (Progressive Web App).
+
+\subsection{Lighthouse goals}
+
+Here is how lighthouse will score our web application:
+\begin{itemize}
+	\item Performace:
+		\begin{itemize}
+			\item CLS (Cumulative Layout Shift)
+			\item TBT (Total Blocking Time)
+			\item FCP (First Contentful Paint)
+			\item LCP (Largest Contentful Paint)
+			\item Speed Index
+		\end{itemize}
+	\item Accessibility
+	\item Best Practices
+	\item SEO
+\end{itemize}
+This is an example of what a lighthouse report looks like:
+
+\includegraphics[keepaspectratio,width=\textwidth]{lighthouse.png}
+
+Our goal is to ensure that all of the scores from lighthouse are above 90.
+Our main focus will be on performance and accessibility, as these are the most important factors for a web application.
+
+On top of this, we will also focus on ensuring the best practices, and valid search engine optimization (SEO) techniques are being used.
+
 
 \subsection{Wireframing}
 Wireframing is an essential component of front-end development; it serves as the blueprint from which all design and implementation decisions follow.  Like all blueprints, its primary goal is to serve as a medium of communication. Communication is the foundation of any collaborative effort, and wireframing provides the first stage of communication for the front-end team.
