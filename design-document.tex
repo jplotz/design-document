@@ -1264,6 +1264,12 @@ When choosing our database we have a few options:
 	\item MariaDB
 	\item PostgreSQL
 \end{itemize}
+
+Since AWS hosting provides a full Linux VM for the project, under current scope restrictions, each database would be installed locally
+and the bits and bytes of our data would exist on the same hosting as our site code and web server. The potential for growth of log entries
+beyond available storage space is not considered during the testing and development phase. A later migration to an independent database service
+with more storage capabilities may be completed if it is determined that a pileup log entries will grow beyond current limits under normal usage.
+
 \subsection{MongoDB}
 MongoDB is a document-oriented NoSQL database that stores data in flexible, JSON-like objects called BSON. It’s great when you need to move fast and don’t want to commit to a strict table structure — data can evolve as the project does. MongoDB supports ACID transactions and comes with solid security features like role-based access control and built-in encryption. It can also scale horizontally, letting data spread across multiple servers for speed and redundancy.
 
