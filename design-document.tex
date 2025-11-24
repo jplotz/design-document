@@ -98,7 +98,7 @@ Imagine you have an epiphany: you need to practice SQL injection or test a newly
 
 The setup process becomes the main barrier, not the learning itself. This challenge represents a broader problem in cybersecurity education: the difficulty of transforming theoretical knowledge into practical skill when technical overhead is disproportionately high.
 
-The Web App Deployment Tool (WADT) was conceived to eliminate this barrier and enable students to focus on learning rather than fighting their environment.
+The WADT project was created to eliminate this barrier and enable students to focus on learning rather than fighting their environment.
 
 The purpose of WADT is to provide a unified, frictionless platform for instantly deploying intentionally and unintentionally vulnerable web applications in a safe, reproducible, and disposable environment. The system directly addresses a critical need within universities, training programs, and self-guided learners by allowing users to interact with vulnerable applications without the time-consuming effort of traditional setup.
 
@@ -124,7 +124,7 @@ Students benefit from reliable, consistent environments where debugging setup is
 
 Over time, this contributes to a more skilled cybersecurity workforce—an increasingly important societal need given the rapid growth of cyber threats and the ongoing shortage of hands-on practitioners.
 
-In summary, the Web App Deployment Tool transforms vulnerable web application deployment from a tedious, error-prone process into a fast, accessible, standardized experience. By removing setup barriers, it allows learners and professionals to focus on meaningful security practice rather than configuration hurdles. The system successfully meets its core objectives and establishes a strong foundation for future enhancements, including role-based access controls, network configuration management, and automated vulnerability reachability checks.
+In summary, WADT transforms vulnerable web application deployment from a tedious, error-prone process into a fast, accessible, standardized experience. By removing setup barriers, it allows learners and professionals to focus on meaningful security practice rather than configuration hurdles. The system successfully meets its core objectives and establishes a strong foundation for future enhancements, including role-based access controls, network configuration management, and automated vulnerability reachability checks.
 
 WADT is well-positioned for broader testing, institutional adoption, and continued development as a scalable, reliable platform for cybersecurity education and experimentation.
 
@@ -152,7 +152,7 @@ This misalignment between educational needs and practical accessibility creates 
 
 \section{User Stories}
 
-The Web App Deployment Tool (WADT) serves a wide range of users who each interact with the system in different ways and for different purposes. User stories illustrate how various stakeholders engage with the platform, what goals they seek to accomplish, and how WADT supports those goals. These narratives highlight both everyday usage and exceptional scenarios to ensure the system addresses practical needs across instructional and exploratory contexts. User stories also help clarify operational and functional expectations for our product that help to guide design decisions and expected system behavior.
+WADT serves a wide range of users who each interact with the system in different ways and for different purposes. User stories illustrate how various stakeholders engage with the platform, what goals they seek to accomplish, and how WADT supports those goals. These narratives highlight both everyday usage and exceptional scenarios to ensure the system addresses practical needs across instructional and exploratory contexts. User stories also help clarify operational and functional expectations for our product that help to guide design decisions and expected system behavior.
 
 \subsection{Student User Stories}
 
@@ -237,7 +237,7 @@ Whether the user is a student, instructor, administrator, or researcher, WADT en
 \section{Project Description}
 
 \subsection {Overview}
-The Web App Deployment Tooling (WADT) project allows students and instructors to browse a catalog of ready-to-deploy vulnerable webapps and manage them through a graphical interface. WADT is the first step in the learning pipeline that ensures students and instructors are on the same page in minimal time. Their efforts can shift to investigating the app itself, while the container-based architecture of WADT ensures they have reproducible sandboxed builds available at the click of a button.
+The WADT project allows students and instructors to browse a catalog of ready-to-deploy vulnerable webapps and manage them through a graphical interface. WADT is the first step in the learning pipeline that ensures students and instructors are on the same page in minimal time. Their efforts can shift to investigating the app itself, while the container-based architecture of WADT ensures they have reproducible sandboxed builds available at the click of a button.
 
 \subsection{The Setup Timesink Problem}
 Cybersecurity students want to practice exploiting and patching vulnerable webapps. When they sit down to practice, their time is eaten up by installation and setup before they can start hacking.
@@ -313,7 +313,7 @@ More detailed activity diagrams will follow in the System Architecture section t
 
 \section{Broader Societal Impacts}
 
-The Web App Deployment Tooling (WADT) project has implications that extend beyond its technical implementation. By lowering barriers to cybersecurity practice, standardizing deployment workflows, and creating a safe environment for exploring vulnerabilities, the platform supports broader goals in education, ethics, public safety, and digital accessibility. The following section outlines the societal impacts of WADT and how the project contributes to the development of a more secure, informed, and equitable technological landscape. We are mainly building for a classroom environment, but the implications of our work extend beyond that as our code is open source and has minimal technical requirements.
+The WADT project has implications that extend beyond its technical implementation. By lowering barriers to cybersecurity practice, standardizing deployment workflows, and creating a safe environment for exploring vulnerabilities, the platform supports broader goals in education, ethics, public safety, and digital accessibility. The following section outlines the societal impacts of WADT and how the project contributes to the development of a more secure, informed, and equitable technological landscape. We are mainly building for a classroom environment, but the implications of our work extend beyond that as our code is open source and has minimal technical requirements.
 
 \subsection{Advancing Cybersecurity Education}
 
@@ -605,7 +605,7 @@ Django's MVC architecture and template system enforces clear separation of conce
 \subsection{Docker Integration}
 
 \subsubsection{Overview}
-Docker integration lies at the core of the Web App Deployment Tooling (WADT) project. Every feature from container deployment to logging, resetting, and shutting down a container relies on Docker’s ability to build and manage isolated environments quickly and consistently. While previous sections discuss why Docker was chosen over alternatives like Podman, this section focuses on how Docker is practically integrated into our system architecture and development workflow.
+Docker integration lies at the core of the WADT project. Every feature from container deployment to logging, resetting, and shutting down a container relies on Docker’s ability to build and manage isolated environments quickly and consistently. While previous sections discuss why Docker was chosen over alternatives like Podman, this section focuses on how Docker is practically integrated into our system architecture and development workflow.
 
 At a high level, Docker serves as the layer that bridges our backend application logic and the intentionally vulnerable web applications being deployed for users. When a user interacts with the WADT frontend, such as clicking “Deploy,” “Stop,” or “Reset”, these requests travel through our Django-based API to the Docker engine via the python-on-whales library. The backend then performs the necessary Docker operations, returning live container states, logs, and connection details to the frontend. This structure allows us to abstract away all of Docker’s complexity while maintaining full control and observability over the containerized environments.
 
@@ -711,7 +711,7 @@ Sticking with our existing setup allowed us to keep the development process simp
 \subsection{Vulnerable Web Application Selection}
 
 \subsubsection{Selection Criteria}
-The goal of the Web App Deployment Tooling (WADT) project is to provide a catalog of intentionally and unintentionally vulnerable web applications that together expose students to a broad, representative set of real-world security issues. We are aiming to maximize educational value while remaining practical to deploy and maintain. We selected target applications according to the following criteria:
+The goal of the WADT project is to provide a catalog of intentionally and unintentionally vulnerable web applications that together expose students to a broad, representative set of real-world security issues. We are aiming to maximize educational value while remaining practical to deploy and maintain. We selected target applications according to the following criteria:
 
 \begin{itemize}
     \item \textbf{Vulnerability breadth:}\\ Each application should expose multiple common vulnerability classes (for example, the OWASP Top 10) so students can practice exploiting and patching different kinds of flaws.
@@ -1059,7 +1059,7 @@ TruffleHog’s main features include:
 \end{itemize}
 
 \subsubsection{Importance for WADT}
-For the Web App Deployment Tooling (WADT) project, TruffleHog helps prevent accidental credential leakage in our public or shared codebase. Because our team uses AWS for hosting and relies on Docker for containerization, we routinely work with environment variables, API keys, and access credentials that could cause significant damage if exposed.
+For the WADT project, TruffleHog helps prevent accidental credential leakage in our public or shared codebase. Because our team uses AWS for hosting and relies on Docker for containerization, we routinely work with environment variables, API keys, and access credentials that could cause significant damage if exposed.
 
 Integrating TruffleHog allows us to:
 \begin{itemize}
