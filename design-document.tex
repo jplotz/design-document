@@ -6,6 +6,7 @@
 
 \usepackage[shortcuts]{extdash}
 
+\usepackage{array}
 \usepackage{biblatex}
 \addbibresource{bibliography.bib}
 
@@ -1445,6 +1446,83 @@ The container logs page (figure \ref{fig:containerLogs}) is crucial, as it will 
 Logs will be maintained for the entire lifespan of each container until it is stopped manually or automatically. Since feedback is critical for an educational tool, the logs page must present information clearly and simply. Only relevant troubleshooting information will be included to avoid overwhelming the user.
 
 The designs shown above represent only some of the pages created throughout the planning of this project. Over the course of development, many of our original ideas have been adjusted, or expanded as we learned more about the requirements and how each page would function within the application. Figma has been especially helpful in this process, as it allows us to quickly draft new ideas and revise our designs without needing to commit to coding right away. While not every design can be included in this document, the mock-ups we have shown highlight the core pages necessary for the application and reflect the overall direction of the project.
+
+\section{Testing Plans}
+\subsection{Unit \& Integration Testing}
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l|p{5cm}|>{\raggedright\arraybackslash}p{5cm}|}
+\hline
+\textbf{Component} & \textbf{Scenario} & \textbf{Expected Outcome} \\ \hline
+Scheduler & Mock container creation time $>$ 24 hours. & \texttt{stop()} command issued for expired ID. \\ \hline
+RBAC & Student role attempts Admin action. & \texttt{403 Forbidden}. \\ \hline
+Views & POST request with invalid JSON. &  \texttt{400 Bad Request}. \\ \hline
+Docker Client & Mock DockerException & \texttt{503 Service Unavailable}. \\ \hline
+\end{tabular}
+\caption{Backend Logic Testing}
+\label{table:unit-tests}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l|>{\raggedright\arraybackslash}p{5cm}|>{\raggedright\arraybackslash}p{5cm}|}
+\hline
+\textbf{Component} & \textbf{Scenario} & \textbf{Expected Outcome} \\ \hline
+Login Form & User submits empty form. & validation error "Fields cannot be empty." appears; API is NOT called. \\ \hline
+Dashboard & API returns 500 Error. & "System Offline" banner is displayed to user. \\ \hline
+Deploy Button & User clicks "Deploy". & Button becomes disabled; Spinner icon appears. \\ \hline
+Status Badge & Container status is "stopped". & Badge color renders Red (not Green). \\ \hline
+\end{tabular}
+\caption{Frontend Testing}
+\label{table:frontend-unit-tests}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l|>{\raggedright\arraybackslash}p{4cm}|>{\raggedright\arraybackslash}p{6cm}|}
+\hline
+\textbf{Components} & \textbf{Scenario} & \textbf{Pass Criteria} \\ \hline
+ API + Docker & Full Container Lifecycle & 1. Deploy triggers start. \newline 2. List returns correct container ID. \newline 3. Stop command halts container. 
+ \\ \hline
+ API + DB & User-Container Association & User ID matches corresponding container ID. 
+ \\ \hline
+API + Docker & Container Isolation & Two users deploying same app results in two distinct Container IDs. 
+\\ \hline
+ API + Network & Vulnerability Reachability & HTTP request to mapped port returns \texttt{200 OK}. 
+ \\ \hline
+\end{tabular}
+\caption{End to End Testing}
+\label{table:integration-tests}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|p{5cm}|>{\raggedright\arraybackslash}p{6cm}|}
+\hline
+\textbf{Workflow} & \textbf{Steps} & \textbf{Pass Criteria} \\ \hline
+Authentication & Navigate to login page and enter valid credentials. & User is redirected to /dashboard; JWT token stored in memory/cookie. \\ \hline
+Deployment & User selects chosen container, clicks "Deploy" and waits 5 seconds. & Dashboard list updates to show new container with "Running" status. \\ \hline
+Log Viewer & Click "View Logs". & Log opens with text not being empty. \\ \hline
+Route Guarding & Logout and manually attempt to enter /dashboard URL. & User is forcibly redirected back to login page. \\ \hline
+\end{tabular}
+\caption{Frontend End-to-End Testing}
+\label{table:frontend-e2e-tests}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l|>{\raggedright\arraybackslash}p{5cm}|l|}
+\hline
+\textbf{Category} & \textbf{Metric Name} & \textbf{Target Value} & \textbf{Tool} \\ \hline
+
+Performance & API Latency & $< 200$ms (excluding Docker) & Postman \\ \hline
+Reliability & Deployment Success & $99\%$ success rate & Scripts \\ \hline
+Efficiency & Container Cleanup & $100\%$ expired apps removed & Logs \\ \hline
+Accessibility &  Lighthouse Score & $100\%$ on Lighthouse Report & Lighthouse \\ \hline
+\end{tabular}
+\caption{Performance and Reliability Metrics}
+\label{table:performance-metrics}
+\end{table}
 
 \section{Ethical Concerns and Considerations}
 
