@@ -66,6 +66,15 @@
 \end{figure}
 }
 
+\newcommand{\diagram}[3] {
+\begin{figure}[htp]
+	\centering
+	\includegraphics[keepaspectratio,height=0.5\textheight,width=\textwidth]{#1}
+	\caption{#2}
+	\label{#3}
+\end{figure}
+}
+
 \usepackage{subfiles}
 
 \title{
@@ -341,11 +350,12 @@ That familiarity with the process made the project feel approachable, and I felt
 \section{System Pipeline Diagram}
 The following activity diagram (figure \ref{fig:systemOverview}) presents the high-level overview for users using WADT. The diagram demonstrates the main interaction loop that enables users to move from authentication to hands-on practice.
 
+\diagram{AD-system-overview.png}{System Overview}{fig:systemOverview}
+
 This emphasizes WADT's primary goal of eliminating setup overhead while providing a streamlined and intuitive interface. Once a user has been authenticated, they can deploy any available applications in a single step and immediately begin testing. Container management involves providing users the capability to reset or inspect containers as needed without restarting the entire process. When the session ends, either by a user manually stopping or automatic timeout after 24 hours, all resources are cleaned up to maintain system integrity.
 
 More detailed activity diagrams will follow in the System Architecture section to provide more substantial details of the notable activities, namely for backend deployment of containers, interactions with containers, and container cleanup. These diagrams have been separated to provide clarity.
 
-\complexgraphic{AD-system-overview.png}{System Overview}{fig:systemOverview}
 
 \section{Broader Societal Impacts}
 
@@ -631,7 +641,7 @@ The ecosystem of extensions to Django was found to be more actively developed. S
 \subsubsection{Python and Django}
 Django is a web framework for Python which was chosen for its sensible architecture and useful features. Django's ORM and admin panel made configuring the database a one-day job, while its migrations feature ensures that any changes are tracked along with the project.
 
-Django's MVC architecture and template system enforces clear separation of concerns and makes prototyping fast and easy. Combined with its powerful ORM, simple views can be implemented in a few lines of code.
+Django's MVC architecture and template system enforces clear separation of concerns and makes prototyping fast and easy. Combined with its powerful ORM, simple views can be implemented in a few lines of code (\ref{fig:indexview}).
 \begin{figure}[H]
 	\centering
 	\begin{minted}{python}
@@ -1005,14 +1015,109 @@ more responsive interaction between the client and server.
 The result is smoother, real-time feedback and an overall better user experience.
 
 \subsection{Backend Architecture}
+Django makes use of a Model, View, Template Architecture. A model is an abstraction over a database. A view performs an action. A template is a skeleton of a page which can be filled out with data.
 
-\subsubsection{Django MVC}
-%TODO
-what's meant here is using django's built in stuff for rendering HTML templates with whatever data you want.
+A Django application is almost always interacting with the user by running view functions/methods in response to browser requests. These views typically render templates by supplying data to them, often using models to parse raw data.
+
+Django encourages developing views (pages) that render a template by supplying it with data. The view behaves as a bridge between data (represented by models) and templates which dictate the look and feel of a page.
+
+A key limitation of the MVT architecture with Django is the relative difficulty of integrating useful Django idioms with the React frontend library. Both tools aim to accomplish the same tasks in different ways, and may clash in ways that must be resolved on a per-project basis.
+
+\subsubsection{Django MVT}
+It is possible to develop frontend pages using React and serve the resulting files with Django. This approach places Django first, React second, as ultimately the Django parts of the application are responsible for routing and serving static files.
+
+As a result, the team can still use the MVT architecture to design pages, while making a case-by-case decision for each page if React is needed. Simple pages can make use of class-based views to remain simple, while complex components can be handled in an appropriate React component rather than trying to push the limits of Django templates. It's the best of both worlds. Or is it?
+
+The issue is that Django is not able to serve JavaScript source files as written. The React parts of the application must first be bundled. This entails new development steps and new sources of bugs.
+
+Another issue: bundled assets tend to be quite heavy. As you might expect, keeping source code alongside its dependencies results in large bundle sizes by default. While there are standardized tools for fixing this issue, such as the webpack bundle analyzer, the team did not want to introduce large bundle sizes.
+
+Since React was an add-on to the initial sponsor provided scope, if its introduction resulted in the necessity of serving bundled static JavaScript files of multiple megabytes, we may violate the requirement of efficiency.
+
+In summary, while the conventions of the MVT architecture enforce a clear separation of concerns, and therefore good design, disregarding these conventions on a case-by-case basis and opting for React instead effectively nullifies the benefits of consistency and clarity that were sought.
+
+The further consequences of a more complex build pipeline and the potential for huge assets led to the team opting to develop a more restricted Django application, as described next.
 
 \subsubsection{API-only}
-%TODO
-what's meant here is using Django to create an API that just sends and receives JSON and doesn't take responsibility for rendering pages, which is what we're actually doing.
+Rather than attempt to use the full MVT design of Django, it is possible to limit its responsibilities in the application to more traditional REST API scope. A series of endpoints that send/receive JSON can be written using the Django REST Framework.
+
+Under this design, the frontend and backend are almost completely decoupled. While this makes the codebase easier to understand, it also leads to an evil of writing software: unnecessary duplication and reinventing the wheel.
+
+Consider the container catalog page of WADT as an example. This page simply lists out the available containers for a user to select. You may imagine now that it is just an unordered list of hyperlink text. Under one possible scheme of implementation (figure \ref{fig:templates}), you are completely correct.
+
+\begin{figure}[htp]
+	\begin{minted}{python}
+{% if container_catalog %}
+<ol class="catalog">
+        {% for container in container_catalog %}
+      <li class="entry">
+        <h2><a href="{% url 'workbench' container.id %}">
+	  {{ container.name }}</a></h2>
+        <p class="status">Status: <span class="indicator">
+	  {{ container.status }}</span></p>
+        <p class="description">{{ container.description }}</p>
+      </li>
+        {% endfor %}
+</ol>
+	\end{minted}
+	\caption{Excerpt of a container list page developed using Django template language}
+	\label{fig:templates}
+\end{figure}
+
+However, under the API-only design, the backend could not be responsible for rendering finished HTML.
+Instead, the backend view would essentially return the results of a database query as JSON.
+
+Conceptually, this design change means that portions of frontend code need to parse and display data,
+repeating the work performed by Django's built-in template system. Django interacts with data through the model
+abstraction, hence why data is accessed using Python attribute syntax (\texttt{container.name}). Under the REST
+API design, frontend JavaScript code would first have to treat data as a series of bytes sent over a network connection,
+then parse it into JSON, then convert into native programming language objects.
+
+\subsubsection{Why Django REST Framework? (DRF)}
+These flaws are made up for by the batteries included style of DRF. Sure, it may be necessary to create boilerplate
+JavaScript to take this approach (or far more likely, generate it with an LLM and subject it to human review and testing).
+But these compromises wash away when DRF provides features that make it much faster to develop and communicate.
+
+What follows is a summary of the benefits of DRF for the project.
+
+\begin{itemize}
+	\item Web Browsable API. DRF ensures that once you've written an endpoint,
+		its spec is converted into a documentation page. The work of the backend team
+		then reduces to adding intuitive, human-readable descriptions of endpoints, saving
+		hours and hours and hours of time and repetitive stress injury.
+	\item Superset of Django. Inter-operates with Django Channels (another key component of the project),
+		and all standard Django features are available since functional views are still accessible.
+	\item Viewsets. DRF allows the backend team to create classes that descend from a DRF-provided template
+		and inherit useful features. See figure \ref{fig:viewset} for a code excerpt that demonstrates
+		why viewsets save time. Methods to list containers and access a specific container are inherited,
+		and all that is required further is methods to perform project-specific actions related to each container.
+	\item Mixins allow for the creation of reusable viewset behavior. As a project-specific example, the container
+		viewset can be refactored to use mixins which are also inherited by the viewset for log entries. Under
+		this scheme, CRUD behavior for each is defined in a single location, allowing for easier debugging.
+	\item Serializers automate the conversion of models into JSON. DRF allows for the creation of custom serializers
+		that decouple serialization from model spec and usage. In figure \ref{fig:viewset}, the container viewset
+		makes use of a ContainerSerializer class written for the project.
+\end{itemize}
+
+\begin{figure}[H]
+	\begin{minted}{python}
+class ContainerViewSet(viewsets.ModelViewSet):
+    queryset = Container.objects.all()
+    serializer_class = ContainerSerializer
+
+    @action(methods=["get"], detail=True)
+    def deploy(self, request, pk=None):
+        db_container = Container.objects.get(pk=pk)
+        image = db_container.docker_url
+        real_container = docker.run(image, detach=True)
+        db_container.docker_id = real_container.id
+        db_container.docker_name = real_container.name
+        db_container.save()
+	...
+	\end{minted}
+	\caption{DRF viewsets are batteries-included, but still extendable for WADT's use case}
+	\label{fig:viewset}
+\end{figure}
 
 
 \subsection{API Testing}
@@ -1077,7 +1182,12 @@ Both Hoppscotch and SwaggerHub provide suitable options for our API documentatio
 Hoppscotch by contrast, is free, yet it still provides the tools we need to properly document our APIs. It also can integrate directly with cURL, allowing us to import cURL commands directly into Hoppscotch. Additionally, it supports real-time documentation alongside testing. This makes Hoppscotch the more practical tool for our API documentation.
 
 \subsection{API Performance Testing}
-%TODO
+Efficiency is paramount to the WADT project. The team aims to optimize these metrics:
+\begin{itemize}
+	\item Response time. While the Docker Engine often takes a significant amount of time to complete requests, we must ensure that users experience a sub-200ms response time. Workarounds may be developed to provide preliminary responses before the Docker Engine completes its work, in an async fashion, so that the site isn't perceived as slow due to its dependency on Docker.
+	\item Resource usage. Network usage is especially important to measure and minimize, since it is the most likely avenue for hosting bills to come from. Third-party requests sent by target vulnerable webapps must be monitored.
+	\item Previous two metrics under concurrent user load. While the original scope of WADT allows for a single-user design, in all practicality it will be desirable to extend to multiple concurrent users in the future.
+\end{itemize}
 
 \subsection{Implementing Webhooks}
 Webhooks are one-way calls that originate from the backend and notify another system when a specific event has occurred. They differ from traditional API requests in that they are push-based rather than pull-based—instead of the frontend constantly asking for updates, the backend automatically sends information when something changes. For instance, when a user makes a purchase on Amazon, an API call first records the transaction in the backend’s database; once the payment is verified, a webhook is sent to confirm the successful purchase and update the user interface in real time.
@@ -1139,7 +1249,15 @@ We plan to integrate TruffleHog as part of our CI/CD security checks:
 By integrating TruffleHog into our development workflow, we create a proactive defense layer against one of the most common and dangerous security oversights—hard-coded secrets. This integration not only protects our AWS infrastructure and project data but also helps enforce professional software-security practices within the development team.
 
 \subsection{CI/CD Pipeline}
-%TODO
+The WADT project is hosted on GitHub. The team will make use of GitHub Actions to automate deployment, testing, and security scanning.
+The intended components are as follows:
+\begin{itemize}
+	\item TruffleHog (Security Scanning) step. Checkout the main branch and use TruffleHog to check for potential password or data leaks.
+	\item Backend test step. Use libraries such as \texttt{pytest} with Django to run test suite and report coverage.
+	\item Frontend test step. Report coverage.
+	\item Build step for frontend and backend. Install dependencies and upload build artifacts before deployment.
+	\item Deployment to AWS step. Run DB migrations, issue system commands, and give status update on deployment.
+\end{itemize}
 
 \subsection{Chosen API Tools}
 For API implementation, some of the biggest considerations are what will potential students need to have access too and what will make this project the easiest to utilize. Along with this we also had to ensure that interfacing with Docker would be seamless to ensure that we could control the container instances while minimizing the potential risks of security issues.
@@ -1169,6 +1287,12 @@ When choosing our database we have a few options:
 	\item MariaDB
 	\item PostgreSQL
 \end{itemize}
+
+Since AWS hosting provides a full Linux VM for the project, under current scope restrictions, each database would be installed locally
+and the bits and bytes of our data would exist on the same hosting as our site code and web server. The potential for growth of log entries
+beyond available storage space is not considered during the testing and development phase. A later migration to an independent database service
+with more storage capabilities may be completed if it is determined that a pileup log entries will grow beyond current limits under normal usage.
+
 \subsection{MongoDB}
 MongoDB is a document-oriented NoSQL database that stores data in flexible, JSON-like objects called BSON. It’s great when you need to move fast and don’t want to commit to a strict table structure — data can evolve as the project does. MongoDB supports ACID transactions and comes with solid security features like role-based access control and built-in encryption. It can also scale horizontally, letting data spread across multiple servers for speed and redundancy.
 
@@ -1191,7 +1315,6 @@ Performance-wise, PostgreSQL can scale well and handle complex queries without b
 
 
 \subsection{Container Identity Management} \label{subsec:container-identity-management}
-%TODO
 In multi-container environments, especially those used for modern web app deployment, it's crucial to identify and reference containers accurately. Whether you're orchestrating services, debugging issues, or automating tasks, knowing which container you're interacting with helps avoid confusion and ensures your tooling behaves predictably.
 Docker provides two unique identifiers for each container: the container ID and the container name. Both are guaranteed to be unique within a host system, but they serve different roles depending on how you're working.
 
@@ -1202,7 +1325,6 @@ Docker provides two unique identifiers for each container: the container ID and 
 \end{itemize}
 
 \subsection{Docker Compose}
-%TODO
 Docker Compose requires a different Python client library than the one typically used for managing single Docker containers. The standard Docker SDK for Python (docker-py) is designed to interact with individual containers—allowing developers to start, stop, inspect, and configure them directly. However, Compose introduces a higher level of orchestration, where multiple services are defined together in a docker-compose.yml file and managed as a unified application stack. This difference means that the same library used for single-container control cannot fully handle the complexity of Compose projects.
 
 When working with Compose, the Python tooling must be able to interpret and act on project-level definitions rather than just container-level commands. This involves parsing YAML files to understand service configurations, networks, and volumes, and then coordinating the lifecycle of all services in the correct order. For example, a database service may need to be initialized before a web server can connect to it, and Compose ensures this dependency is respected. Libraries or wrappers that integrate with Compose are therefore essential for managing these workflows programmatically.
@@ -1600,7 +1722,7 @@ The database requires two tables: Container and LogEntry. Container encapsulates
 
 As visible in figure \ref{fig:erd}, each container has a name and description. These are user-provided metadata which will display on the site.
 
-\complexgraphic{erd.png}{WADT ERD}{fig:erd}
+\diagram{erd.png}{WADT ERD}{fig:erd}
 
 Each container also requires an id, which is needed for making requests through the Docker API.
 
@@ -1608,10 +1730,9 @@ Each log entry has its contents, a timestamp, and a foreign key which links back
 
 Other portions of the ERD are automatically generated by Django.
 
-
 Examples of each field type can be seen in table \ref{fig:erdtable}.
 
-\begin{table}[H]
+\begin{table}[htp]
 \centering
 \begin{tabular}{|l|l|l|p{5cm}|}
 \hline
@@ -1648,32 +1769,183 @@ Examples of each field type can be seen in table \ref{fig:erdtable}.
 
 \subsection{Use Case Diagram}
 The use case diagram (figure \ref{fig:usecase}) illustrates the interactions between the two primary actors, students and instructors, inside the web application system. Students can browse available vulnerable web applications, deploy containers with automatic 24-hour timeouts, and manage their containers through stop, restart, and reset operations. Students also have access to timestamped logs specific to their container activities. Instructors inherit all student capabilities, but have additional privileges which include, access to more comprehensive instructor logs, the ability to view statuses across all student containers, disabling containers to restrict student access, and overriding student actions with race condition prevention.
-\complexgraphic{WADT_Use_Case.pdf}{WADT Web Application Use Case Diagram}{fig:usecase}
+\diagram{WADT_Use_Case.pdf}{WADT Web Application Use Case Diagram}{fig:usecase}
 
 \subsection{Deploying Containers}
 The activity diagram (figure \ref{fig:deployContainer}) details the process behind deployment of a container, from catalog selection through backend processing. 
 
+\diagram{AD-deploying-containers.png}{Container Deployment Activity Diagram}{fig:deployContainer}
 
 The backend applies security configurations automatically during deployment, ensuring each container runs in an isolated network with enforced lifetime limits. If an image is unavailable, the system returns an error rather than proceeding with a partial deployment.
 
-\complexgraphic{AD-deploying-containers.png}{Container Deployment Activity Diagram}{fig:deployContainer}
-
 \subsection{Interactions with Containers}
-The figure below illustrates the management actions available to users during an active session.
+The figure \ref{fig:interactContainers} illustrates the management actions available to users during an active session.
+
+\diagram{AD-interacting-w-containers.png}{Interacting with Containers}{fig:interactContainers}
 
 During an active session, users can view logs, reset to a clean state, restart with any changes made preserved, or stop containers entirely. The system monitors lifetime limits in the background and triggers automatic shutdown if a container exceeds its allocated time.
 
-\complexgraphic{AD-interacting-w-containers.png}{Interacting with Containers}{fig:interactContainers}
-
 \subsection{Container Cleanup Process}
-The following figure describes the cleanup process that occurs when a container session ends.
+The figure \ref{fig:cleanup} describes the cleanup process that occurs when a container session ends.
+
+\diagram{AD-container-cleanup.png}{Container Cleanup}{fig:cleanup}
 
 The system attempts a graceful shutdown before forcing termination if necessary. All associated resources, network bridges, database metadata, and allocated ports are released to maintain system integrity for subsequent deployments.
 
-\complexgraphic{AD-container-cleanup.png}{Container Cleanup}{fig:cleanup}
-
 \section{Design Summary}
-%TODO text summary of the design based on the previous diagrams
+
+\subsection{Framework Selection: Django and DRF}
+
+Reasons for choosing Django + DRF:
+\begin{itemize}
+    \item Built-in ORM and admin panel, make managing database easier with migrations
+    \item Django Channels for WebSockets
+    \item Function-based views + viewsets make a powerful set of abstractions available
+\end{itemize}
+
+We chose a REST API architecture with React instead of Django MVT alone, for
+these reasons:
+\begin{itemize}
+    \item Web-browsable HTML version of API
+    \item Viewsets inheriting common CRUD operations
+    \item Serializer classes enforce separation of concerns
+    \item Backend and frontend are more independent
+\end{itemize}
+
+\subsection{Programming Language: Python}
+
+Python was chosen for its Docker SDK integration and compatibility with Django. We opted not to use Go because its Docker SDKs
+were low-level and detail-heavy in comparison, beyond what was needed to implement WADT.
+
+\subsection{Containerization Tool: Docker over Podman}
+
+We chose Docker over Podman for the following reasons:
+\begin{itemize}
+    \item More extensive Python SDK
+    \item Better ecosystem and documentation
+    \item Highly available public registries (DockerHub and others)
+    \item No potential incompatibilities that Podman might include
+\end{itemize}
+
+\subsection{Docker SDK: python-on-whales over docker-py}
+
+python-on-whales is a better fit for WADT, as was experimentally verified through the two prototypes.
+The following advantages make python-on-whales a more attractive choice:
+\begin{itemize}
+    \item Thread safety. Guaranteed thread-safe client means views are simpler to write
+    \item Compose support. Built-in Docker Compose support extends range of available vulnerable apps
+    \item Clear API. python-on-whales mirrors the Docker CLI syntax almost perfectly.
+\end{itemize}
+
+\subsection{Database: PostgreSQL}
+
+The team evaluated MongoDB, MySQL, MariaDB, and PostgreSQL, ultimately choosing PostgreSQL for its
+support and documentation.
+The database runs locally on the AWS EC2 instance. We may migrate to cloud storage if log entries result
+in a larger database, requiring a dedicated storage solution.
+
+\subsection{Async Support: Django Channels over Celery}
+
+For real-time status information from containers, we chose Django Channels instead of Celery:
+\begin{itemize}
+    \item Celery's capacity exceeded project needs
+    \item Channels has fewer dependencies
+\end{itemize}
+
+\subsection{Frontend: React and TypeScript}
+
+React was selected for its extensive selection of useful components.
+The reasons for choosing React include:
+\begin{itemize}
+    \item Efficiency
+    \item Component reusability
+    \item Enforce division between frontend and backend work, leading to a cleaner codebase
+    \item High-quality documentation
+\end{itemize}
+
+TypeScript over JavaScript provided compile-time error detection and type annotations.
+
+\subsection{React-Bootstrap}
+
+The team chose React-Bootstrap (Bootstrap 5 integration) over Tailwind and Chakra UI:
+\begin{itemize}
+    \item Team familiarity and sponsor familiarity
+    \item Already available components
+    \item Bootswatch themes (Cyborg, Lux, Zephyr, Pulse) available
+\end{itemize}
+
+\subsection{Hosting: AWS}
+We selected our hosting for the following reasons:
+\begin{itemize}
+    \item sponsor-provided hosting option was AWS EC2
+    \item Improved familiarity
+    \item Needed packages compatible with Ubuntu and available in standard repos
+\end{itemize}
+
+\subsection{Security Measures}
+\begin{itemize}
+	\item IP restrictions (deny-by-default)
+	\item Limited network access for containers
+	\item Resource limits and uptime limits
+	\item Docker configuration best practices
+\end{itemize}
+
+\subsection{2FA with pyotp + pass-otp}
+
+The authentication system will use TOTP:
+\begin{itemize}
+    \item Users must have SSH access to the AWS instance to generate auth codes
+    \item \texttt{pyotp} generates one-time codes on the instance
+    \item Users store secrets using \texttt{pass} with \texttt{pass-otp} extension on the instance
+    \item Therefore, users must have SSH access as a prerequisite to access WADT
+\end{itemize}
+
+\subsubsection{Secrets Management}
+\begin{itemize}
+    \item Pre-commit hooks
+    \item Scan every commit
+    \item Measures in place for rotation and emergencies relating to leaks
+\end{itemize}
+
+\subsection{Vulnerable Application Catalog}
+
+\subsubsection{Intentional Vulnerabilities:}
+\begin{itemize}
+    \item OWASP Juice Shop
+    \item PyGoat
+    \item DVWA
+    \item vAPI
+    \item NIVA
+    \item Vulnerableapp-facade
+    \item BodgeIt Store
+    \item Damn Vulnerable RESTaurant
+\end{itemize}
+
+\subsubsection{Unintentional CVEs:}
+\begin{itemize}
+    \item Ghost CMS (CVE-2023-32235)
+    \item PrestaShop (CVE-2023-3882)
+    \item Ghost Kit WordPress Plugin (CVE-2025-9992)
+\end{itemize}
+
+\subsection{Containerization}
+
+Each application includes:
+\begin{itemize}
+    \item Dockerfiles
+    \item Resource limits
+    \item Maximum uptime (24hrs)
+\end{itemize}
+
+\subsection{CI/CD Pipeline}
+
+\begin{enumerate}
+    \item TruffleHog scan
+    \item Backend tests
+    \item Frontend tests
+    \item Build artifacts
+    \item AWS deployment
+\end{enumerate}
 
 \section{Timeline and Milestones}
 
@@ -1741,7 +2013,88 @@ Cybersecurity education evolves constantly, especially as new vulnerabilities, t
 There are also additional features outside our core requirements that later teams could explore. One major possibility is adding automated checks to determine whether a vulnerable application has been successfully patched. Even if this isn’t part of our team minimum viable product, another group could create a companion tool to evaluate student work more thoroughly. Our focus is on giving students the environment they need to work on vulnerabilities, but a complementary system that provides automated feedback without requiring instructor involvement would make the tool even more useful. The overarching goal of this project is to make the learning process more efficient, and giving students fast, and thorough feedback would help them learn more independently. We are supplying the core environment, but there is significant room to elevate the project by expanding the amount of guidance, assessment, and feedback available to students.
 
 \section{Project Management (Agile)}
-%TODO
+
+\subsection{Product Backlog with User Stories}
+\begin{itemize}
+	\item arbitrary command execution - Medium - To Do
+	\item admin controls/advanced - Medium - To Do
+	\item edit network settings per-container - Medium - To Do
+	\item admin controls/basic - Medium - To Do - container resource usage limits and auto-down after 24hrs
+	\item colorschemes switching - Medium - To Do
+	\item test dockerized TVWAs - Highest - To Do - "As a backend developer, I want to ensure that each containerized Target Vulnerable WebApp is functioning properly so that immediate problems can be diagnosed."
+	\item Docker Compose compatibility - Medium - To Do - "As a user, I want WADT to work for both single-container and Compose projects, so that I can practice while ignoring Docker-specific details"
+	\item accessibility testing - Medium - To Do - "As a user, I want a fully accessible site so that I can use WADT under a diverse set of circumstances"
+	\item performance testing - Medium - To Do - "As a sponsor providing hosting, I want a site that has minimal overhead to minimize bandwidth charges."
+	\item domain name - Highest - In Review - "As a user, I want a convenient domain to use to access WADT so that I can easily remember it and start practicing."
+	\item 2-factor auth - Lowest - To Do - "As a site administrator, I need 2-factor authentication for user logon to prevent unauthorized access from bad actors."
+	\item write API spec - High - To Do - "As a frontend developer, I require an API spec in order to develop frontend UI components for the project."
+	\item initial deployment - Highest - To Do - "As a user, I want a real website to access so that I don’t have to install software on my computer."
+	\item set up CI/CD pipeline - Highest - To Do - "As a developer, I want a CI/CD pipeline to format, lint, test, and scan for vulnerabilities my code before deploying it automatically, so that I don’t have to hurt my wrists typing the same things over and over."
+	\item deploy database - Highest - To Do - "As a developer, I need a database on a server to store data so that my app works."
+	\item dockerize unintentionally vulnerable webapps 2 - Medium - Done - "As a user, I want WADT to include modern webapps with unintentional vulnerabilities which are published CVEs, so that I can practice in a realistic environment."
+	\item dockerize unintentionally vulnerable webapps 1 - Medium - Done - "As a user, I want WADT to include modern webapps with unintentional vulnerabilities which are published CVEs, so that I can practice in a realistic environment."
+	\item Dockerize second 5 Web Apps - High - Done
+	\item Dockerize first 5 Web Apps - High - Done
+	\item Create repo - Highest - Done - "As a developer, I want a repository to work on that will automatically deploy to the instance so that code changes are tracked"
+	\item Design Main Page Template - Lowest - In Review - "Communicate with Backend to determine what is necessary for a main page (where the user can access the docker containers). Then use Figma to design a wireframe that matches the theme of the Home page."
+	\item Design Login Page Template - Lowest - In Review - Design a wireframe login page utilizing the themes from the home page on figma
+	\item Design Home Page Template - Lowest - In Review - "Design a wireframe home page using Figma to determine: * Website Color Theme * Website Format * Other UI components"
+	\item Determine essential interactions - High - Done - Answer the question: what do our users want to do with Docker containers? The answer determines which API endpoints the backend must expose and which controls the UI team must anticipate.
+	\item Integrate with backend team - Medium - To Do
+	\item "create reports for each image (file size -  potential problems -  etc.)" - Medium - To Do
+	\item write Dockerfiles/compose files - Medium - To Do
+	\item Select 7 apps - Medium - To Do
+	\item choose 10 vulnerable web apps and propose to sponsor - Lowest - Done - Select and containerize 7 appropriate vulnerable apps
+	\item security audit - Medium - To Do - Entire team verifies the security practices used to set up the AWS instance. Each member documents potential issues with the setup.
+	\item docker seminar from sponsor - High - Done - Attend meeting with sponsor where he will show us how to identify and dockerize vulnerable apps.
+	\item document security - High - To Do - "Based on security decisions made for sandboxing containers, create documents to explain choices and setup to sponsor, our future selves -  potential users, and the Senior Design Committee."
+	\item Prereqs for hosting - Highest - Done
+	\item learn to dockerize - Medium - Done - Research the process of Dockerizing a sample web app and perform this task on a demo example.
+	\item create UI mockups - Low - Done - create mockups/wireframes for the UI components of each page
+	\item setup database - Medium - Done - "Select the database for the project. Create a schema or model of the data. Project scope is one user at a time, limited enough to allow for not putting much thought into the database. However, an approach that at least allows for the possibility of multiple users eliminates technical debt which may haunt future SD teams."
+	\item aws instance setup - High - Done - Ensure all members can SSH into the AWS instance. Ensure instance is secure.
+	\item sandboxing - Highest - Done - Determine how to sandbox vulnerable applications for safe hosting on an AWS instance. Must protect instance from privilege escalation attacks and prevent internet-connected containers from being used in botnets or similar.
+\end{itemize}
+
+\subsection{Sprint Backlog with User Stories}
+\begin{itemize}
+\item test dockerized TVWAs,"As a backend developer, I want to ensure that each containerized Target Vulnerable WebApp is functioning properly so that immediate problems can be diagnosed."
+\item Docker Compose compatibility,"As a user, I want WADT to work for both single-container and Compose projects, so that I can practice while ignoring Docker-specific details"
+\item domain name,"As a user, I want a convenient domain to use to access WADT so that I can easily remember it and start practicing."
+\item write API spec,"As a frontend developer, I require an API spec in order to develop frontend UI components for the project."
+\item initial deployment,"As a user, I want a real website to access so that I don’t have to install software on my computer."
+\item set up CI/CD pipeline,"As a developer, I want a CI/CD pipeline to format, lint, test, and scan for vulnerabilities my code before deploying it automatically, so that I don’t have to hurt my wrists typing the same things over and over."
+\item deploy database,"As a developer, I need a database on a server to store data so that my app works."
+\item Design Main Page Template,"Communicate with Backend to determine what is necessary for a main page (where the user can access the docker containers) Then use Figma to design a wireframe that matches the theme of the Home page."
+\item Design Login Page Template,Design a wireframe login page utilizing the themes from the home page on figma
+\item Design Home Page Template,"Design a wireframe home page using Figma to determine: * Website Color Theme * Website Format * Other UI components"
+\item security audit,Entire team verifies the security practices used to set up the AWS instance. Each member documents potential issues with the setup.
+\item document security,"Based on security decisions made for sandboxing containers, create documents to explain choices and setup to sponsor, our future selves, potential users, and the Senior Design Committee."
+\end{itemize}
+
+\complexgraphic{sprint-backlog}{Current Sprint Backlog with User Stories}{diagram:backlog}
+
+\subsection{Milestone Chart}
+\subsubsection{Current Milestone Chart}
+\complexgraphic{timeline}{Current Milestone Chart (End of SD1)}{diagram:timeline}
+
+\subsubsection{Projected Milestone Chart}
+\complexgraphic{gantt}{Projected Milestone Chart (End of SD2)}{diagram:future-timeline}
+
+\subsection{Setbacks}
+\begin{itemize}
+	\item Security research - didn't fit into original timebox. Team fell behind on first spike.
+		Adapt through simplifying requirements and communicating with sponsor.
+	\item Deployment - delayed due to issues with team members accessing hosting. Slight delay on first sprint.
+		Adapt through creating team-internal documentation.
+	\item Early Security vulnerability - due to an error in planning early sprints, repository created before security measures fully in place. Django secret keys accidentally leaked due to human error. No delay, but would be problematic if site active at time of leak.
+		Adapt through committing to spike of research on security scanning tools and CI/CD pipeline.
+\end{itemize}
+
+\subsubsection{Lessons Learned}
+Early rapid prototyping and constant communication have been vital for the team.
+As we uncover oversights in our original plans, we are able to quickly adapt and modify our sprints.
+We are fully equipped to continue the development cycle through SD2 while fulfillng our MVP.
 
 \section{Acknowledgements}
 The members of the WADT project wish to thank our sponsor Chris Fischer for providing hosting, guidance, and valuable advice and insight. Fischer was able to impart his relevant development experience to the team and assist us with beginning our study of the project technologies. He contributed to our design by giving loose guidance on system architecture.
