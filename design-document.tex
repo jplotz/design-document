@@ -201,6 +201,7 @@ Both parties are capable of following a list of instructions to set up a target 
 WADT aims to eliminate redundant setup work by providing a standardized environment where vulnerable web apps can be deployed instantly in isolated containers. Building on this foundation, WADT introduces a modular deployment toolkit that streamlines lab creation and management. Each app is launched with its dependencies in a reproducible containerized setup, supported by command-line scripts for rapid provisioning, teardown, and scenario resets. Network and volume isolation ensure clean separation between labs, while customization hooks allow instructors to inject or remove vulnerabilities as needed. This tooling empowers educators to design focused, resettable exercises and enables students to concentrate on exploit development and remediation without setup distractions.
 
 \section{Personal Motivations}
+
 \subsection{Dustin Allen}
 My motivations for this project was to further my skills in Python and more experience with working on API’s specifically. Along with this I was really interested in the idea of creating something that deals with security issues. Being able to work on a completely different API infrastructure and having more freedom to experiment and learn on my own has me very excited to see what I can create and how the API side of the project can be created. With an interest in full-stack development this also gives me a good chance to research and learn about industry standards along with making sure to implement them into the project not only to benefit the project but also to have in a portfolio to share during future job interviews. 
 
@@ -212,6 +213,7 @@ Aside from those motivations I also have some aspirations and features I would w
 
 Our sponsor's encouragement for us to come up with good ideas and additions to the project that we would find interesting and that's within scope of the project has also motivated me a lot to do more research on possible additions to the project. I plan on challenging myself on the API side to add features such as a health check for the dockerized apps in case of crashes, and some other features that would help with stability to ensure we aren't using too many resources by running the apps. For me having the support of our sponsor to take on our own initiatives for the project has made this much more interesting and also will give me more things to talk about in future interviews. 
 \subsection{Daniel Armas}
+
 \subsection{Rithik Dhakshnamoorthy}
 When I began considering options for senior design, I wanted a project that would give me the chance to develop skills I hadn’t yet mastered. I liked a lot of the projects shown to me that are sometimes related to computer science, but this project stood out because it was new, open‑ended, and offered plenty of space for some creativity. It also introduced technologies I didn’t work with before, which makes it an excellent challenge. Cybersecurity and Docker stood out to me, since both are widely used in today’s industry and tied to my future work after graduation.
 
@@ -222,6 +224,15 @@ Another reason I chose WADT was the chance to work and understand computer engin
 Finally, I liked how the sponsor, who was a recent graduate who had guided other senior design teams before, gave us the freedom to make additions to our project that can improve of how it looks more better. I plan on learning and interacting more with Docker and cybersecurity, not only to strengthen my understanding of containerization and orchestration, but also to explore how these technologies intersect with modern security practices. By experimenting with Docker in different deployment scenarios and studying common attack vectors, I aim to gain a deeper awareness of how vulnerabilities arise in web applications, such as misconfigured containers, insecure defaults, or unpatched dependencies. In the end, these motivations can help me reach my goals of getting a professional job in the future after graduation. 
 
 \subsection{Jacob Plotz}
+I chose WADT because our sponsor Lt. Fischer titled his introduction slide \texttt{\$whoami}. I thought, "seems like a mighty technical fellow!" Then I saw the rest of the pitch and my prediction was verified. WADT is run by a sponsor with a successful track record of Senior Design projects, available expertise and mentoring, and a keen interest in a slick MVP. Our scope is well-defined and achievable with room for improvement. We get to make a site that solves a real problem, involves a heap of technical challenges, and I can explain it to my grandma without needing to stop talking to regain my strength. I would contend that I have found the Holy Grail of Senior Design Projects. I will enjoy writing maps and zips until the cows come home.
+
+My main goal is to transform Docker from a pesky whale that lingers unused on the cybersecurity student's desktop into a useful tool by abstracting away its presence. The name of our game is "hide the whale."
+
+The project is an interesting challenge because we are building a very transparent tool: Docker itself already uses a client/server architecture with a REST API available. There is a sense in which we are creating a client/server architecture over top of the existing architecture.
+
+We have been able to gain insight from the design of Docker itself and by investigating the REST API it provides (and the SDK+CLI that wrap around it).
+
+
 \subsection{Luke Samuel Sandoval}
 I chose to take on the challenge of Dockerizing our vulnerable web applications because containerization has become a foundational skill in modern software engineering and cybersecurity. As I approach graduation and prepare to enter industry, I want hands-on experience with the same tooling used to deploy, isolate, and scale real-world systems. This project offers a direct way to build those skills while contributing something genuinely useful to students who need reliable practice environments.
 
