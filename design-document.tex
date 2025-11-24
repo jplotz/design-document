@@ -63,6 +63,7 @@
 
 \usepackage{subfiles}
 
+\title{hello}
 \title{
 	{Final Design Document}\\
 	{\large Project WADT (Web App Deployment Tooling)}\\
@@ -70,9 +71,7 @@
 	{\vspace{1em}}
 	{\includegraphics[scale=0.5]{goosefish}}\\
 	{\large Group A40}
-
 }
-
 \author{
 	Dustin Allen
 	\and
@@ -364,6 +363,15 @@ If all the user needs is a URL, provide the URL in an easy-to-copy format. Nothi
 
 \subsection{Tech Stack}
 \onelinelogos
+
+\begin{itemize}
+	\item \textbf{Django} is a web framework for Python that makes use of the Model View Template (MVT) architecture. Common middleware, a database administrator interface, class-based views, and URL routing are a few of the tools the project uses which are included in Django. Django can be extended with the Django Channels library for handling tasks and the Django REST Framework for creating APIs that don't fit the MVT architecture.
+	\item \textbf{Python} is needed to use Django. Its support for functional and object-oriented programming is reflected in the availability of Django's functional views or class-based views. Its available, easy-to-use libraries for interfacing with Docker blend well with Django idioms within the project.
+	\item \textbf{JavaScript} adds an interactive element to the website's frontend. It enables use of the React framework.
+	\item \textbf{React} is a frontend library for JavaScript. It's components offer additional power and control over the relatively plain HTML template syntax of Django. Stateful components of the UI (logs, timers, status indicators) can easily be modeled with React features.
+	\item \textbf{Docker} containerizes vulnerable webapps and has actively developed SDKs for Python. It ensures that each vulnerable webapp runs in a separate, isolated environment.
+	\item \textbf{AWS} provides scalable hosting for the project.
+\end{itemize}
 
 % Describe technologies used to make MVP possible
 \section{Research}
