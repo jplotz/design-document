@@ -467,7 +467,7 @@ If all the user needs is a URL, provide the URL in an easy-to-copy format. Nothi
 \end{itemize}
 
 % Describe technologies used to make MVP possible
-\section{Research}
+\section{Backend Research}
 
 \subsection{Hosting Provider}
 \subsubsection{DigitalOcean}
@@ -1136,7 +1136,7 @@ REST architecture is also being used as it is the industry standard for web API 
 \subsection{API Considerations} \label{subsec:api-considerations}
 Some other considerations were the usage of web-sockets for our communication protocols as they would provide continuous streaming of live logs or container stats. This was also considered due to the concern of "heisenbugs", race conditions and other overhead related issues such as our client initialization with each user who may be using the application. After research the decision to not utilize web-sockets was that the REST API would be able to handle this much better with less complications of writing and implementing these systems ourselves. Rather than getting live updates instead we will be using client sided polling of the endpoints to get the container statuses and logs. The research also provided insight on Docker itself. The realization was that rather than initializing multiple clients when we have multiple users, instead initializing a single shared client would be the best option. This is because Docker already uses different request threads which will help us prevent race conditions or any "heisenbugs" that were anticipated at first. Using this Docker client management we also avoid high overhead costs as the clients are only created once the app boots up, it is inherently designed to be shared across threads while keeping user data separate, and prevents the need for database space being taken.
 
-\section{Database}
+\section{Database Research}
 When choosing our database we have a few options:
 \begin{itemize}
 	\item MongoDB
@@ -1243,7 +1243,7 @@ Our deployment pipeline handles every stage of container management. We build im
 \section{Prototypes}
 \subfile{sections/prototypes.tex}
 
-\section{Frontend}
+\section{Frontend Research}
 \subsection{Frontend Framework}
 \subsubsection{React}
 The front-end of our application is built using React. React employs a virtual Document Object Model, or DOM, to more efficiently manage updates to the UI. Only the components that have changed are updated, rather than needing to re-render the entire page to make changes. This makes the application faster and more responsive, which is an important quality for any web application.
@@ -1519,6 +1519,8 @@ The following figure describes the cleanup process that occurs when a container 
 
 The system attempts a graceful shutdown before forcing termination if necessary. All associated resources, network bridges, database metadata, and allocated ports are released to maintain system integrity for subsequent deployments.
 
+\section{Design Summary}
+%TODO
 
 \section{Timeline and Milestones}
 \subsection{Project Timeline}
@@ -1583,6 +1585,17 @@ Our group is the first to work on the Web App Deployment Tool, and while the pro
 Cybersecurity education evolves constantly, especially as new vulnerabilities, technologies, and industry practices emerge. With that in mind, there is a lot of potential to expand the catalog of vulnerable applications beyond the initial seven we will include. Future groups will be able to update the tool to introduce new applications, new vulnerability types, and new skills for students to practice. Our team is essentially starting the process and establishing the structure, leaving plenty of room for refinement as more students and instructors interact with the application. While we will make updates based on early feedback, the most meaningful insights will come from long-term use in educational settings. Over time, future teams together with the sponsor will be able to use that feedback to set new goals and evolve the project further.
 
 There are also additional features outside our core requirements that later teams could explore. One major possibility is adding automated checks to determine whether a vulnerable application has been successfully patched. Even if this isn’t part of our team minimum viable product, another group could create a companion tool to evaluate student work more thoroughly. Our focus is on giving students the environment they need to work on vulnerabilities, but a complementary system that provides automated feedback without requiring instructor involvement would make the tool even more useful. The overarching goal of this project is to make the learning process more efficient, and giving students fast, and thorough feedback would help them learn more independently. We are supplying the core environment, but there is significant room to elevate the project by expanding the amount of guidance, assessment, and feedback available to students.
+
+\section{Project Management (Agile)}
+%TODO
+
+\section{Acknowledgements}
+The members of the WADT project wish to thank our sponsor Chris Fischer for providing hosting, guidance, and valuable advice and insight. Fischer was able to impart his relevant development experience to the team and assist us with beginning our study of the project technologies. He contributed to our design by giving loose guidance on system architecture.
+
+We are grateful for the opportunity to create WADT in an excellent environment for it to thrive and see real usage. Fischer was able to connect us to UCF alums with cybersecurity experience and ensure our MVP conformed to the needs of a realistic lab setting. The multi-disciplinary user base (students and airmen) which we are thereby connected to is invaluable for guiding our user stories and design objectives.
+
+We would like to acknowledge our sponsor for providing flexible, highly-available hosting to meet the project's needs. Since funding comes from our sponsor and is independent of any particular research, military, or government agency, this has enabled the team to take \textit{our} chosen direction with the project and make technical decisions as we see fit to achieve the MVP agreed to by our sponsor. We are grateful for the opportunity to have free reign with the technical details, all the while accessing dependable hosting at no cost to any member of the team.
+
 \printbibliography
 
 \end{document}
