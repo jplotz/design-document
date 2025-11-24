@@ -1748,7 +1748,159 @@ The figure \ref{fig:cleanup} describes the cleanup process that occurs when a co
 The system attempts a graceful shutdown before forcing termination if necessary. All associated resources, network bridges, database metadata, and allocated ports are released to maintain system integrity for subsequent deployments.
 
 \section{Design Summary}
-%TODO text summary of the design based on the previous diagrams
+
+\subsection{Framework Selection: Django and DRF}
+
+Reasons for choosing Django + DRF:
+\begin{itemize}
+    \item Built-in ORM and admin panel, make managing database easier with migrations
+    \item Django Channels for WebSockets
+    \item Function-based views + viewsets make a powerful set of abstractions available
+\end{itemize}
+
+We chose a REST API architecture with React instead of Django MVT alone, for
+these reasons:
+\begin{itemize}
+    \item Web-browsable HTML version of API
+    \item Viewsets inheriting common CRUD operations
+    \item Serializer classes enforce separation of concerns
+    \item Backend and frontend are more independent
+\end{itemize}
+
+\subsection{Programming Language: Python}
+
+Python was chosen for its Docker SDK integration and compatibility with Django. We opted not to use Go because its Docker SDKs
+were low-level and detail-heavy in comparison, beyond what was needed to implement WADT.
+
+\subsection{Containerization Tool: Docker over Podman}
+
+We chose Docker over Podman for the following reasons:
+\begin{itemize}
+    \item More extensive Python SDK
+    \item Better ecosystem and documentation
+    \item Highly available public registries (DockerHub and others)
+    \item No potential incompatibilities that Podman might include
+\end{itemize}
+
+\subsection{Docker SDK: python-on-whales over docker-py}
+
+python-on-whales is a better fit for WADT, as was experimentally verified through the two prototypes.
+The following advantages make python-on-whales a more attractive choice:
+\begin{itemize}
+    \item Thread safety. Guaranteed thread-safe client means views are simpler to write
+    \item Compose support. Built-in Docker Compose support extends range of available vulnerable apps
+    \item Clear API. python-on-whales mirrors the Docker CLI syntax almost perfectly.
+\end{itemize}
+
+\subsection{Database: PostgreSQL}
+
+The team evaluated MongoDB, MySQL, MariaDB, and PostgreSQL, ultimately choosing PostgreSQL for its
+support and documentation.
+The database runs locally on the AWS EC2 instance. We may migrate to cloud storage if log entries result
+in a larger database, requiring a dedicated storage solution.
+
+\subsection{Async Support: Django Channels over Celery}
+
+For real-time status information from containers, we chose Django Channels instead of Celery:
+\begin{itemize}
+    \item Celery's capacity exceeded project needs
+    \item Channels has fewer dependencies
+\end{itemize}
+
+\subsection{Frontend: React and TypeScript}
+
+React was selected for its extensive selection of useful components.
+The reasons for choosing React include:
+\begin{itemize}
+    \item Efficiency
+    \item Component reusability
+    \item Enforce division between frontend and backend work, leading to a cleaner codebase
+    \item High-quality documentation
+\end{itemize}
+
+TypeScript over JavaScript provided compile-time error detection and type annotations.
+
+\subsection{React-Bootstrap}
+
+The team chose React-Bootstrap (Bootstrap 5 integration) over Tailwind and Chakra UI:
+\begin{itemize}
+    \item Team familiarity and sponsor familiarity
+    \item Already available components
+    \item Bootswatch themes (Cyborg, Lux, Zephyr, Pulse) available
+\end{itemize}
+
+\subsection{Hosting: AWS}
+We selected our hosting for the following reasons:
+\begin{itemize}
+    \item sponsor-provided hosting option was AWS EC2
+    \item Improved familiarity
+    \item Needed packages compatible with Ubuntu and available in standard repos
+\end{itemize}
+
+\subsection{Security Measures}
+\begin{itemize}
+	\item IP restrictions (deny-by-default)
+	\item Limited network access for containers
+	\item Resource limits and uptime limits
+	\item Docker configuration best practices
+\end{itemize}
+
+\subsection{2FA with pyotp + pass-otp}
+
+The authentication system will use TOTP:
+\begin{itemize}
+    \item Users must have SSH access to the AWS instance to generate auth codes
+    \item \texttt{pyotp} generates one-time codes on the instance
+    \item Users store secrets using \texttt{pass} with \texttt{pass-otp} extension on the instance
+    \item Therefore, users must have SSH access as a prerequisite to access WADT
+\end{itemize}
+
+\subsubsection{Secrets Management}
+\begin{itemize}
+    \item Pre-commit hooks
+    \item Scan every commit
+    \item Measures in place for rotation and emergencies relating to leaks
+\end{itemize}
+
+\subsection{Vulnerable Application Catalog}
+
+\subsubsection{Intentional Vulnerabilities:}
+\begin{itemize}
+    \item OWASP Juice Shop
+    \item PyGoat
+    \item DVWA
+    \item vAPI
+    \item NIVA
+    \item Vulnerableapp-facade
+    \item BodgeIt Store
+    \item Damn Vulnerable RESTaurant
+\end{itemize}
+
+\subsubsection{Unintentional CVEs:}
+\begin{itemize}
+    \item Ghost CMS (CVE-2023-32235)
+    \item PrestaShop (CVE-2023-3882)
+    \item Ghost Kit WordPress Plugin (CVE-2025-9992)
+\end{itemize}
+
+\subsection{Containerization}
+
+Each application includes:
+\begin{itemize}
+    \item Dockerfiles
+    \item Resource limits
+    \item Maximum uptime (24hrs)
+\end{itemize}
+
+\subsection{CI/CD Pipeline}
+
+\begin{enumerate}
+    \item TruffleHog scan
+    \item Backend tests
+    \item Frontend tests
+    \item Build artifacts
+    \item AWS deployment
+\end{enumerate}
 
 \section{Timeline and Milestones}
 
