@@ -1546,6 +1546,49 @@ Our application will maintain logs of container actions for both students and in
 
 Our logs will only capture information required for necessary functions and will exclude excessive information such as private user information, or unrelated system information. Logging will only be used as a tool for debugging, learning, or ensuring proper usage
 
+\subsection{Transparency}
+Transparency is an important principle in the design of this application. We strive to minimize the amount of data collected and stored, both to reduce potential vulnerabilities and because we believe it is unethical to retain information that is unnecessary. While certain data must be stored to carry out essential functions, maintain system reliability, and ensure security, we would like to provide all users or potential users with a clear explanation of how their data is used.
+
+To support this goal, the application will include a dedicated Data Usage and Privacy page that will be accessible without requiring a registered account. This page will cover exactly what information is collected, why it is collected, and how long it will be stored. Our intention is to build trust and confidence with any users of WADT by being open and explicit about the platform’s data and security practices.
+
+The Data Usage and Transparency Policy will include the following sections and information:
+
+\subsubsection{Data Collection}
+\begin{itemize}
+	\item A clear explanation of all data that will be collected and the reasoning behind it
+	\item Our commitment to minimal data storage
+\end{itemize}
+
+\subsubsection{Data Storage}
+\begin{itemize}
+	\item Sensitive configuration data is stored exclusively in environment variables
+	\item A local .env file is used for development and excluded from version control via .gitignore
+	\item Procedures for dealing with credential exposure
+	\item The inclusion of regular security audits and automated scanning to maintain credential safety.
+	\item Logs and user information will be stored for the minimum time required to support debugging, analytics, or security auditing
+\end{itemize}
+
+\subsubsection{Access Permissions}
+\begin{itemize}
+	\item Explicit descriptions of what instructors can see, what actions they can perform, and how their access differs from that of students.
+	\item Application of the principle of least privilege.
+\end{itemize}
+
+\subsubsection{Logging and Data Retention}
+\begin{itemize}
+	\item Detailed information about what container related information is being logged and why logging is necessary.
+	\item Clear descriptions of how long logs are retained and when they are deleted.
+\end{itemize}
+
+\subsubsection{Commitment to Ethical Data Handling}
+\begin{itemize}
+	\item Explicit descriptions of what information is intentionally not stored.
+	\item A guarantee that no data will be sold, shared, or used for any purposes unrelated to the application.
+	\item A commitment that user information will never be tracked for any non-educational purpose.
+\end{itemize}
+
+We feel strongly about transparency in all aspects of data storage and handling. There are far too many modern applications and platforms that do not uphold these values. Because WADT is an educational tool, users should feel comfortable and confident while interacting with it. While the primary purpose of the platform is to teach students about application vulnerabilities and security practices, we also hope that our emphasis on transparency will help students understand the importance of ethical data management and responsible system design.
+
 \section{The ``WADTtastic" Future In Store}
 \subfile{sections/future.tex}
 
