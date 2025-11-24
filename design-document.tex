@@ -66,6 +66,15 @@
 \end{figure}
 }
 
+\newcommand{\diagram}[3] {
+\begin{figure}[htp]
+	\centering
+	\includegraphics[keepaspectratio,height=0.5\textheight,width=\textwidth]{#1}
+	\caption{#2}
+	\label{#3}
+\end{figure}
+}
+
 \usepackage{subfiles}
 
 \title{
@@ -1808,7 +1817,54 @@ Cybersecurity education evolves constantly, especially as new vulnerabilities, t
 There are also additional features outside our core requirements that later teams could explore. One major possibility is adding automated checks to determine whether a vulnerable application has been successfully patched. Even if this isn’t part of our team minimum viable product, another group could create a companion tool to evaluate student work more thoroughly. Our focus is on giving students the environment they need to work on vulnerabilities, but a complementary system that provides automated feedback without requiring instructor involvement would make the tool even more useful. The overarching goal of this project is to make the learning process more efficient, and giving students fast, and thorough feedback would help them learn more independently. We are supplying the core environment, but there is significant room to elevate the project by expanding the amount of guidance, assessment, and feedback available to students.
 
 \section{Project Management (Agile)}
-%TODO
+
+\subsection{Product Backlog with User Stories}
+\begin{itemize}
+	\item arbitrary command execution - Medium - To Do
+	\item admin controls/advanced - Medium - To Do
+	\item edit network settings per-container - Medium - To Do
+	\item admin controls/basic - Medium - To Do - container resource usage limits and auto-down after 24hrs
+	\item colorschemes switching - Medium - To Do
+	\item test dockerized TVWAs - Highest - To Do - "As a backend developer, I want to ensure that each containerized Target Vulnerable WebApp is functioning properly so that immediate problems can be diagnosed."
+	\item Docker Compose compatibility - Medium - To Do - "As a user, I want WADT to work for both single-container and Compose projects, so that I can practice while ignoring Docker-specific details"
+	\item accessibility testing - Medium - To Do - "As a user, I want a fully accessible site so that I can use WADT under a diverse set of circumstances"
+	\item performance testing - Medium - To Do - "As a sponsor providing hosting, I want a site that has minimal overhead to minimize bandwidth charges."
+	\item domain name - Highest - In Review - "As a user, I want a convenient domain to use to access WADT so that I can easily remember it and start practicing."
+	\item 2-factor auth - Lowest - To Do - "As a site administrator, I need 2-factor authentication for user logon to prevent unauthorized access from bad actors."
+	\item write API spec - High - To Do - "As a frontend developer, I require an API spec in order to develop frontend UI components for the project."
+	\item initial deployment - Highest - To Do - "As a user, I want a real website to access so that I don’t have to install software on my computer."
+	\item set up CI/CD pipeline - Highest - To Do - "As a developer, I want a CI/CD pipeline to format, lint, test, and scan for vulnerabilities my code before deploying it automatically, so that I don’t have to hurt my wrists typing the same things over and over."
+	\item deploy database - Highest - To Do - "As a developer, I need a database on a server to store data so that my app works."
+	\item dockerize unintentionally vulnerable webapps 2 - Medium - Done - "As a user, I want WADT to include modern webapps with unintentional vulnerabilities which are published CVEs, so that I can practice in a realistic environment."
+	\item dockerize unintentionally vulnerable webapps 1 - Medium - Done - "As a user, I want WADT to include modern webapps with unintentional vulnerabilities which are published CVEs, so that I can practice in a realistic environment."
+	\item Dockerize second 5 Web Apps - High - Done
+	\item Dockerize first 5 Web Apps - High - Done
+	\item Create repo - Highest - Done - "As a developer, I want a repository to work on that will automatically deploy to the instance so that code changes are tracked"
+	\item Design Main Page Template - Lowest - In Review - "Communicate with Backend to determine what is necessary for a main page (where the user can access the docker containers). Then use Figma to design a wireframe that matches the theme of the Home page."
+	\item Design Login Page Template - Lowest - In Review - Design a wireframe login page utilizing the themes from the home page on figma
+	\item Design Home Page Template - Lowest - In Review - "Design a wireframe home page using Figma to determine: * Website Color Theme * Website Format * Other UI components"
+	\item Determine essential interactions - High - Done - Answer the question: what do our users want to do with Docker containers? The answer determines which API endpoints the backend must expose and which controls the UI team must anticipate.
+	\item Integrate with backend team - Medium - To Do
+	\item "create reports for each image (file size -  potential problems -  etc.)" - Medium - To Do
+	\item write Dockerfiles/compose files - Medium - To Do
+	\item Select 7 apps - Medium - To Do
+	\item choose 10 vulnerable web apps and propose to sponsor - Lowest - Done - Select and containerize 7 appropriate vulnerable apps
+	\item security audit - Medium - To Do - Entire team verifies the security practices used to set up the AWS instance. Each member documents potential issues with the setup.
+	\item docker seminar from sponsor - High - Done - Attend meeting with sponsor where he will show us how to identify and dockerize vulnerable apps.
+	\item document security - High - To Do - "Based on security decisions made for sandboxing containers, create documents to explain choices and setup to sponsor, our future selves -  potential users, and the Senior Design Committee."
+	\item Prereqs for hosting - Highest - Done
+	\item learn to dockerize - Medium - Done - Research the process of Dockerizing a sample web app and perform this task on a demo example.
+	\item create UI mockups - Low - Done - create mockups/wireframes for the UI components of each page
+	\item setup database - Medium - Done - "Select the database for the project. Create a schema or model of the data. Project scope is one user at a time, limited enough to allow for not putting much thought into the database. However, an approach that at least allows for the possibility of multiple users eliminates technical debt which may haunt future SD teams."
+	\item aws instance setup - High - Done - Ensure all members can SSH into the AWS instance. Ensure instance is secure.
+	\item sandboxing - Highest - Done - Determine how to sandbox vulnerable applications for safe hosting on an AWS instance. Must protect instance from privilege escalation attacks and prevent internet-connected containers from being used in botnets or similar.
+\end{itemize}
+
+\subsection{Sprint Backlog with User Stories}
+
+\subsection{Milestone Chart}
+
+\subsection{Setbacks}
 
 \section{Acknowledgements}
 The members of the WADT project wish to thank our sponsor Chris Fischer for providing hosting, guidance, and valuable advice and insight. Fischer was able to impart his relevant development experience to the team and assist us with beginning our study of the project technologies. He contributed to our design by giving loose guidance on system architecture.
