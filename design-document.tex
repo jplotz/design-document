@@ -334,7 +334,7 @@ I was also drawn to the idea behind the project itself. I liked the idea of a pr
 That familiarity with the process made the project feel approachable, and I felt much more comfortable committing to a project with a sponsor who understood both the technical and academic expectations. Choosing a senior design project is a long-term commitment, and knowing I would be working with someone experienced in the process made the decision to work on this project much easier.
 
 \section{System Pipeline Diagram}
-The following activity diagram presents the high-level overview for users using WADT. The diagram demonstrates the main interaction loop that enables users to move from authentication to hands-on practice
+The following activity diagram (figure \ref{fig:systemOverview}) presents the high-level overview for users using WADT. The diagram demonstrates the main interaction loop that enables users to move from authentication to hands-on practice
 
 \complexgraphic{AD-system-overview.png}{System Overview}{fig:systemOverview}
 
@@ -516,9 +516,9 @@ Example exploitation steps:
 	\item User configures DVWA built-in security level to low using environment variables, config file, or webpage
 	\item User accesses command injection vulnerability in browser at /vulnerabilities/exec
 	\item User enters \texttt{localhost; ls /dev} to verify injection vulnerability. Devices on the host are listed. In this instance, the shell runs as user www-data, meaning that exploitation possibilities are roughly the same as a non-root user on the host. In the event of a privilege escalation vulnerability, the user may gain root access
-	\item For this demonstration, the user runs a fork bomb
+	\item For this demonstration, the user runs a fork bomb (figure \ref{fig:forkbomb})
 		\simplegraphic{fork-bomb}{Command injection - fork bomb setup}{fig:forkbomb}
-	\item A significant slowdown occurs on the host system. In principle, a user could perform this attack on the WADT site to take it offline
+	\item A significant slowdown occurs on the host system (figure \ref{fig:forkbomb-exec}). In principle, a user could perform this attack on the WADT site to take it offline
 		\simplegraphic{cannot-fork}{Command injection - fork bomb execution}{fig:forkbomb-exec}
 \end{enumerate}
 
@@ -585,7 +585,7 @@ Traditional 2FA providers are primarily concerned with verifying the identity of
 The Open Container Initiative (OCI) maintains a group of three specifications which containerization tools are expected to follow to be compliant to the same standards as Docker. Since Docker was taken as a baseline technology for the project, only other OCI-compliant containerization tools were considered.
 
 \subsubsection{Podman}
-Podman is a drop-in replacement for Docker which is both daemonless and rootless. It differs in its underlying architecture: Podman is pod-based. A pod is an infra container combined with a number of regular containers.
+Podman is a drop-in replacement for Docker which is both daemonless and rootless. It differs in its underlying architecture: Podman is pod-based (see figure \ref{fig:podman}). A pod is an infra container combined with a number of regular containers.
 
 For comparison, plain Docker functions interacts with plain containers, not pods. Docker Compose can be used to run multiple containers together for a project.
 
@@ -1333,10 +1333,10 @@ The frontend team tested several themes that balanced readability and contrast w
 
 Here are some theme designs that we decided on (note subject to change until due date)
 \begin{itemize}
-    \item Bootswatch Cyborg:
-    \item Bootswatch Lux:
-    \item Bootswatch Zephyr:
-    \item Bootswatch Pulse:
+	\item Bootswatch Cyborg (\ref{fig:cyborg}):
+	\item Bootswatch Lux (\ref{fig:lux}):
+	\item Bootswatch Zephyr (\ref{fig:zephyr}):
+	\item Bootswatch Pulse (\ref{fig:pulse}):
 \end{itemize}
 \begin{figure}[H]
   \centering
@@ -1395,15 +1395,15 @@ Figma’s collaboration tools, and ease of sharing designs and information made 
 Below are several of the mock-up pages designed in Figma along with a discussion of their purpose within the application. While these designs are subject to change as implementation of the project progresses, the goals and requirements for each page will likely remain the same. 
 
 \subsubsection{Login Page}
-A login page is necessary as both students and instructor users will need different levels of access and capabilities. User accounts will also allow students to save their work and return to it later. Although containers will automatically stop after 24 hours, this approach will provide students the flexibility to work in intervals rather than needing to complete everything in a single session.
+A login page (figure \ref{fig:login})is necessary as both students and instructor users will need different levels of access and capabilities. User accounts will also allow students to save their work and return to it later. Although containers will automatically stop after 24 hours, this approach will provide students the flexibility to work in intervals rather than needing to complete everything in a single session.
 \simplegraphic{Login.png}{Example login page design}{fig:login}
 
 \subsubsection{Vulnerable Applications Dashboard}
-Students need a clear and easily accessible way to work with vulnerable applications. Therefore, the webapp will have a dashboard which will contain all available vulnerable applications. Each listed application will include a description of the application alongside the relevant skills that are being tested when attempting to patch any vulnerabilities. The front-end team will work with the sponsor and docker team to rank the difficulty as well. 
+Students need a clear and easily accessible way to work with vulnerable applications. Therefore, the webapp will have a dashboard (figure \ref{fig:dashboard}) which will contain all available vulnerable applications. Each listed application will include a description of the application alongside the relevant skills that are being tested when attempting to patch any vulnerabilities. The front-end team will work with the sponsor and docker team to rank the difficulty as well. 
 \simplegraphic{WebAppDashboard.png}{Example dashboard design}{fig:dashboard}
 
 \subsubsection{Container Logs}
-The container logs page is crucial, as it will provide all of the information needed to resolve any issues related to any relevant container actions or events. Logs will be maintained for the entire lifespan of each container until it is stopped manually or automatically. Since feedback is critical for an educational tool, the logs page must present information clearly and simply. Only relevant troubleshooting information will be included to avoid overwhelming the user.
+The container logs page (figure \ref{fig:containerLogs}) is crucial, as it will provide all of the information needed to resolve any issues related to any relevant container actions or events. Logs will be maintained for the entire lifespan of each container until it is stopped manually or automatically. Since feedback is critical for an educational tool, the logs page must present information clearly and simply. Only relevant troubleshooting information will be included to avoid overwhelming the user.
 \complexgraphic{ContainerLogs.png}{Example Container Logs}{fig:containerLogs}
 
 The designs shown above represent only some of the pages created throughout the planning of this project. Over the course of development, many of our original ideas have been adjusted, or expanded as we learned more about the requirements and how each page would function within the application. Figma has been especially helpful in this process, as it allows us to quickly draft new ideas and revise our designs without needing to commit to coding right away. While not every design can be included in this document, the mock-ups we have shown highlight the core pages necessary for the application and reflect the overall direction of the project.
@@ -1451,11 +1451,11 @@ Other portions of the ERD are automatically generated by Django.
 \end{figure}
 
 \subsection{Use Case Diagram}
-The use case diagram illustrates the interactions between the two primary actors, students and instructors, inside the web application system. Students can browse available vulnerable web applications, deploy containers with automatic 24-hour timeouts, and manage their containers through stop, restart, and reset operations. Students also have access to timestamped logs specific to their container activities. Instructors inherit all student capabilities, but have additional privileges which include, access to more comprehensive instructor logs, the ability to view statuses across all student containers, disabling containers to restrict student access, and overriding student actions with race condition prevention.
+The use case diagram (figure \ref{fig:usecase}) illustrates the interactions between the two primary actors, students and instructors, inside the web application system. Students can browse available vulnerable web applications, deploy containers with automatic 24-hour timeouts, and manage their containers through stop, restart, and reset operations. Students also have access to timestamped logs specific to their container activities. Instructors inherit all student capabilities, but have additional privileges which include, access to more comprehensive instructor logs, the ability to view statuses across all student containers, disabling containers to restrict student access, and overriding student actions with race condition prevention.
 \complexgraphic{WADT_Use_Case.pdf}{WADT Web Application Use Case Diagram}{fig:usecase}
 
 \subsection{Deploying Containers}
-The activity diagram details the process behind deployment of a container, from catalog selection through backend processing. 
+The activity diagram (figure \ref{fig:deployContainer}) details the process behind deployment of a container, from catalog selection through backend processing. 
 
 \complexgraphic{AD-deploying-containers.png}{Container Deployment Activity Diagram}{fig:deployContainer}
 
