@@ -1005,14 +1005,109 @@ more responsive interaction between the client and server.
 The result is smoother, real-time feedback and an overall better user experience.
 
 \subsection{Backend Architecture}
+Django makes use of a Model, View, Template Architecture. A model is an abstraction over a database. A view performs an action. A template is a skeleton of a page which can be filled out with data.
 
-\subsubsection{Django MVC}
-%TODO
-what's meant here is using django's built in stuff for rendering HTML templates with whatever data you want.
+A Django application is almost always interacting with the user by running view functions/methods in response to browser requests. These views typically render templates by supplying data to them, often using models to parse raw data.
+
+Django encourages developing views (pages) that render a template by supplying it with data. The view behaves as a bridge between data (represented by models) and templates which dictate the look and feel of a page.
+
+A key limitation of the MVT architecture with Django is the relative difficulty of integrating useful Django idioms with the React frontend library. Both tools aim to accomplish the same tasks in different ways, and may clash in ways that must be resolved on a per-project basis.
+
+\subsubsection{Django MVT}
+It is possible to develop frontend pages using React and serve the resulting files with Django. This approach places Django first, React second, as ultimately the Django parts of the application are responsible for routing and serving static files.
+
+As a result, the team can still use the MVT architecture to design pages, while making a case-by-case decision for each page if React is needed. Simple pages can make use of class-based views to remain simple, while complex components can be handled in an appropriate React component rather than trying to push the limits of Django templates. It's the best of both worlds. Or is it?
+
+The issue is that Django is not able to serve JavaScript source files as written. The React parts of the application must first be bundled. This entails new development steps and new sources of bugs.
+
+Another issue: bundled assets tend to be quite heavy. As you might expect, keeping source code alongside its dependencies results in large bundle sizes by default. While there are standardized tools for fixing this issue, such as the webpack bundle analyzer, the team did not want to introduce large bundle sizes.
+
+Since React was an add-on to the initial sponsor provided scope, if its introduction resulted in the necessity of serving bundled static JavaScript files of multiple megabytes, we may violate the requirement of efficiency.
+
+In summary, while the conventions of the MVT architecture enforce a clear separation of concerns, and therefore good design, disregarding these conventions on a case-by-case basis and opting for React instead effectively nullifies the benefits of consistency and clarity that were sought.
+
+The further consequences of a more complex build pipeline and the potential for huge assets led to the team opting to develop a more restricted Django application, as described next.
 
 \subsubsection{API-only}
-%TODO
-what's meant here is using Django to create an API that just sends and receives JSON and doesn't take responsibility for rendering pages, which is what we're actually doing.
+Rather than attempt to use the full MVT design of Django, it is possible to limit its responsibilities in the application to more traditional REST API scope. A series of endpoints that send/receive JSON can be written using the Django REST Framework.
+
+Under this design, the frontend and backend are almost completely decoupled. While this makes the codebase easier to understand, it also leads to an evil of writing software: unnecessary duplication and reinventing the wheel.
+
+Consider the container catalog page of WADT as an example. This page simply lists out the available containers for a user to select. You may imagine now that it is just an unordered list of hyperlink text. Under one possible scheme of implementation (figure \ref{fig:templates}), you are completely correct.
+
+\begin{figure}[H]
+	\begin{minted}{python}
+{% if container_catalog %}
+<ol class="catalog">
+        {% for container in container_catalog %}
+      <li class="entry">
+        <h2><a href="{% url 'workbench' container.id %}">
+	  {{ container.name }}</a></h2>
+        <p class="status">Status: <span class="indicator">
+	  {{ container.status }}</span></p>
+        <p class="description">{{ container.description }}</p>
+      </li>
+        {% endfor %}
+</ol>
+	\end{minted}
+	\caption{Excerpt of a container list page developed using Django template language}
+	\label{fig:templates}
+\end{figure}
+
+However, under the API-only design, the backend could not be responsible for rendering finished HTML.
+Instead, the backend view would essentially return the results of a database query as JSON.
+
+Conceptually, this design change means that portions of frontend code need to parse and display data,
+repeating the work performed by Django's built-in template system. Django interacts with data through the model
+abstraction, hence why data is accessed using Python attribute syntax (\texttt{container.name}). Under the REST
+API design, frontend JavaScript code would first have to treat data as a series of bytes sent over a network connection,
+then parse it into JSON, then convert into native programming language objects.
+
+\subsubsection{Why Django REST Framework? (DRF)}
+These flaws are made up for by the batteries included style of DRF. Sure, it may be necessary to create boilerplate
+JavaScript to take this approach (or far more likely, generate it with an LLM and subject it to human review and testing).
+But these compromises wash away when DRF provides features that make it much faster to develop and communicate.
+
+What follows is a summary of the benefits of DRF for the project.
+
+\begin{itemize}
+	\item Web Browsable API. DRF ensures that once you've written an endpoint,
+		its spec is converted into a documentation page. The work of the backend team
+		then reduces to adding intuitive, human-readable descriptions of endpoints, saving
+		hours and hours and hours of time and repetitive stress injury.
+	\item Superset of Django. Inter-operates with Django Channels (another key component of the project),
+		and all standard Django features are available since functional views are still accessible.
+	\item Viewsets. DRF allows the backend team to create classes that descend from a DRF-provided template
+		and inherit useful features. See figure \ref{fig:viewset} for a code excerpt that demonstrates
+		why viewsets save time. Methods to list containers and access a specific container are inherited,
+		and all that is required further is methods to perform project-specific actions related to each container.
+	\item Mixins allow for the creation of reusable viewset behavior. As a project-specific example, the container
+		viewset can be refactored to use mixins which are also inherited by the viewset for log entries. Under
+		this scheme, CRUD behavior for each is defined in a single location, allowing for easier debugging.
+	\item Serializers automate the conversion of models into JSON. DRF allows for the creation of custom serializers
+		that decouple serialization from model spec and usage. In figure \ref{fig:viewset}, the container viewset
+		makes use of a ContainerSerializer class written for the project.
+\end{itemize}
+
+\begin{figure}[H]
+	\begin{minted}{python}
+class ContainerViewSet(viewsets.ModelViewSet):
+    queryset = Container.objects.all()
+    serializer_class = ContainerSerializer
+
+    @action(methods=["get"], detail=True)
+    def deploy(self, request, pk=None):
+        db_container = Container.objects.get(pk=pk)
+        image = db_container.docker_url
+        real_container = docker.run(image, detach=True)
+        db_container.docker_id = real_container.id
+        db_container.docker_name = real_container.name
+        db_container.save()
+	...
+	\end{minted}
+	\caption{DRF viewsets are batteries-included, but still extendable for WADT's use case}
+	\label{fig:viewset}
+\end{figure}
 
 
 \subsection{API Testing}
