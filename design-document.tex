@@ -157,40 +157,60 @@ The Web App Deployment Tool (WADT) serves a wide range of users who each interac
 \subsection{Student User Stories}
 
 \subsubsection*{A student launching their first vulnerable web app}
-An underclassmen cybersecurity student opens the WADT interface after hearing in lecture about SQL injection techniques. The student has never cloned a repository or configured a Docker image before. They navigate to the catalog, choose an intentionally vulnerable blog application, and press the “Deploy” button. Within seconds, the system spins up an isolated container instance. The student interacts with the web app directly through a provided URL and begins practicing query manipulation without ever having to troubleshoot dependencies or install packages. The student repeats this process with other applications to compare different vulnerability patterns, confident that each deployment is clean and reproducible.
+An underclassmen cybersecurity student opens the WADT interface after hearing in lecture about SQL injection techniques. The student has never cloned a repository or configured a Docker image before. They navigate to the catalog, choose an intentionally vulnerable blog application, and press the “Deploy” button.
+
+Within seconds, the system spins up an isolated container instance. The student interacts with the web app directly through a provided URL and begins practicing query manipulation without ever having to troubleshoot dependencies or install packages. The student repeats this process with other applications to compare different vulnerability patterns, confident that each deployment is clean and reproducible.
 
 \subsubsection*{A student preparing for an exam or certification}
-An upperclassmen student studying for an applied cybersecurity exam needs rapid access to practice environments in order to diagnose and possibly fix vulnerabilities. Instead of manually rebuilding labs for setup, they use WADT to deploy known vulnerable applications repeatedly, resetting containers between attempts. The system’s predictable behavior gives the student a stable environment to test their skills in injection, authentication bypass, and insecure session handling. The ability to rapidly deploy multiple apps back-to-back supports structured, focused study sessions that would otherwise be slowed by setup overhead.
+An upperclassmen student studying for an applied cybersecurity exam needs rapid access to practice environments in order to diagnose and possibly fix vulnerabilities. Instead of manually rebuilding labs for setup, they use WADT to deploy known vulnerable applications repeatedly, resetting containers between attempts.
+
+The system’s predictable behavior gives the student a stable environment to test their skills in injection, authentication bypass, and insecure session handling. The ability to rapidly deploy multiple apps back-to-back supports structured, focused study sessions that would otherwise be slowed by setup overhead.
 
 \subsubsection*{A remote learner with limited hardware}
-An undergraduate computer science student only has access to an older laptop with limited processing power needs to participate in their online cybersecurity course. Traditional vulnerable app environments are too heavy for their machine. By accessing WADT through a web browser on a lab computer, the student launches remote container instances hosted on the central server, bypassing local hardware constraints. They can complete all labs, interact with vulnerable applications, and submit assignments without needing to install or run any resource-intensive components on their own device. WADT thus provides equitable access for students across a wide range of computing environments.
+An undergraduate computer science student only has access to an older laptop with limited processing power needs to participate in their online cybersecurity course. Traditional vulnerable app environments are too heavy for their machine. By accessing WADT through a web browser on a lab computer, the student launches remote container instances hosted on the central server, bypassing local hardware constraints.
+
+They can complete all labs, interact with vulnerable applications, and submit assignments without needing to install or run any resource-intensive components on their own device. WADT thus provides equitable access for students across a wide range of computing environments.
 
 \subsection{Instructor User Stories}
 
 \subsubsection*{Setting up a classroom lab session}
-An instructor is planning an in-class workshop on cross-site scripting. Instead of preparing custom VM images or relying on students to install tools in advance, the instructor uses WADT to curate a list of approved vulnerable applications. At the start of class, students are instructed to log in, select the appropriate application from the pre-filtered catalog, and deploy it. The entire class is ready to begin within minutes. The instructor can rely on consistent application behavior across all student instances, making it easier to teach, demonstrate, and assess learning outcomes.
+An instructor is planning an in-class workshop on cross-site scripting. Instead of preparing custom VM images or relying on students to install tools in advance, the instructor uses WADT to curate a list of approved vulnerable applications. At the start of class, students are instructed to log in, select the appropriate application from the pre-filtered catalog, and deploy it.
+
+The entire class is ready to begin within minutes. The instructor can rely on consistent application behavior across all student instances, making it easier to teach, demonstrate, and assess learning outcomes.
 
 \subsubsection*{Monitoring activity and offering guidance}
-During a lab period, an instructor monitors student progress by observing container deployment logs and instance status. When a student encounters unexpected behavior, the instructor checks whether the issue is due to misuse, container expiration, or application runtime errors. The system’s structured logging allows the instructor to trace events and help students without needing to replicate their exact steps manually. The instructor can advise students to reset or redeploy containers when necessary, ensuring a smooth instructional flow. If absolutely necessary, the instructor can intervene directly in a student’s container to shutdown their environment if they suspect misuse.
+During a lab period, an instructor monitors student progress by observing container deployment logs and instance status. When a student encounters unexpected behavior, the instructor checks whether the issue is due to misuse, container expiration, or application runtime errors. The system’s structured logging allows the instructor to trace events and help students without needing to replicate their exact steps manually.
+
+The instructor can advise students to reset or re-deploy containers when necessary, ensuring a smooth instructional flow. If absolutely necessary, the instructor can intervene directly in a student’s container to shutdown their environment if they suspect misuse.
 
 \subsubsection*{Creating new assignments or labs}
-When designing a new assignment around insecure direct object references, the instructor identifies a relevant application and verifies that it behaves as expected within a WADT deployment. They then write assignment instructions referencing the platform’s deploy URL and reset functionality. Because WADT standardizes deployment, the instructor is confident that all students will interact with an identical environment, reducing ambiguity and minimizing grading complications.
+When designing a new assignment around insecure direct object references, the instructor identifies a relevant application and verifies that it behaves as expected within a WADT deployment. They then write assignment instructions referencing the platform’s deploy URL and reset functionality.
+
+Because WADT standardizes deployment, the instructor is confident that all students will interact with an identical environment, reducing ambiguity and minimizing grading complications.
 
 \subsection{Teaching Assistant and Support Staff User Stories}
 
 \subsubsection*{Providing troubleshooting assistance}
-A teaching assistant responds to student messages in a course discussion forum. In previous semesters, support requests often involved dependency conflicts, incorrect virtual machine configuration, or issues setting up virtual environments. With WADT, most issues instead involve conceptual misunderstandings or misuse of platform features, which the TA can quickly diagnose by reviewing container logs or guiding the student to redeploy. The TA experiences a reduced support burden and can focus more on helping students improve their security skills.
+A teaching assistant responds to student messages in a course discussion forum. In previous semesters, support requests often involved dependency conflicts, incorrect virtual machine configuration, or issues setting up virtual environments.
+
+With WADT, most issues instead involve conceptual misunderstandings or misuse of platform features, which the TA can quickly diagnose by reviewing container logs or guiding the student to redeploy. The TA experiences a reduced support burden and can focus more on helping students improve their security skills.
 
 \subsubsection*{Ensuring lab readiness before class}
-A TA responsible for lab infrastructure checks the WADT dashboard the day before a scheduled assignment release. They verify that all approved applications deploy properly, that container expiration and cleanup processes are functioning, and that no stale containers remain active. WADT gives the TA confidence that the environment will be ready for the next day’s class without requiring manual VM imaging or environment resets.
+A TA responsible for lab infrastructure checks the WADT dashboard the day before a scheduled assignment release. They verify that all approved applications deploy properly, that container expiration and cleanup processes are functioning, and that no stale containers remain active.
+
+WADT gives the TA confidence that the environment will be ready for the next day’s class without requiring manual VM imaging or environment resets.
 
 \subsection{System Administrator User Stories}
 
 \subsubsection*{Managing resource usage and container lifecycle}
-A system administrator responsible for the server hosting WADT monitors system load and storage utilization. They rely on WADT’s automated expiration policies to remove inactive instances and prevent resource exhaustion. If an unusually high number of deployments occurs during a bootcamp week, the administrator uses the platform’s administrative controls to adjust cleanup frequency or enforce deployment limits. This oversight ensures the system remains stable during periods of heavy usage.
+A system administrator responsible for the server hosting WADT monitors system load and storage utilization. They rely on WADT’s automated expiration policies to remove inactive instances and prevent resource exhaustion.
+
+If an unusually high number of deployments occurs during a bootcamp week, the administrator uses the platform’s administrative controls to adjust cleanup frequency or enforce deployment limits. This oversight ensures the system remains stable during periods of heavy usage.
 
 \subsubsection*{Adding new vulnerable applications}
-A system administrator receives a request from an instructor to add a newly published vulnerable application into the WADT catalog. Using the deployment manifest template, the administrator builds a lightweight descriptor file that defines the container image, environment variables, exposed ports, and reset behavior. After testing the new application’s deployment and runtime behavior, they add it to the catalog. The modular design allows applications to be introduced quickly without modifying the core system.
+A system administrator receives a request from an instructor to add a newly published vulnerable application into the WADT catalog. Using the deployment manifest template, the administrator builds a lightweight descriptor file that defines the container image, environment variables, exposed ports, and reset behavior.
+
+After testing the new application’s deployment and runtime behavior, they add it to the catalog. The modular design allows applications to be introduced quickly without modifying the core system.
 
 \subsection{Security Researcher and Practitioner User Stories}
 
@@ -210,7 +230,9 @@ If a user attempts to deploy an application whose manifest contains an error, WA
 
 \subsection{Summary of User Story Themes}
 
-Across all user roles, several common themes emerge. Users value the ability to deploy vulnerable applications quickly, reliably, and consistently. They rely on WADT to minimize setup friction, provide a stable environment, and support repeatable workflows. Whether the user is a student, instructor, administrator, or researcher, WADT enhances their capabilities by standardizing vulnerable application deployments and reducing the operational overhead typically associated with cybersecurity labs. These stories collectively illustrate the breadth of real-world situations WADT is designed to support.
+Across all user roles, several common themes emerge. Users value the ability to deploy vulnerable applications quickly, reliably, and consistently. They rely on WADT to minimize setup friction, provide a stable environment, and support repeatable workflows.
+
+Whether the user is a student, instructor, administrator, or researcher, WADT enhances their capabilities by standardizing vulnerable application deployments and reducing the operational overhead typically associated with cybersecurity labs. These stories collectively illustrate the breadth of real-world situations WADT is designed to support.
 
 \section{Project Description}
 
