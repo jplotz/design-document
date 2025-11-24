@@ -1172,7 +1172,12 @@ Both Hoppscotch and SwaggerHub provide suitable options for our API documentatio
 Hoppscotch by contrast, is free, yet it still provides the tools we need to properly document our APIs. It also can integrate directly with cURL, allowing us to import cURL commands directly into Hoppscotch. Additionally, it supports real-time documentation alongside testing. This makes Hoppscotch the more practical tool for our API documentation.
 
 \subsection{API Performance Testing}
-%TODO
+Efficiency is paramount to the WADT project. The team aims to optimize these metrics:
+\begin{itemize}
+	\item Response time. While the Docker Engine often takes a significant amount of time to complete requests, we must ensure that users experience a sub-200ms response time. Workarounds may be developed to provide preliminary responses before the Docker Engine completes its work, in an async fashion, so that the site isn't perceived as slow due to its dependency on Docker.
+	\item Resource usage. Network usage is especially important to measure and minimize, since it is the most likely avenue for hosting bills to come from. Third-party requests sent by target vulnerable webapps must be monitored.
+	\item Previous two metrics under concurrent user load. While the original scope of WADT allows for a single-user design, in all practicality it will be desirable to extend to multiple concurrent users in the future.
+\end{itemize}
 
 \subsection{Implementing Webhooks}
 Webhooks are one-way calls that originate from the backend and notify another system when a specific event has occurred. They differ from traditional API requests in that they are push-based rather than pull-based—instead of the frontend constantly asking for updates, the backend automatically sends information when something changes. For instance, when a user makes a purchase on Amazon, an API call first records the transaction in the backend’s database; once the payment is verified, a webhook is sent to confirm the successful purchase and update the user interface in real time.
@@ -1234,7 +1239,15 @@ We plan to integrate TruffleHog as part of our CI/CD security checks:
 By integrating TruffleHog into our development workflow, we create a proactive defense layer against one of the most common and dangerous security oversights—hard-coded secrets. This integration not only protects our AWS infrastructure and project data but also helps enforce professional software-security practices within the development team.
 
 \subsection{CI/CD Pipeline}
-%TODO
+The WADT project is hosted on GitHub. The team will make use of GitHub Actions to automate deployment, testing, and security scanning.
+The intended components are as follows:
+\begin{itemize}
+	\item TruffleHog (Security Scanning) step. Checkout the main branch and use TruffleHog to check for potential password or data leaks.
+	\item Backend test step. Use libraries such as \texttt{pytest} with Django to run test suite and report coverage.
+	\item Frontend test step. Report coverage.
+	\item Build step for frontend and backend. Install dependencies and upload build artifacts before deployment.
+	\item Deployment to AWS step. Run DB migrations, issue system commands, and give status update on deployment.
+\end{itemize}
 
 \subsection{Chosen API Tools}
 For API implementation, some of the biggest considerations are what will potential students need to have access too and what will make this project the easiest to utilize. Along with this we also had to ensure that interfacing with Docker would be seamless to ensure that we could control the container instances while minimizing the potential risks of security issues.
