@@ -1286,7 +1286,6 @@ Performance-wise, PostgreSQL can scale well and handle complex queries without b
 
 
 \subsection{Container Identity Management} \label{subsec:container-identity-management}
-%TODO
 In multi-container environments, especially those used for modern web app deployment, it's crucial to identify and reference containers accurately. Whether you're orchestrating services, debugging issues, or automating tasks, knowing which container you're interacting with helps avoid confusion and ensures your tooling behaves predictably.
 Docker provides two unique identifiers for each container: the container ID and the container name. Both are guaranteed to be unique within a host system, but they serve different roles depending on how you're working.
 
@@ -1297,7 +1296,6 @@ Docker provides two unique identifiers for each container: the container ID and 
 \end{itemize}
 
 \subsection{Docker Compose}
-%TODO
 Docker Compose requires a different Python client library than the one typically used for managing single Docker containers. The standard Docker SDK for Python (docker-py) is designed to interact with individual containers—allowing developers to start, stop, inspect, and configure them directly. However, Compose introduces a higher level of orchestration, where multiple services are defined together in a docker-compose.yml file and managed as a unified application stack. This difference means that the same library used for single-container control cannot fully handle the complexity of Compose projects.
 
 When working with Compose, the Python tooling must be able to interpret and act on project-level definitions rather than just container-level commands. This involves parsing YAML files to understand service configurations, networks, and volumes, and then coordinating the lifecycle of all services in the correct order. For example, a database service may need to be initialized before a web server can connect to it, and Compose ensures this dependency is respected. Libraries or wrappers that integrate with Compose are therefore essential for managing these workflows programmatically.
