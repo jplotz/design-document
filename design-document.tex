@@ -1359,6 +1359,36 @@ Compose operates in three main stages:
     \item{Teardown} – The \texttt{docker compose down} command stops and removes containers, networks, and volumes, which allows to have a clean resets.
 \end{itemize}
 
+\subsection{Overview of Supervisord}
+
+Supervisord is a simple and reliable process manager that is used to run and control multiple long-running processes. It acts like a lightweight init system: it starts programs, keeps them running, restarts them if they fail, and provides a single place to view logs. This makes it especially useful in situations where several processes must run together inside one environment.
+
+In modern deployments, Supervisord is commonly used inside containers. Docker normally expects each container to run only one main process. However, many real applications need more than one process at the same time, such as a web server, a background worker, and a scheduler. Supervisord solves this problem by managing all of these processes inside a single container. It ensures that each process starts correctly, stays running, and is restarted automatically if it crashes.
+
+Supervisord works by reading configuration files written in a simple INI-style format. These files define each program's command, environment, restart behavior, and logging settings. Typical configuration files are stored in \texttt{/etc/supervisor/supervisord.conf} and \texttt{/etc/supervisor/conf.d/}. Because the configuration is separate from the application code, it is easy to update, version-control, and reuse across different environments.
+
+One of the main benefits of Supervisord is its unified logging system. All managed processes can have their output collected into log files, making it easier to debug issues. In containerized environments, these logs can be mounted to the host or sent to external logging systems. This provides consistent visibility into what each process is doing.
+
+Supervisord also handles shutdowns cleanly. When the container receives a stop signal, Supervisord forwards that signal to all of its child processes. This allows each process to shut down properly instead of being terminated abruptly. This behavior helps prevent data loss, incomplete tasks, or corrupted files.
+
+In multi-container web applications, Supervisord works together with tools like Docker Compose or Kubernetes. These tools manage containers, networks, and scaling, but they do not manage the internal processes inside each container. Supervisord fills this gap by controlling the processes inside the container while the orchestration tool controls the container itself. This separation keeps the system organized and predictable.
+
+Supervisord also includes an optional XML-RPC interface that allows external tools to check the status of processes or restart them remotely. While not always needed in container setups, this feature can be useful in more advanced deployments.
+
+In summary, Supervisord is a practical and dependable tool for managing multiple processes inside a single container or server. It provides automatic restarts, clean shutdowns, centralized logging, and simple configuration. When combined with container orchestration tools, it helps ensure that complex applications run smoothly and consistently across different environments.
+
+\subsection{How Supervisord Manages Processes Inside Each Docker Compose Container}
+
+Docker Compose controls containers, but it does not manage the individual processes running inside them. Each service in the \texttt{docker-compose.yml} file starts exactly one container, and Docker expects that container to run a single main foreground process. Many real applications, however, need several processes running at the same time. Examples include a web server, a background worker, and a scheduler. Docker cannot manage these processes by itself.
+
+Supervisord solves this problem by acting as a process manager \emph{inside} the container. When the container starts, Supervisord becomes the main process (PID~1). It then reads its configuration files and starts all required internal programs. Each program is defined with a command, restart policy, and logging settings. Supervisord keeps every process running for the entire lifetime of the container.
+
+If any internal process crashes, Supervisord automatically restarts it. This prevents the container from exiting unexpectedly and keeps the service stable. Supervisord also collects the output of all processes into log files, making it easier to understand what is happening inside the container.
+
+When Docker Compose stops the container, Supervisord receives the stop signal and forwards it to all managed processes. This allows each process to shut down cleanly instead of being terminated abruptly.
+
+In summary, Docker Compose manages containers, while Supervisord manages the processes inside each container. This combination allows a single container to run multiple long-lived processes reliably, while still fitting cleanly into a multi-container Compose environment.
+
 \subsection{Docker Architecture}
 % Docker team content follows
 Docker provides a comprehensive containerization framework that underpins the way we deploy and manage intentionally vulnerable web applications. At its core, Docker simplifies the packaging of applications by bundling code, dependencies, and runtime settings into portable units that can run consistently across different environments. This consistency is crucial for security testing, where reproducibility and isolation are required to ensure that vulnerabilities can be explored without interference from host systems or other applications. By abstracting away platform differences and offering lightweight, isolated execution environments, Docker makes it possible to replicate complex setups quickly and reliably, whether on local machines, in labs, or in cloud platforms.
