@@ -352,9 +352,14 @@ That familiarity with the process made the project feel approachable, and I felt
 \section{System Pipeline Diagram}
 The following activity diagram (figure \ref{fig:systemOverview}) presents the high-level overview for users using WADT. The diagram demonstrates the main interaction loop that enables users to move from authentication to hands-on practice.
 
-\diagram{AD-system-overview.png}{System Overview}{fig:systemOverview}
-
 This emphasizes WADT's primary goal of eliminating setup overhead while providing a streamlined and intuitive interface. Once a user has been authenticated, they can deploy any available applications in a single step and immediately begin testing. Container management involves providing users the capability to reset or inspect containers as needed without restarting the entire process. When the session ends, either by a user manually stopping or automatic timeout after 24 hours, all resources are cleaned up to maintain system integrity.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[keepaspectratio,height=0.5\textheight,width=\textwidth]{AD-system-overview.png}
+    \caption{System Pipeline Diagram}
+    \label{fig:systemOverview}
+\end{figure}
 
 More detailed activity diagrams will follow in the System Architecture section to provide more substantial details of the notable activities, namely for backend deployment of containers, interactions with containers, and container cleanup. These diagrams have been separated to provide clarity.
 
@@ -1597,10 +1602,10 @@ The frontend team tested several themes that balanced readability and contrast w
 \subsection{Theme Designs}
 Here are some theme designs that we decided on (note: these themes are subject to change as we continue development):
 \begin{itemize}
-    \item Bootswatch Cyborg: Figure 1
-    \item Bootswatch Lux: Figure 2
-    \item Bootswatch Zephyr: Figure 3
-    \item Bootswatch Pulse: Figure 4
+    \item Bootswatch Cyborg: \ref{fig:cyborg}
+    \item Bootswatch Lux: \ref{fig:lux}
+    \item Bootswatch Zephyr: \ref{fig:zephyr}
+    \item Bootswatch Pulse: \ref{fig:pulse}
 \end{itemize}
 \begin{figure}[H]
   \centering
@@ -1644,9 +1649,14 @@ Here is how lighthouse will score our web application:
 	\item Best Practices
 	\item SEO
 \end{itemize}
-This is an example of what a lighthouse report looks like:
+An example a lighthouse report is shown in figure \ref{fig:lighthouse}.
 
-\includegraphics[keepaspectratio,width=\textwidth]{lighthouse.png}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{lighthouse.png}
+    \caption{Lighthouse Report}
+    \label{fig:lighthouse}
+\end{figure}
 
 Our goal is to ensure that all of the scores from lighthouse are above 90.
 Our main focus will be on performance and accessibility, as these are the most important factors for a web application.
@@ -1695,7 +1705,7 @@ Figma’s collaboration tools, and ease of sharing designs and information made 
 Below are several of the mock-up pages designed in Figma along with a discussion of their purpose within the application. While these designs are subject to change as implementation of the project progresses, the goals and requirements for each page will likely remain the same. 
 
 \subsubsection{Login Page}
-A login page (figure \ref{fig:login})is necessary as both students and instructor users will need different levels of access and capabilities. User accounts will also allow students to save their work and return to it later. Although containers will automatically stop after 24 hours, this approach will provide students the flexibility to work in intervals rather than needing to complete everything in a single session.
+A login page (figure \ref{fig:login}) is necessary as both students and instructor users will need different levels of access and capabilities. User accounts will also allow students to save their work and return to it later. Although containers will automatically stop after 24 hours, this approach will provide students the flexibility to work in intervals rather than needing to complete everything in a single session.
 \simplegraphic{Login.png}{Example login page design}{fig:login}
 
 \subsubsection{Vulnerable Applications Dashboard}
@@ -1909,27 +1919,48 @@ Examples of each field type can be seen in table \ref{fig:erdtable}.
 \end{table}
 
 \subsection{Use Case Diagram}
-The use case diagram (figure \ref{fig:usecase}) illustrates the interactions between the two primary actors, students and instructors, inside the web application system. Students can browse available vulnerable web applications, deploy containers with automatic 24-hour timeouts, and manage their containers through stop, restart, and reset operations. Students also have access to timestamped logs specific to their container activities. Instructors inherit all student capabilities, but have additional privileges which include, access to more comprehensive instructor logs, the ability to view statuses across all student containers, disabling containers to restrict student access, and overriding student actions with race condition prevention.
-\diagram{WADT_Use_Case.pdf}{WADT Web Application Use Case Diagram}{fig:usecase}
+The use case diagram in figure \ref{fig:usecase} illustrates the interactions between the two primary actors, students and instructors, inside the web application system. Students can browse available vulnerable web applications, deploy containers with automatic 24-hour timeouts, and manage their containers through stop, restart, and reset operations. Students also have access to timestamped logs specific to their container activities. Instructors inherit all student capabilities, but have additional privileges which include, access to more comprehensive instructor logs, the ability to view statuses across all student containers, disabling containers to restrict student access, and overriding student actions with race condition prevention.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[keepaspectratio,height=0.5\textheight,width=\textwidth]{WADT_Use_Case.pdf}
+    \caption{WADT Web Application Use Case Diagram}
+    \label{fig:usecase}
+\end{figure}
 
 \subsection{Deploying Containers}
-The activity diagram (figure \ref{fig:deployContainer}) details the process behind deployment of a container, from catalog selection through backend processing. 
+The activity diagram in figure \ref{fig:deployContainer} details the process behind deployment of a container, from catalog selection through backend processing. 
 
-\diagram{AD-deploying-containers.png}{Container Deployment Activity Diagram}{fig:deployContainer}
+\begin{figure}[H]
+    \centering
+    \includegraphics[keepaspectratio,height=0.5\textheight,width=\textwidth]{AD-deploying-containers.png}
+    \caption{Container Deployment Activity Diagram}
+    \label{fig:deployContainer}
+\end{figure}
 
 The backend applies security configurations automatically during deployment, ensuring each container runs in an isolated network with enforced lifetime limits. If an image is unavailable, the system returns an error rather than proceeding with a partial deployment.
 
 \subsection{Interactions with Containers}
 The figure \ref{fig:interactContainers} illustrates the management actions available to users during an active session.
 
-\diagram{AD-interacting-w-containers.png}{Interacting with Containers}{fig:interactContainers}
+\begin{figure}[H]
+    \centering
+    \includegraphics[keepaspectratio,height=0.5\textheight,width=\textwidth]{AD-interacting-w-containers.png}
+    \caption{Interacting with containers}
+    \label{fig:interactContainers}
+\end{figure}
 
 During an active session, users can view logs, reset to a clean state, restart with any changes made preserved, or stop containers entirely. The system monitors lifetime limits in the background and triggers automatic shutdown if a container exceeds its allocated time.
 
 \subsection{Container Cleanup Process}
-The figure \ref{fig:cleanup} describes the cleanup process that occurs when a container session ends.
+Figure \ref{fig:cleanup} describes the cleanup process that occurs when a container session ends.
 
-\diagram{AD-container-cleanup.png}{Container Cleanup}{fig:cleanup}
+\begin{figure}[H]
+    \centering
+    \includegraphics[keepaspectratio,height=0.5\textheight,width=\textwidth]{AD-container-cleanup.png}
+    \caption{Container Cleanup}
+    \label{cleanup}
+\end{figure}
 
 The system attempts a graceful shutdown before forcing termination if necessary. All associated resources, network bridges, database metadata, and allocated ports are released to maintain system integrity for subsequent deployments.
 
@@ -2302,5 +2333,9 @@ We would like to acknowledge our sponsor for providing flexible, highly-availabl
 \end{itemize}
 
 \printbibliography
+
+\section{Appendix}
+\subsection{Copyright permissions}
+For the purposes of this project, we have not needed to secure any copyright permissions.
 
 \end{document}
