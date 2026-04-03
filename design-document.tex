@@ -2258,9 +2258,34 @@ We are fully equipped to continue the development cycle through SD2 while fulfil
 	\item Container status is indicated through the site
 \end{itemize}
 
-%TODO
 \section{Analysis}
+\begin{figure}[H]
+	\centering
+	\includegraphics[keepaspectratio,height=0.25\textheight,width=0.5\textwidth]{performance.png}
+	\caption{Lighthouse Scores: Performance}
+\end{figure}
 
+\section{Continuing On}
+The following areas would be most fruitful for new groups of students to continue to improve WADT.
+\begin{itemize}
+	\item Fully-featured "add container" page. The difficulty of enabling this feature is not
+		allowing users to add new containers to the site, as that is fairly easy. All it requires
+		is supplying the name of an image. The challenge is in verifying that the supplied image
+		is not malicious. This feature requires establishing other complementary features to ensure
+		trust of specific users with elevated privileges, and potentially even advanced features
+		that can heuristically gauge whether a container is suitable to be added to WADT's catalog
+		(As an example, a feature that scans the README page of a suggested image, looking for red flags).
+	\item Arbitrary command execution. There are scenarios where a student may want fine-grained control of a
+		running container in ways that are not accessible through its UI. They may want to run arbitrary
+		commands inside of that container, similar to what experienced command-line users do with \texttt{docker exec}.
+		The challenge a new group of students would face is the following: how can they permit command execution
+		without allowing for malicious commands? This problem is extremely challenging as there is a huge variety
+		of methods to disguise malicious commands to circumvent simplistic detection methods.
+	\item Integration with other common pentesting and cybersecurity tools. Can future groups of students make
+		it easier for learners to use their existing toolbox to interact with WADT's containers? As an example,
+		features may be added that make it easier to use remote debugging tools to step through the execution flow
+		inside a container.
+\end{itemize}
 
 \section{How to Run WADT}
 \subsection{Local Environment}
