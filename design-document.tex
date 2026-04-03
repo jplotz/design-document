@@ -874,19 +874,19 @@ For lab reproducibility we will ensure database seeding is deterministic. Becaus
 \subsubsection*{Why chosen}
 PrestaShop is a high-impact, real-world example of how file handling vulnerabilities in feature-heavy web applications can lead to full server compromise. It complements our intentional-vulnerability apps by demonstrating production failures.
 
-\subsubsection{vAPI}
+\subsubsection{cVWA}
 
 \paragraph{Overview and stack}
-vAPI (Vulnerable Adversely Programmed Interface) is a self-hosted lab that shows common API security issues from the OWASP Top 10. It uses PHP and MySQL, built with the Laravel framework. The project includes Postman collections for testing and supports Docker Compose and Helm for deployment.
+cVWA (Custom Vulnerable Web Application) is a lightweight, intentionally insecure training application designed to demonstrate common web vulnerabilities in a controlled environment. It typically runs on a simple PHP and MySQL stack, making it easy to deploy in Docker or local LAMP setups. The application exposes multiple endpoints with deliberately weak validation, insecure session handling, and flawed database interactions.
 
 \paragraph{Educational value}
-vAPI helps users learn about real-world API vulnerabilities like broken access control, data leaks, and insecure input handling. Each issue is set up as a hands-on challenge, making it useful for students, ethical hackers, and security testers. Postman files make it easy to follow and repeat tests. Some vulnerabilities stimulated in vAPI are lack of resources, injection flaws, and broken authentication.
+cVWA provides hands-on practice with classic web vulnerabilities such as SQL injection, XSS, insecure direct object references, and weak authentication flows. Because the application is intentionally minimal, learners can focus on understanding the vulnerability mechanics without the complexity of a full framework. This makes cVWA ideal for introductory security labs, demonstrations, and rapid experimentation.
 
 \paragraph{Deployment notes and Docker considerations}
-vAPI comes with a Docker Compose setup that runs both the Laravel app and MySQL database. Users should set up the \texttt{.env} file with correct database settings and match passwords across files. Using volumes helps save logs and exploit data. After setup, the app runs at \url{http://localhost/vapi/}.
+cVWA is typically deployed using a simple Docker Compose configuration that launches a PHP/Apache container alongside a MySQL database. Environment variables must be aligned across the \texttt{docker-compose.yml} and application configuration files. Volumes can be used to persist the database state. Once deployed, the application is accessible at \url{http://localhost/cvwa/} or the configured virtual host.
 
 \paragraph{Why chosen}
-vAPI was chosen because it focuses on API-specific security issues, which are common in modern apps. It’s easy to deploy, well-documented, and recognized by the security community. It fits WADT’s goal of offering practical, container-based labs for learning and testing.
+cVWA was selected because of its simplicity, predictable behavior, and suitability for teaching foundational web security concepts. Its minimal design makes it easy to integrate into WADT’s container-based lab environment while still offering meaningful, hands-on vulnerability exploration.
 
 \subsubsection{NoSQL Injection Vulnerable App (NIVA)}
 
@@ -1377,17 +1377,19 @@ Supervisord also includes an optional XML-RPC interface that allows external too
 
 In summary, Supervisord is a practical and dependable tool for managing multiple processes inside a single container or server. It provides automatic restarts, clean shutdowns, centralized logging, and simple configuration. When combined with container orchestration tools, it helps ensure that complex applications run smoothly and consistently across different environments.
 
-\subsection{How Supervisord Manages Processes Inside Each Docker Compose Container}
+\subsubsection{How Supervisord Manages Processes Inside a Docker Container}
 
-Docker Compose controls containers, but it does not manage the individual processes running inside them. Each service in the \texttt{docker-compose.yml} file starts exactly one container, and Docker expects that container to run a single main foreground process. Many real applications, however, need several processes running at the same time. Examples include a web server, a background worker, and a scheduler. Docker cannot manage these processes by itself.
+Supervisord is a lightweight process control system that runs as the primary process inside a container and is responsible for launching and supervising all other internal processes. When the container starts, Supervisord reads its configuration file and initializes each defined program with its own command, environment variables, and logging rules. This allows a single container to run multiple services in a controlled and predictable manner.
 
-Supervisord solves this problem by acting as a process manager \emph{inside} the container. When the container starts, Supervisord becomes the main process (PID~1). It then reads its configuration files and starts all required internal programs. Each program is defined with a command, restart policy, and logging settings. Supervisord keeps every process running for the entire lifetime of the container.
+Once active, Supervisord continuously monitors the health and status of each managed process. If a program exits unexpectedly or becomes unresponsive, Supervisord can automatically restart it according to the specified policy. This ensures that essential services such as web servers, background workers, or schedulers remain available throughout the container's lifetime. Startup priorities and dependency ordering can also be defined, allowing complex applications to initialize in a stable sequence.
 
-If any internal process crashes, Supervisord automatically restarts it. This prevents the container from exiting unexpectedly and keeps the service stable. Supervisord also collects the output of all processes into log files, making it easier to understand what is happening inside the container.
+Supervisord centralizes logging by capturing the standard output and error streams of each process and writing them to log files inside the container. This unified logging approach simplifies debugging and provides clear visibility into how different processes behave and interact. Administrators can also query Supervisord for process status, stop or restart individual programs, and adjust configurations without modifying the container's base image.
 
-When Docker Compose stops the container, Supervisord receives the stop signal and forwards it to all managed processes. This allows each process to shut down cleanly instead of being terminated abruptly.
+During shutdown, Supervisord receives the termination signal and gracefully forwards it to all managed processes. This coordinated shutdown sequence allows each service to close connections, flush buffers, and complete pending work before exiting. By acting as an internal init system, Supervisord ensures clean termination and reduces the risk of corrupted data or inconsistent application state.
 
-In summary, Docker Compose manages containers, while Supervisord manages the processes inside each container. This combination allows a single container to run multiple long-lived processes reliably, while still fitting cleanly into a multi-container Compose environment.
+Overall, Supervisord provides structured, reliable control over multi-process behavior inside a container. It launches programs, monitors their health, manages logs, restarts failures, and coordinates orderly shutdowns, making it a practical solution for scenarios where multiple internal processes must run together within a single container.
+
+\textbf{Note:} For this project, we use Docker Compose instead of Supervisord because Supervisord requires produces a large amount of data that becomes difficult to manage at scale. It also becomes complex for us to fix onto the containers, which is why we're using Docker Compose.
 
 \subsection{Docker Architecture}
 % Docker team content follows
@@ -2053,7 +2055,7 @@ The authentication system will use TOTP:
     \item OWASP Juice Shop
     \item PyGoat
     \item DVWA
-    \item vAPI
+    \item cVWA
     \item NIVA
     \item Vulnerableapp-facade
     \item BodgeIt Store
